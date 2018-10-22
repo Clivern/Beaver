@@ -1,0 +1,26 @@
+language: go
+
+go:
+  - 1.9.x
+  - 1.10.x
+  - 1.11.x
+  - master
+
+install: true
+
+# Fix this by renaming the directory before testing.
+# https://github.com/travis-ci/travis-ci/issues/4573
+script:
+  - export GOBIN="$GOPATH/bin"
+  - export PATH="$PATH:$GOBIN"
+  # Fix dir names
+  - cd $GOPATH/src/github.com/
+  - mv Clivern/Beaver Clivern/beaver
+  - mv Clivern clivern
+  - cd clivern/beaver
+  # Config & execute ci tasks
+  - make install_dep
+  - make install_revive
+  - make ensure_dep
+  - make ci
+

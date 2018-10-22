@@ -10,3 +10,12 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Config file
+config.dist.json
+
+# App build
+beaver
+
+# Ignore vendor and run dep ensure
+vendor

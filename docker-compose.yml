@@ -1,0 +1,32 @@
+version: '3'
+services:
+   db:
+      image: "mysql:5.7"
+      environment:
+         - MYSQL_ROOT_PASSWORD=root
+         - MYSQL_DATABASE=beaver
+         - MYSQL_USER=beaver
+         - MYSQL_PASSWORD=secret
+         - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      restart: always
+      healthcheck:
+         test: '/usr/bin/mysql --user=beaver --password=secret --execute "SHOW DATABASES;"'
+         interval: 3s
+         timeout: 1s
+         retries: 5
+   web:
+      image: "clivern_beaver:1.0.0"
+      build: .
+      command: './beaver'
+      ports:
+         - "8080:8080"
+      depends_on:
+         - db
+      volumes:
+         - './var:/go/src/github.com/clivern/beaver/var'
+      restart: always
+      environment:
+         - AppMode=prod
+         - AppPort=8080
+         - AppLogLevel=info
+         - AppDomain=example.com
