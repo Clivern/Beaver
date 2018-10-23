@@ -23,7 +23,7 @@ func main() {
 
 	r := gin.Default()
 	r.Static("/assets", "./assets")
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob("web/template/*")
 	r.GET("/", controller.Index)
 	r.GET("/_healthcheck", controller.HealthCheck)
 	r.GET("/favicon.ico", func(c *gin.Context) {

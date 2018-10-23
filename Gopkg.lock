@@ -31,6 +31,14 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:c620af5b788da03b66b43a0ff34eb39e5bcbbfa8e174a1a97f828325dbd06749"
+  name = "github.com/google/logger"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "54b4ae679a63f6d6fd5c0009b2471e637eabf784"
+
+[[projects]]
   digest = "1:3e551bbb3a7c0ab2a2bf4660e7fcad16db089fdcfbb44b0199e62838038623ea"
   name = "github.com/json-iterator/go"
   packages = ["."]
@@ -72,11 +80,16 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c5791551cb1ebd8cd399edad5bc32805661a5c0340515110dd7d5ab0b0508efc"
+  digest = "1:973abb7e0ee4f20cceb724eb2f7397a442a4f067ef3b682534bb82787c08a038"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows",
+    "windows/registry",
+    "windows/svc/eventlog",
+  ]
   pruneopts = "UT"
-  revision = "8a28ead16f52c8aaeffbf79239b251dfdf6c4f96"
+  revision = "44b849a8bc13eb42e95e6c6c5e360481b73ec710"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -97,6 +110,9 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/gin-gonic/gin"]
+  input-imports = [
+    "github.com/gin-gonic/gin",
+    "github.com/google/logger",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
