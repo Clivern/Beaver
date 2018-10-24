@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="Beaver Logo" src="https://raw.githubusercontent.com/Clivern/Beaver/master/assets/img/logo.png" height="80" />
     <h3 align="center">Beaver</h3>
-    <p align="center">Build Realtime Applications.</p>
+    <p align="center">Pusher Server Implementation.</p>
 </p>
 
 ## Documentation
