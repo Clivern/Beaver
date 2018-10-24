@@ -8,5 +8,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// MySQL DB connector
 type MySQL struct {
 }

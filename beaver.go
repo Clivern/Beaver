@@ -5,11 +5,13 @@
 package main
 
 import (
-	"github.com/clivern/beaver/internal/app/controller"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/clivern/beaver/internal/app/controller"
+	"github.com/clivern/beaver/internal/pkg/broadcast"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -22,13 +24,21 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.Static("/assets", "./assets")
+	r.Static("/static", "./web/static/")
 	r.LoadHTMLGlob("web/template/*")
 	r.GET("/", controller.Index)
 	r.GET("/_healthcheck", controller.HealthCheck)
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.String(http.StatusNoContent, "")
 	})
+	r.GET("/chat", controller.Chat)
+
+	socket := &broadcast.Websocket{}
+	socket.Init()
+	r.GET("/ws", func(c *gin.Context) {
+		socket.HandleConnections(c.Writer, c.Request)
+	})
+	go socket.HandleMessages()
 
 	r.Run()
 }

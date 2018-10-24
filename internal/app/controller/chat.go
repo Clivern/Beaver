@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-// Index controller
-func Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+// Chat controller
+func Chat(c *gin.Context) {
+	c.HTML(http.StatusOK, "chat.tmpl", gin.H{
 		"title": "Beaver",
 	})
 }

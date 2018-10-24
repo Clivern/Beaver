@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// HealthCheck controller
 func HealthCheck(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": "ok",

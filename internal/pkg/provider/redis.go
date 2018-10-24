@@ -8,5 +8,6 @@ import (
 	_ "github.com/go-redis/redis"
 )
 
+// Redis provider
 type Redis struct {
 }

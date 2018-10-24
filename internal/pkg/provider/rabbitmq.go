@@ -8,5 +8,6 @@ import (
 	_ "github.com/streadway/amqp"
 )
 
+// RabbitMQ provider
 type RabbitMQ struct {
 }

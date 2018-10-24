@@ -64,6 +64,14 @@
   revision = "54b4ae679a63f6d6fd5c0009b2471e637eabf784"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9ee923192163b86d29ab503748f3cb4a3e37607dbf46be4dde5716499a3c84af"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "76e4896901ef89d253d69b528d3701dd146fe2ae"
+
+[[projects]]
   digest = "1:3e551bbb3a7c0ab2a2bf4660e7fcad16db089fdcfbb44b0199e62838038623ea"
   name = "github.com/json-iterator/go"
   packages = ["."]
@@ -156,6 +164,7 @@
     "github.com/go-redis/redis",
     "github.com/go-sql-driver/mysql",
     "github.com/google/logger",
+    "github.com/gorilla/websocket",
     "github.com/streadway/amqp",
   ]
   solver-name = "gps-cdcl"

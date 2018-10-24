@@ -48,3 +48,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/streadway/amqp"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gorilla/websocket"
