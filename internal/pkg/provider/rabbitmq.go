@@ -5,9 +5,8 @@
 package provider
 
 import (
-    "github.com/streadway/amqp"
+	_ "github.com/streadway/amqp"
 )
 
 type RabbitMQ struct {
-
 }

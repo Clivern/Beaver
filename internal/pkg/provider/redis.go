@@ -5,9 +5,8 @@
 package provider
 
 import (
-    "github.com/go-redis/redis"
+	_ "github.com/go-redis/redis"
 )
 
 type Redis struct {
-
 }
