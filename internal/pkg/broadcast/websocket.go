@@ -5,29 +5,32 @@
 package broadcast
 
 import (
-	"net/http"
-
+	_ "fmt"
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"github.com/gorilla/websocket"
+	"net/http"
 )
+
+// https://github.com/gorilla/websocket/issues/46#issuecomment-227906715
 
 // Message Object
 type Message struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Message  string `json:"message"`
+	Channel  string `json:"channel"`
 }
 
 // Websocket Object
 type Websocket struct {
-	Clients   map[*websocket.Conn]bool
+	Clients   map[string]map[*websocket.Conn]bool
 	Broadcast chan Message
 	Upgrader  websocket.Upgrader
 }
 
 // Websocket Init
 func (e *Websocket) Init() {
-	e.Clients = make(map[*websocket.Conn]bool)
+	e.Clients = make(map[string]map[*websocket.Conn]bool)
 	e.Broadcast = make(chan Message)
 	e.Upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -41,20 +44,21 @@ func (e *Websocket) HandleMessages() {
 	for {
 		// Grab the next message from the broadcast channel
 		msg := <-e.Broadcast
+
 		// Send it out to every client that is currently connected
-		for client := range e.Clients {
+		for client := range e.Clients[msg.Channel] {
 			err := client.WriteJSON(msg)
 			if err != nil {
 				logger.Infof("error: %v", err)
 				client.Close()
-				delete(e.Clients, client)
+				delete(e.Clients[msg.Channel], client)
 			}
 		}
 	}
 }
 
 // Websocket HandleConnections
-func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request) {
+func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, channel string) {
 	// Upgrade initial GET request to a websocket
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
@@ -65,8 +69,12 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
 
+	if _, ok := e.Clients[channel]; !ok {
+		e.Clients[channel] = make(map[*websocket.Conn]bool)
+	}
+
 	// Register our new client
-	e.Clients[ws] = true
+	e.Clients[channel][ws] = true
 
 	for {
 		var msg Message
@@ -76,7 +84,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			logger.Infof("error: %v", err)
-			delete(e.Clients, ws)
+			delete(e.Clients[channel], ws)
 			break
 		}
 

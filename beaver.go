@@ -36,7 +36,7 @@ func main() {
 	socket := &broadcast.Websocket{}
 	socket.Init()
 	r.GET("/ws", func(c *gin.Context) {
-		socket.HandleConnections(c.Writer, c.Request)
+		socket.HandleConnections(c.Writer, c.Request, c.DefaultQuery("channel", ""))
 	})
 	go socket.HandleMessages()
 
