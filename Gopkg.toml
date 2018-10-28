@@ -47,8 +47,8 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/streadway/amqp"
+  name = "github.com/gorilla/websocket"
 
 [[constraint]]
   branch = "master"
-  name = "github.com/gorilla/websocket"
+  name = "github.com/satori/go.uuid"

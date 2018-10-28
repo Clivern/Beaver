@@ -2,16 +2,15 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-package broadcast
+package pusher
 
 import (
-	_ "fmt"
+	"fmt"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
-
-// https://github.com/gorilla/websocket/issues/46#issuecomment-227906715
 
 // Message Object
 type Message struct {
@@ -33,7 +32,9 @@ func (e *Websocket) Init() {
 	e.Clients = make(map[string]map[*websocket.Conn]bool)
 	e.Broadcast = make(chan Message)
 	e.Upgrader = websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(_ *http.Request) bool {
 			return true
 		},
 	}
@@ -49,7 +50,7 @@ func (e *Websocket) HandleMessages() {
 		for client := range e.Clients[msg.Channel] {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				logger.Infof("error: %v", err)
+				fmt.Printf("error: %v", err)
 				client.Close()
 				delete(e.Clients[msg.Channel], client)
 			}
@@ -58,7 +59,7 @@ func (e *Websocket) HandleMessages() {
 }
 
 // Websocket HandleConnections
-func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, channel string) {
+func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, appName string) {
 	// Upgrade initial GET request to a websocket
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
@@ -69,12 +70,14 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ch
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
 
-	if _, ok := e.Clients[channel]; !ok {
-		e.Clients[channel] = make(map[*websocket.Conn]bool)
+	if _, ok := e.Clients[appName]; !ok {
+		e.Clients[appName] = make(map[*websocket.Conn]bool)
 	}
 
+	fmt.Println(utils.GenerateUUID())
+
 	// Register our new client
-	e.Clients[channel][ws] = true
+	e.Clients[appName][ws] = true
 
 	for {
 		var msg Message
@@ -83,8 +86,8 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ch
 		err := ws.ReadJSON(&msg)
 
 		if err != nil {
-			logger.Infof("error: %v", err)
-			delete(e.Clients[channel], ws)
+			fmt.Printf("error: %v", err)
+			delete(e.Clients[appName], ws)
 			break
 		}
 

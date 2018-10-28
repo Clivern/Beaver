@@ -10,11 +10,22 @@ import (
 	"os"
 
 	"github.com/clivern/beaver/internal/app/controller"
-	"github.com/clivern/beaver/internal/pkg/broadcast"
+	"github.com/clivern/beaver/internal/pkg/pusher"
+	"github.com/clivern/beaver/internal/pkg/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	utils.PrintBanner()
+
+	// Load config.json file and store on env
+	config := &utils.Config{}
+	config.Load("config.dist.json")
+	// This will never override ENV Vars if exists
+	config.Cache()
+	config.GinEnv()
 
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
@@ -31,13 +42,18 @@ func main() {
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.String(http.StatusNoContent, "")
 	})
-	r.GET("/chat", controller.Chat)
 
-	socket := &broadcast.Websocket{}
+	r.POST("/apps/:app_id/events", controller.Events)
+	r.GET("/apps/:app_id/channels", controller.Channels)
+	r.GET("/apps/:app_id/channels/:channel_name", controller.Channel)
+	r.GET("/apps/:app_id/channels/:channel_name/users", controller.ChannelUsers)
+
+	socket := &pusher.Websocket{}
 	socket.Init()
-	r.GET("/ws", func(c *gin.Context) {
-		socket.HandleConnections(c.Writer, c.Request, c.DefaultQuery("channel", ""))
+	r.GET("/app/:key", func(c *gin.Context) {
+		socket.HandleConnections(c.Writer, c.Request, c.Param("key"))
 	})
+
 	go socket.HandleMessages()
 
 	r.Run()

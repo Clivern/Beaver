@@ -23,7 +23,7 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:7c2fd446293ff7799cc496d3446e674ee67902d119f244de645caf95dff1bb98"
+  digest = "1:34a9a60fade37f8009ed4a19e02924198aba3eabfcc120ee5c6002b7de17212d"
   name = "github.com/go-redis/redis"
   packages = [
     ".",
@@ -36,8 +36,8 @@
     "internal/util",
   ]
   pruneopts = "UT"
-  revision = "f3bba01df2026fc865f7782948845db9cf44cf23"
-  version = "v6.14.1"
+  revision = "b3d9bf10f6666b2ee5100a6f3f84f4caf3b4e37d"
+  version = "v6.14.2"
 
 [[projects]]
   digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
@@ -105,11 +105,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0c088044c1c1ee83e723692442df4fec9b3f2e57f7a99773485c97adfbc31695"
-  name = "github.com/streadway/amqp"
+  digest = "1:a3b8912deeef29007fab9a13a9f21b9e9b59c621a2ed61e2fe7b37320a71fbd5"
+  name = "github.com/satori/go.uuid"
   packages = ["."]
   pruneopts = "UT"
-  revision = "70e15c650864f4fc47f5d3c82ea117285480895d"
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
 
 [[projects]]
   digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
@@ -121,7 +121,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:973abb7e0ee4f20cceb724eb2f7397a442a4f067ef3b682534bb82787c08a038"
+  digest = "1:07332a7bb5c09f77c6602f623da55c3178e4591b61d90ebd39151f827df44269"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -130,7 +130,7 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "44b849a8bc13eb42e95e6c6c5e360481b73ec710"
+  revision = "95b1ffbd15a57cc5abb3f04402b9e8ec0016a52c"
 
 [[projects]]
   digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
@@ -165,7 +165,7 @@
     "github.com/go-sql-driver/mysql",
     "github.com/google/logger",
     "github.com/gorilla/websocket",
-    "github.com/streadway/amqp",
+    "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

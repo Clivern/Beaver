@@ -6,12 +6,14 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
-// Chat controller
-func Chat(c *gin.Context) {
-	c.HTML(http.StatusOK, "chat.tmpl", gin.H{
-		"title": "Beaver",
+// Channels
+func Channels(c *gin.Context) {
+	appID := c.Param("app_id")
+
+	c.JSON(200, gin.H{
+		"status": "ok",
+		"appID":  appID,
 	})
 }
