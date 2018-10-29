@@ -11,6 +11,7 @@ import (
 	"os"
 )
 
+// Config util
 type Config struct {
 	AppMode       string `json:"app_mode"`
 	AppPort       string `json:"app_port"`
@@ -24,6 +25,7 @@ type Config struct {
 	MySQLDatabase string `json:"mysql_database"`
 }
 
+// Load method loads configs from json file
 func (e *Config) Load(file string) (bool, error) {
 
 	_, err := os.Stat(file)
@@ -47,6 +49,7 @@ func (e *Config) Load(file string) (bool, error) {
 	return true, nil
 }
 
+// Cache stores configs on env vars
 func (e *Config) Cache() {
 	if os.Getenv("AppMode") == "" {
 		os.Setenv("AppMode", e.AppMode)
@@ -62,6 +65,7 @@ func (e *Config) Cache() {
 	}
 }
 
+// GinEnv will store gin port on env var
 func (e *Config) GinEnv() {
 	// Used by gin framework
 	// https://github.com/gin-gonic/gin/blob/d510595aa58c2417373d89a8d8ffa21cf58673cb/utils.go#L140

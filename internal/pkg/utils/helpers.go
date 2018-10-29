@@ -9,13 +9,13 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-// Generate UUID
+// GenerateUUID create a UUID
 func GenerateUUID() string {
 	u := uuid.Must(uuid.NewV4())
 	return u.String()
 }
 
-// Print Banner
+// PrintBanner add a banner to app
 func PrintBanner() {
 	fmt.Print("\033[31m")
 	fmt.Print(`

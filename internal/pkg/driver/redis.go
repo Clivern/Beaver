@@ -5,9 +5,9 @@
 package driver
 
 import (
-	_ "github.com/go-redis/redis"
+//_ "github.com/go-redis/redis"
 )
 
-// Redis
+// Redis driver
 type Redis struct {
 }

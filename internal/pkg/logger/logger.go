@@ -12,6 +12,7 @@ import (
 	"github.com/google/logger"
 )
 
+// LogsPath defines where we store logs
 const LogsPath = "var/logs"
 
 // Info log

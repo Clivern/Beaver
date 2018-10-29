@@ -8,10 +8,10 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/clivern/beaver/internal/pkg/logger"
-	_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/go-sql-driver/mysql"
 )
 
-// MySQL
+// MySQL driver
 type MySQL struct {
 	Username string
 	Password string
