@@ -81,4 +81,4 @@ Initial Release.
 
 © 2018, Clivern. Released under [MIT License](https://opensource.org/licenses/mit-license.php).
 
-**Beaver** is authored and maintained by [@Clivern](http://github.com/getkraven).
+**Beaver** is authored and maintained by [@Clivern](http://github.com/clivern).
