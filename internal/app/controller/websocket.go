@@ -21,7 +21,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// Websocket
+// Websocket controller
 func Websocket(c *gin.Context) {
 	//key := c.Param("key")
 

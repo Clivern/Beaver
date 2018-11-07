@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Channels
+// Channels controller
 func Channels(c *gin.Context) {
 	appID := c.Param("app_id")
 

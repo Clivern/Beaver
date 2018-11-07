@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Events
+// Events controller
 func Events(c *gin.Context) {
 	appID := c.Param("app_id")
 

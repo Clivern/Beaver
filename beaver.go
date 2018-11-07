@@ -5,18 +5,22 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 
+	"github.com/clivern/beaver/internal/app/cmd"
 	"github.com/clivern/beaver/internal/app/controller"
 	"github.com/clivern/beaver/internal/pkg/pusher"
 	"github.com/clivern/beaver/internal/pkg/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	var exec string
 
 	utils.PrintBanner()
 
@@ -27,12 +31,40 @@ func main() {
 	config.Cache()
 	config.GinEnv()
 
+	flag.StringVar(&exec, "exec", "", "exec")
+	flag.Parse()
+	if exec != "" {
+		switch exec {
+		case "migrate.up":
+			migrate := &cmd.Migrate{}
+			migrate.Up()
+		case "migrate.down":
+			migrate := &cmd.Migrate{}
+			migrate.Down()
+		case "migrate.status":
+			migrate := &cmd.Migrate{}
+			migrate.Status()
+		case "health":
+			health := &cmd.Health{}
+			health.Status()
+		default:
+			utils.PrintCommands()
+		}
+		return
+	}
+
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
 		f, _ := os.Create("var/logs/gin.log")
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
+
+	files := []string{}
+
+	files = utils.ListFiles("internal/scheme")
+	files = utils.FilterFiles(files, []string{"down"})
+	fmt.Println(files)
 
 	r := gin.Default()
 	r.Static("/static", "./web/static/")

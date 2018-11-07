@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ChannelUsers
+// ChannelUsers controller
 func ChannelUsers(c *gin.Context) {
 	appID := c.Param("app_id")
 	channelName := c.Param("channel_name")

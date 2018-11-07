@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -67,9 +68,16 @@ func (e *MySQL) Migrate(path string, direction string) bool {
 	return true
 }
 
-//func (e *MySQL) ScanMigration(path string, direction string) []string {
+// ScanMigration get all migration files whether up or down
+func (e *MySQL) ScanMigration(path string, direction string) []string {
 
-//}
+	files := []string{}
+
+	files = utils.ListFiles(path)
+	files = utils.FilterFiles(files, []string{direction})
+
+	return files
+}
 
 // TableExists checks if table exists or not
 func (e *MySQL) TableExists(tableName string) bool {
