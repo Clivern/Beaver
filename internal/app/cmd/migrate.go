@@ -18,6 +18,12 @@ func (e *Migrate) Up() (error, bool) {
 	return nil, true
 }
 
+// SafeUp runs the needed migrations only
+func (e *Migrate) SafeUp() (error, bool) {
+	fmt.Println("SafeUp")
+	return nil, true
+}
+
 // Down runs the down migrations
 func (e *Migrate) Down() (error, bool) {
 	fmt.Println("Down")

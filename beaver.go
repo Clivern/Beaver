@@ -53,6 +53,9 @@ func main() {
 		return
 	}
 
+	safeMigrate := &cmd.Migrate{}
+	safeMigrate.SafeUp()
+
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
