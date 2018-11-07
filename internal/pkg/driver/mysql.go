@@ -8,8 +8,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/clivern/beaver/internal/pkg/logger"
-	"github.com/clivern/beaver/internal/pkg/utils"
 	_ "github.com/go-sql-driver/mysql"
+	"os"
+	"strconv"
 )
 
 // MySQL driver
@@ -21,6 +22,20 @@ type MySQL struct {
 	Database   string
 	Protocol   string
 	Connection *sql.DB
+}
+
+// NewMySQL creates a new mysql instance
+func NewMySQL() *MySQL {
+	port, _ := strconv.Atoi(os.Getenv("MySQLPort"))
+
+	return &MySQL{
+		Username: os.Getenv("MySQLUsername"),
+		Password: os.Getenv("MySQLPassword"),
+		Host:     os.Getenv("MySQLHost"),
+		Port:     port,
+		Database: os.Getenv("MySQLDatabase"),
+		Protocol: os.Getenv("MySQLProtocol"),
+	}
 }
 
 // Ping method check the db connection
@@ -61,22 +76,6 @@ func (e *MySQL) Exec(query string) bool {
 		return true
 	}
 	return false
-}
-
-// Migrate runs migrations inside specifc path
-func (e *MySQL) Migrate(path string, direction string) bool {
-	return true
-}
-
-// ScanMigration get all migration files whether up or down
-func (e *MySQL) ScanMigration(path string, direction string) []string {
-
-	files := []string{}
-
-	files = utils.ListFiles(path)
-	files = utils.FilterFiles(files, []string{direction})
-
-	return files
 }
 
 // TableExists checks if table exists or not

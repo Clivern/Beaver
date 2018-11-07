@@ -6,7 +6,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -62,12 +61,6 @@ func main() {
 		f, _ := os.Create("var/logs/gin.log")
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
-
-	files := []string{}
-
-	files = utils.ListFiles("internal/scheme")
-	files = utils.FilterFiles(files, []string{"down"})
-	fmt.Println(files)
 
 	r := gin.Default()
 	r.Static("/static", "./web/static/")
