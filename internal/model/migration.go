@@ -4,29 +4,68 @@
 
 package model
 
+import (
+	"database/sql"
+	"fmt"
+)
+
 // Migration struct
 type Migration struct {
-	ID        int
+	ID        int64
 	Migration string
 	CreatedAt int
 }
 
-// Insert inserts records
-func (e *Migration) Insert() (error, bool) {
-	return nil, true
+// InsertOne inserts a record
+func InsertOne(connection *sql.DB, migration string) (int64, error) {
+
+	stmt, err := connection.Prepare("INSERT INTO migration(migration) VALUES(?)")
+	if err != nil {
+		return 0, err
+	}
+	res, err := stmt.Exec(migration)
+	if err != nil {
+		return 0, err
+	}
+
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return lastId, nil
 }
 
-// Get gets records
-func (e *Migration) Get() (error, bool) {
-	return nil, true
+// GetOneByMigration get a record by migration
+func GetOneByMigration(connection *sql.DB, migration string) (int64, error) {
+	var id int64
+	rows, err := connection.Query("select id from migration where migration = ?", migration)
+	if err != nil {
+		return 0, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			return 0, err
+		}
+		return id, nil
+	}
+
+	err = rows.Err()
+
+	if err != nil {
+		return 0, err
+	}
+	return 0, nil
 }
 
-// Count counts records
-func (e *Migration) Count() (error, bool) {
-	return nil, true
-}
-
-// Delete deletes records
-func (e *Migration) Delete() (error, bool) {
-	return nil, true
+// DeleteOneByMigration deletes a record by migration
+func DeleteOneByMigration(connection *sql.DB, migration string) (bool, error) {
+	_, err := connection.Exec(fmt.Sprintf("DELETE FROM migration where migration='%s'", migration))
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

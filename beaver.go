@@ -32,17 +32,17 @@ func main() {
 
 	flag.StringVar(&exec, "exec", "", "exec")
 	flag.Parse()
+
+	cmd.CreateMigrationTable()
+
 	if exec != "" {
 		switch exec {
 		case "migrate.up":
-			migrate := &cmd.Migrate{}
-			migrate.Up()
+			cmd.Up()
 		case "migrate.down":
-			migrate := &cmd.Migrate{}
-			migrate.Down()
+			cmd.Down()
 		case "migrate.status":
-			migrate := &cmd.Migrate{}
-			migrate.Status()
+			cmd.Status()
 		case "health":
 			health := &cmd.Health{}
 			health.Status()
@@ -52,8 +52,7 @@ func main() {
 		return
 	}
 
-	safeMigrate := &cmd.Migrate{}
-	safeMigrate.SafeUp()
+	cmd.Up()
 
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
