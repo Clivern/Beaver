@@ -38,21 +38,20 @@ func main() {
 	if exec != "" {
 		switch exec {
 		case "migrate.up":
-			cmd.Up()
+			cmd.MigrationUp()
 		case "migrate.down":
-			cmd.Down()
+			cmd.MigrationDown()
 		case "migrate.status":
-			cmd.Status()
+			cmd.MigrationStatus()
 		case "health":
-			health := &cmd.Health{}
-			health.Status()
+			cmd.HealthStatus()
 		default:
 			utils.PrintCommands()
 		}
 		return
 	}
 
-	cmd.Up()
+	cmd.MigrationUp()
 
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)

@@ -8,12 +8,8 @@ import (
 	"fmt"
 )
 
-// Health struct
-type Health struct {
-}
-
-// Status check the current app health. Make it compatible with process managers like systemd & docker
-func (e *Health) Status() (error, bool) {
-	fmt.Println("Status")
-	return nil, true
+// HealthStatus check the current app health. Make it compatible with process managers like systemd & docker
+func HealthStatus() (bool, error) {
+	fmt.Println("HealthStatus")
+	return true, nil
 }

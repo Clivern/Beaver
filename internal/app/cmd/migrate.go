@@ -83,8 +83,8 @@ func DropMigrationTable() (bool, error) {
 	return ok, nil
 }
 
-// Up runs up migrations
-func Up() (bool, error) {
+// MigrationUp runs up migrations
+func MigrationUp() (bool, error) {
 	var query string
 	var mysql driver.MySQL = *driver.NewMySQL()
 
@@ -118,8 +118,8 @@ func Up() (bool, error) {
 	return ok, nil
 }
 
-// Down runs down migrations
-func Down() (bool, error) {
+// MigrationDown runs down migrations
+func MigrationDown() (bool, error) {
 	var query string
 	var mysql driver.MySQL = *driver.NewMySQL()
 
@@ -153,8 +153,29 @@ func Down() (bool, error) {
 	return ok, nil
 }
 
-// Status shows migration status
-func Status() (bool, error) {
-	fmt.Println("Status")
-	return true, nil
+// MigrationStatus shows migration status
+func MigrationStatus() {
+	var mysql driver.MySQL = *driver.NewMySQL()
+
+	if mysql.Ping() == false {
+		logger.Error("Unable to connect to database!")
+	}
+
+	files := utils.ListFiles("internal/scheme")
+	upFiles := utils.FilterFiles(files, []string{".up"})
+
+	fmt.Print("\n\033[35m")
+	for _, file := range upFiles {
+		count, _ := model.GetOneByMigration(mysql.Connection, file)
+		if count == 0 {
+			logger.Infof("Migration %s [Not OK]", file)
+			fmt.Printf("Migration %s [Not OK]\n", file)
+		} else {
+			logger.Infof("Migration %s [OK]", file)
+			fmt.Printf("Migration %s [OK]\n", file)
+		}
+	}
+	fmt.Println("\033[0m")
+
+	mysql.Close()
 }
