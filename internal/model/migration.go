@@ -9,13 +9,6 @@ import (
 	"fmt"
 )
 
-// Migration struct
-type Migration struct {
-	ID        int64
-	Migration string
-	CreatedAt int
-}
-
 // InsertOne inserts a record
 func InsertOne(connection *sql.DB, migration string) (int64, error) {
 
