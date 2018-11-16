@@ -3,6 +3,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:5771b86b64a5e64d8e3d70337813686586210131ac4fb4c6a97b43c8e25e2253"
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3af4c746e1c248ee8491a3e0c6f7a9cd831e95f8"
+
+[[projects]]
+  branch = "master"
   digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -23,6 +31,31 @@
   version = "v1.3.0"
 
 [[projects]]
+  digest = "1:34a9a60fade37f8009ed4a19e02924198aba3eabfcc120ee5c6002b7de17212d"
+  name = "github.com/go-redis/redis"
+  packages = [
+    ".",
+    "internal",
+    "internal/consistenthash",
+    "internal/hashtag",
+    "internal/pool",
+    "internal/proto",
+    "internal/singleflight",
+    "internal/util",
+  ]
+  pruneopts = "UT"
+  revision = "b3d9bf10f6666b2ee5100a6f3f84f4caf3b4e37d"
+  version = "v6.14.2"
+
+[[projects]]
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
+
+[[projects]]
   digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -32,11 +65,19 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c620af5b788da03b66b43a0ff34eb39e5bcbbfa8e174a1a97f828325dbd06749"
+  digest = "1:aff61b46ef326e4a211e69245a0ca03dee77f850b6221d3fd0f5bc9208591734"
   name = "github.com/google/logger"
   packages = ["."]
   pruneopts = "UT"
-  revision = "54b4ae679a63f6d6fd5c0009b2471e637eabf784"
+  revision = "324a7c096a0d1041e2766b42187908af70e4f723"
+
+[[projects]]
+  branch = "master"
+  digest = "1:fbf6ef64ade9cc8474adb1bc22d1679a3837c6f083666d6313bc0cadabc055f0"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "483fb8d7c32fcb4b5636cd293a92e3935932e2f4"
 
 [[projects]]
   digest = "1:3e551bbb3a7c0ab2a2bf4660e7fcad16db089fdcfbb44b0199e62838038623ea"
@@ -71,6 +112,14 @@
   version = "1.0.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:a3b8912deeef29007fab9a13a9f21b9e9b59c621a2ed61e2fe7b37320a71fbd5"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b2ce2384e17bbe0c6d34077efa39dbab3e09123b"
+
+[[projects]]
   digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
   name = "github.com/ugorji/go"
   packages = ["codec"]
@@ -80,7 +129,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:973abb7e0ee4f20cceb724eb2f7397a442a4f067ef3b682534bb82787c08a038"
+  digest = "1:469c17f357b39eddb38c6a12f4a80bc119beffe87184028432bf9ce18f30412e"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -89,7 +138,15 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "44b849a8bc13eb42e95e6c6c5e360481b73ec710"
+  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
+
+[[projects]]
+  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  pruneopts = "UT"
+  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
+  version = "v1.3.0"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -111,8 +168,13 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/dgrijalva/jwt-go",
     "github.com/gin-gonic/gin",
+    "github.com/go-redis/redis",
+    "github.com/go-sql-driver/mysql",
     "github.com/google/logger",
+    "github.com/gorilla/websocket",
+    "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

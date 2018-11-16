@@ -11,8 +11,8 @@ services:
       restart: always
       healthcheck:
          test: '/usr/bin/mysql --user=beaver --password=secret --execute "SHOW DATABASES;"'
-         interval: 3s
-         timeout: 1s
+         interval: 5s
+         timeout: 2s
          retries: 5
    web:
       image: "clivern_beaver:1.0.0"
@@ -30,3 +30,15 @@ services:
          - AppPort=8080
          - AppLogLevel=info
          - AppDomain=example.com
+         - MySQLUsername=root
+         - MySQLPassword=root
+         - MySQLProtocol=tcp
+         - MySQLHost=localhost
+         - MySQLPort=3306
+         - MySQLDatabase=beaver
+      restart: always
+      healthcheck:
+         test: './beaver -exec=health'
+         interval: 5s
+         timeout: 2s
+         retries: 5

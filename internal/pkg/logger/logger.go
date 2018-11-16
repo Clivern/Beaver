@@ -6,14 +6,16 @@ package logger
 
 import (
 	"fmt"
-	"github.com/google/logger"
 	"os"
 	"time"
+
+	"github.com/google/logger"
 )
 
+// LogsPath defines where we store logs
 const LogsPath = "var/logs"
 
-// Info log function
+// Info log
 func Info(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -37,7 +39,7 @@ func Info(v ...interface{}) {
 	}
 }
 
-// Infoln log function
+// Infoln log
 func Infoln(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -61,7 +63,7 @@ func Infoln(v ...interface{}) {
 	}
 }
 
-// Infof log function
+// Infof log
 func Infof(format string, v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -85,7 +87,7 @@ func Infof(format string, v ...interface{}) {
 	}
 }
 
-// Warning log function
+// Warning log
 func Warning(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -109,7 +111,7 @@ func Warning(v ...interface{}) {
 	}
 }
 
-// Warningln log function
+// Warningln log
 func Warningln(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -133,7 +135,7 @@ func Warningln(v ...interface{}) {
 	}
 }
 
-// Warningf log function
+// Warningf log
 func Warningf(format string, v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -157,7 +159,7 @@ func Warningf(format string, v ...interface{}) {
 	}
 }
 
-// Error log function
+// Error log
 func Error(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -181,7 +183,7 @@ func Error(v ...interface{}) {
 	}
 }
 
-// Errorln log function
+// Errorln log
 func Errorln(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -205,7 +207,7 @@ func Errorln(v ...interface{}) {
 	}
 }
 
-// Errorf log function
+// Errorf log
 func Errorf(format string, v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -229,7 +231,7 @@ func Errorf(format string, v ...interface{}) {
 	}
 }
 
-// Fatal log function
+// Fatal log
 func Fatal(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -253,7 +255,7 @@ func Fatal(v ...interface{}) {
 	}
 }
 
-// Fatalln log function
+// Fatalln log
 func Fatalln(v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")
@@ -277,7 +279,7 @@ func Fatalln(v ...interface{}) {
 	}
 }
 
-// Fatalf log function
+// Fatalf log
 func Fatalf(format string, v ...interface{}) {
 
 	logLevel := os.Getenv("AppLogLevel")

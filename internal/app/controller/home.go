@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// Index controller
 func Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title": "Beaver",

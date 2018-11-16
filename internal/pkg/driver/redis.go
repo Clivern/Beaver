@@ -2,15 +2,12 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-package controller
+package driver
 
 import (
-	"github.com/gin-gonic/gin"
+	_ "github.com/go-redis/redis"
 )
 
-// HealthCheck controller
-func HealthCheck(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"status": "ok",
-	})
+// Redis driver
+type Redis struct {
 }
