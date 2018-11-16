@@ -21,11 +21,11 @@ func InsertOne(connection *sql.DB, migration string) (int64, error) {
 		return 0, err
 	}
 
-	lastId, err := res.LastInsertId()
+	lastID, err := res.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	return lastId, nil
+	return lastID, nil
 }
 
 // GetOneByMigration get a record by migration

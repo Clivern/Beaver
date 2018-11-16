@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/app/cmd"
 	"github.com/clivern/beaver/internal/app/controller"
-	"github.com/clivern/beaver/internal/pkg/pusher"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -69,15 +69,10 @@ func main() {
 		c.String(http.StatusNoContent, "")
 	})
 
-	r.POST("/apps/:app_id/events", controller.Events)
-	r.GET("/apps/:app_id/channels", controller.Channels)
-	r.GET("/apps/:app_id/channels/:channel_name", controller.Channel)
-	r.GET("/apps/:app_id/channels/:channel_name/users", controller.ChannelUsers)
-
-	socket := &pusher.Websocket{}
+	socket := &api.Websocket{}
 	socket.Init()
-	r.GET("/app/:key", func(c *gin.Context) {
-		socket.HandleConnections(c.Writer, c.Request, c.Param("key"))
+	r.GET("/ws", func(c *gin.Context) {
+		socket.HandleConnections(c.Writer, c.Request)
 	})
 
 	go socket.HandleMessages()

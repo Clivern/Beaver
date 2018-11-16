@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-package pusher
+package api
 
 import (
 	"fmt"
@@ -12,24 +12,22 @@ import (
 	"net/http"
 )
 
-// Message Object
+// Message struct
 type Message struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Message  string `json:"message"`
-	Channel  string `json:"channel"`
+	Client string `json:"client"`
+	Data   string `json:"data"`
 }
 
 // Websocket Object
 type Websocket struct {
-	Clients   map[string]map[*websocket.Conn]bool
+	Clients   map[string]*websocket.Conn
 	Broadcast chan Message
 	Upgrader  websocket.Upgrader
 }
 
-// Websocket Init
+// Init initialize the websocket object
 func (e *Websocket) Init() {
-	e.Clients = make(map[string]map[*websocket.Conn]bool)
+	e.Clients = make(map[string]*websocket.Conn)
 	e.Broadcast = make(chan Message)
 	e.Upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -40,26 +38,27 @@ func (e *Websocket) Init() {
 	}
 }
 
-// Websocket HandleMessages
+// HandleMessages send messages to connected clients
 func (e *Websocket) HandleMessages() {
 	for {
 		// Grab the next message from the broadcast channel
 		msg := <-e.Broadcast
 
 		// Send it out to every client that is currently connected
-		for client := range e.Clients[msg.Channel] {
+		for id, client := range e.Clients {
+			msg.Client = id
 			err := client.WriteJSON(msg)
 			if err != nil {
 				fmt.Printf("error: %v", err)
 				client.Close()
-				delete(e.Clients[msg.Channel], client)
+				delete(e.Clients, id)
 			}
 		}
 	}
 }
 
-// Websocket HandleConnections
-func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, appName string) {
+// HandleConnections manage new clients
+func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	// Upgrade initial GET request to a websocket
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
@@ -70,14 +69,10 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ap
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
 
-	if _, ok := e.Clients[appName]; !ok {
-		e.Clients[appName] = make(map[*websocket.Conn]bool)
-	}
-
-	fmt.Println(utils.GenerateUUID())
+	clientID := utils.GenerateUUID()
 
 	// Register our new client
-	e.Clients[appName][ws] = true
+	e.Clients[clientID] = ws
 
 	for {
 		var msg Message
@@ -87,7 +82,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ap
 
 		if err != nil {
 			fmt.Printf("error: %v", err)
-			delete(e.Clients[appName], ws)
+			delete(e.Clients, clientID)
 			break
 		}
 
