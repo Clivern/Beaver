@@ -10,10 +10,10 @@ import (
 )
 
 // GetConfigByID controller
-func GetConfigByID(c *gin.Context) {
-	ID := c.Param("id")
+func GetConfigByKey(c *gin.Context) {
+	Key := c.Param("key")
 
-	fmt.Println(ID)
+	fmt.Println(Key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -28,10 +28,10 @@ func CreateConfig(c *gin.Context) {
 }
 
 // DeleteConfigByID controller
-func DeleteConfigByID(c *gin.Context) {
-	ID := c.Param("id")
+func DeleteConfigByKey(c *gin.Context) {
+	Key := c.Param("key")
 
-	fmt.Println(ID)
+	fmt.Println(Key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -39,10 +39,10 @@ func DeleteConfigByID(c *gin.Context) {
 }
 
 // UpdateConfigByID controller
-func UpdateConfigByID(c *gin.Context) {
-	ID := c.Param("id")
+func UpdateConfigByKey(c *gin.Context) {
+	Key := c.Param("key")
 
-	fmt.Println(ID)
+	fmt.Println(Key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",

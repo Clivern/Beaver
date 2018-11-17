@@ -83,10 +83,15 @@ func main() {
 
 	r.GET("/api/metrics", controller.GetMetrics)
 
-	r.GET("/api/config/:id", controller.GetConfigByID)
+	r.GET("/api/config/:key", controller.GetConfigByKey)
 	r.POST("/api/config", controller.CreateConfig)
-	r.DELETE("/api/config/:id", controller.DeleteConfigByID)
-	r.PUT("/api/config/:id", controller.UpdateConfigByID)
+	r.DELETE("/api/config/:key", controller.DeleteConfigByKey)
+	r.PUT("/api/config/:key", controller.UpdateConfigByKey)
+
+	r.POST("/api/broadcast", controller.Broadcast)
+	r.POST("/api/unsubscribe", controller.Unsubscribe)
+	r.POST("/api/subscribe", controller.Subscribe)
+	r.POST("/api/publish", controller.Publish)
 
 	socket := &api.Websocket{}
 	socket.Init()
