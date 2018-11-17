@@ -2,11 +2,5 @@
     "app_mode": "dev",
     "app_port": "8080",
     "app_log_level": "info",
-    "app_domain": "example.com",
-    "mysql_username": "root",
-    "mysql_password": "root",
-    "mysql_protocol": "tcp",
-    "mysql_host": "localhost",
-    "mysql_port": "3306",
-    "mysql_database": "beaver"
+    "app_domain": "example.com"
 }
