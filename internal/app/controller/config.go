@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetConfigByID controller
+// GetConfigByKey controller
 func GetConfigByKey(c *gin.Context) {
 	Key := c.Param("key")
 
@@ -27,7 +27,7 @@ func CreateConfig(c *gin.Context) {
 	})
 }
 
-// DeleteConfigByID controller
+// DeleteConfigByKey controller
 func DeleteConfigByKey(c *gin.Context) {
 	Key := c.Param("key")
 
@@ -38,7 +38,7 @@ func DeleteConfigByKey(c *gin.Context) {
 	})
 }
 
-// UpdateConfigByID controller
+// UpdateConfigByKey controller
 func UpdateConfigByKey(c *gin.Context) {
 	Key := c.Param("key")
 
