@@ -11,9 +11,9 @@ import (
 
 // GetConfigByKey controller
 func GetConfigByKey(c *gin.Context) {
-	Key := c.Param("key")
+	key := c.Param("key")
 
-	fmt.Println(Key)
+	fmt.Println(key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -29,9 +29,9 @@ func CreateConfig(c *gin.Context) {
 
 // DeleteConfigByKey controller
 func DeleteConfigByKey(c *gin.Context) {
-	Key := c.Param("key")
+	key := c.Param("key")
 
-	fmt.Println(Key)
+	fmt.Println(key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -40,9 +40,9 @@ func DeleteConfigByKey(c *gin.Context) {
 
 // UpdateConfigByKey controller
 func UpdateConfigByKey(c *gin.Context) {
-	Key := c.Param("key")
+	key := c.Param("key")
 
-	fmt.Println(Key)
+	fmt.Println(key)
 
 	c.JSON(200, gin.H{
 		"status": "ok",

@@ -9,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetClientByID controller
-func GetClientByID(c *gin.Context) {
-	ID := c.Param("id")
+// GetClientByUUID controller
+func GetClientByUUID(c *gin.Context) {
+	UUID := c.Param("uuid")
 
-	fmt.Println(ID)
+	fmt.Println(UUID)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -27,22 +27,22 @@ func CreateClient(c *gin.Context) {
 	})
 }
 
-// DeleteClientByID controller
-func DeleteClientByID(c *gin.Context) {
-	ID := c.Param("id")
+// DeleteClientByUUID controller
+func DeleteClientByUUID(c *gin.Context) {
+	UUID := c.Param("uuid")
 
-	fmt.Println(ID)
+	fmt.Println(UUID)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
 	})
 }
 
-// UpdateClientByID controller
-func UpdateClientByID(c *gin.Context) {
-	ID := c.Param("id")
+// UpdateClientByUUID controller
+func UpdateClientByUUID(c *gin.Context) {
+	UUID := c.Param("uuid")
 
-	fmt.Println(ID)
+	fmt.Println(UUID)
 
 	c.JSON(200, gin.H{
 		"status": "ok",

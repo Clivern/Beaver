@@ -9,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetChannelByID controller
-func GetChannelByID(c *gin.Context) {
-	ID := c.Param("id")
+// GetChannelByName controller
+func GetChannelByName(c *gin.Context) {
+	name := c.Param("name")
 
-	fmt.Println(ID)
+	fmt.Println(name)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
@@ -27,22 +27,22 @@ func CreateChannel(c *gin.Context) {
 	})
 }
 
-// DeleteChannelByID controller
-func DeleteChannelByID(c *gin.Context) {
-	ID := c.Param("id")
+// DeleteChannelByName controller
+func DeleteChannelByName(c *gin.Context) {
+	name := c.Param("name")
 
-	fmt.Println(ID)
+	fmt.Println(name)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
 	})
 }
 
-// UpdateChannelByID controller
-func UpdateChannelByID(c *gin.Context) {
-	ID := c.Param("id")
+// UpdateChannelByName controller
+func UpdateChannelByName(c *gin.Context) {
+	name := c.Param("name")
 
-	fmt.Println(ID)
+	fmt.Println(name)
 
 	c.JSON(200, gin.H{
 		"status": "ok",
