@@ -69,10 +69,32 @@ func main() {
 		c.String(http.StatusNoContent, "")
 	})
 
+	r.GET("/api/channel/:id", controller.GetChannelByID)
+	r.POST("/api/channel", controller.CreateChannel)
+	r.DELETE("/api/channel/:id", controller.DeleteChannelByID)
+	r.PUT("/api/channel/:id", controller.UpdateChannelByID)
+
+	r.GET("/api/client/:id", controller.GetClientByID)
+	r.POST("/api/client", controller.CreateClient)
+	r.DELETE("/api/client/:id", controller.DeleteClientByID)
+	r.PUT("/api/client/:id", controller.UpdateClientByID)
+
+	r.GET("/api/node", controller.GetNodeInfo)
+
+	r.GET("/api/metrics", controller.GetMetrics)
+
+	r.GET("/api/config/:id", controller.GetConfigByID)
+	r.POST("/api/config", controller.CreateConfig)
+	r.DELETE("/api/config/:id", controller.DeleteConfigByID)
+	r.PUT("/api/config/:id", controller.UpdateConfigByID)
+
 	socket := &api.Websocket{}
 	socket.Init()
 	r.GET("/ws", func(c *gin.Context) {
 		socket.HandleConnections(c.Writer, c.Request)
+	})
+	r.GET("/push", func(c *gin.Context) {
+		socket.PushMessages(c.Writer, c.Request)
 	})
 
 	go socket.HandleMessages()
