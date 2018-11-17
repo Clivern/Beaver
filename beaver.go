@@ -69,10 +69,37 @@ func main() {
 		c.String(http.StatusNoContent, "")
 	})
 
+	r.GET("/api/channel/:name", controller.GetChannelByName)
+	r.POST("/api/channel", controller.CreateChannel)
+	r.DELETE("/api/channel/:name", controller.DeleteChannelByName)
+	r.PUT("/api/channel/:name", controller.UpdateChannelByName)
+
+	r.GET("/api/client/:uuid", controller.GetClientByUUID)
+	r.POST("/api/client", controller.CreateClient)
+	r.DELETE("/api/client/:uuid", controller.DeleteClientByUUID)
+	r.PUT("/api/client/:uuid", controller.UpdateClientByUUID)
+
+	r.GET("/api/node", controller.GetNodeInfo)
+
+	r.GET("/api/metrics", controller.GetMetrics)
+
+	r.GET("/api/config/:key", controller.GetConfigByKey)
+	r.POST("/api/config", controller.CreateConfig)
+	r.DELETE("/api/config/:key", controller.DeleteConfigByKey)
+	r.PUT("/api/config/:key", controller.UpdateConfigByKey)
+
+	r.POST("/api/broadcast", controller.Broadcast)
+	r.POST("/api/unsubscribe", controller.Unsubscribe)
+	r.POST("/api/subscribe", controller.Subscribe)
+	r.POST("/api/publish", controller.Publish)
+
 	socket := &api.Websocket{}
 	socket.Init()
 	r.GET("/ws", func(c *gin.Context) {
 		socket.HandleConnections(c.Writer, c.Request)
+	})
+	r.GET("/push", func(c *gin.Context) {
+		socket.PushMessages(c.Writer, c.Request)
 	})
 
 	go socket.HandleMessages()
