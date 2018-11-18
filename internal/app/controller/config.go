@@ -5,46 +5,167 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/clivern/beaver/internal/app/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // GetConfigByKey controller
 func GetConfigByKey(c *gin.Context) {
 	key := c.Param("key")
+	config := &api.Config{}
 
-	fmt.Println(key)
+	if !config.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
 
-	c.JSON(200, gin.H{
-		"status": "ok",
+	value, err := config.GetConfigByKey(key)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"key":   key,
+		"value": value,
 	})
 }
 
 // CreateConfig controller
 func CreateConfig(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"status": "ok",
-	})
+
+	var configRequest api.ConfigResult
+
+	config := &api.Config{}
+
+	rawBody, err := c.GetRawData()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	configRequest.LoadFromJSON(rawBody)
+
+	if configRequest.Key == "" || configRequest.Value == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	if !config.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status":  "error",
+			"message": "Internal server error",
+		})
+		return
+	}
+
+	_, err = config.CreateConfig(configRequest.Key, configRequest.Value)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }
 
 // DeleteConfigByKey controller
 func DeleteConfigByKey(c *gin.Context) {
 	key := c.Param("key")
+	config := &api.Config{}
 
-	fmt.Println(key)
+	if !config.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
 
-	c.JSON(200, gin.H{
-		"status": "ok",
-	})
+	_, err := config.DeleteConfigByKey(key)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 // UpdateConfigByKey controller
 func UpdateConfigByKey(c *gin.Context) {
-	key := c.Param("key")
 
-	fmt.Println(key)
+	var configRequest api.ConfigResult
 
-	c.JSON(200, gin.H{
-		"status": "ok",
-	})
+	config := &api.Config{}
+
+	rawBody, err := c.GetRawData()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	configRequest.LoadFromJSON(rawBody)
+	configRequest.Key = c.Param("key")
+
+	if configRequest.Key == "" || configRequest.Value == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	if !config.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
+
+	_, err = config.UpdateConfigByKey(configRequest.Key, configRequest.Value)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }

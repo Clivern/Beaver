@@ -13,10 +13,13 @@ import (
 
 // Config util
 type Config struct {
-	AppMode     string `json:"app_mode"`
-	AppPort     string `json:"app_port"`
-	AppLogLevel string `json:"app_log_level"`
-	AppDomain   string `json:"app_domain"`
+	AppMode       string `json:"app_mode"`
+	AppPort       string `json:"app_port"`
+	AppLogLevel   string `json:"app_log_level"`
+	AppDomain     string `json:"app_domain"`
+	RedisAddr     string `json:"redis_addr"`
+	RedisPassword string `json:"redis_password"`
+	RedisDB       string `json:"redis_db"`
 }
 
 // Load method loads configs from json file
@@ -50,6 +53,9 @@ func (e *Config) Cache() {
 		os.Setenv("AppLogLevel", e.AppLogLevel)
 		os.Setenv("AppPort", e.AppPort)
 		os.Setenv("AppDomain", e.AppDomain)
+		os.Setenv("RedisAddr", e.RedisAddr)
+		os.Setenv("RedisPassword", e.RedisPassword)
+		os.Setenv("RedisDB", e.RedisDB)
 	}
 }
 

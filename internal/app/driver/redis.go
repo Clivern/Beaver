@@ -18,7 +18,7 @@ type Redis struct {
 }
 
 // Connect establish a redis connection
-func (r *Redis) Connect() bool {
+func (r *Redis) Connect() (bool, error) {
 	r.Client = redis.NewClient(&redis.Options{
 		Addr:     r.Addr,
 		Password: r.Password,
@@ -28,10 +28,10 @@ func (r *Redis) Connect() bool {
 	_, err := r.Ping()
 
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return true
+	return true, nil
 }
 
 // Ping checks the redis connection

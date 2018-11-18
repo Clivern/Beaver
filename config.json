@@ -2,5 +2,8 @@
     "app_mode": "dev",
     "app_port": "8080",
     "app_log_level": "info",
-    "app_domain": "example.com"
+    "app_domain": "example.com",
+    "redis_addr": "127.0.0.1:7001",
+    "redis_password": "",
+    "redis_db": 0
 }
