@@ -26,7 +26,7 @@ Then Create a dist config file
 $ cp config.json config.dist.json
 ```
 
-Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `mysql_*`, ...etc.
+Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `redis_*`, ...etc.
 
 ```json
 {
@@ -34,12 +34,9 @@ Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `mysql_*`, 
     "app_port": "8080",
     "app_log_level": "info",
     "app_domain": "example.com",
-    "mysql_username": "root",
-    "mysql_password": "root",
-    "mysql_protocol": "tcp",
-    "mysql_host": "localhost",
-    "mysql_port": "3306",
-    "mysql_database": "beaver"
+    "redis_addr": "127.0.0.1:7001",
+    "redis_password": "",
+    "redis_db": 0
 }
 ```
 

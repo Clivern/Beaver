@@ -21,6 +21,10 @@ services:
          - AppPort=8080
          - AppLogLevel=info
          - AppDomain=example.com
+         - RedisAddr=127.0.0.1:7001
+         - RedisPassword=
+         - RedisDB=0
+
       restart: always
       healthcheck:
          test: './beaver -exec=health'
