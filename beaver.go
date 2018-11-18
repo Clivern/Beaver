@@ -13,6 +13,7 @@ import (
 	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/app/cmd"
 	"github.com/clivern/beaver/internal/app/controller"
+	"github.com/clivern/beaver/internal/app/middleware"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -51,6 +52,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(middleware.Logger())
 	r.Static("/static", "./web/static/")
 	r.LoadHTMLGlob("web/template/*")
 	r.GET("/", controller.Index)
