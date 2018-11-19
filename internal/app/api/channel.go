@@ -11,6 +11,7 @@ import (
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"os"
 	"strconv"
+	"time"
 )
 
 // ChannelsHashPrefix is the hash prefix
@@ -23,8 +24,12 @@ type Channel struct {
 
 // ChannelResult struct
 type ChannelResult struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name        string    `json:"name"`
+	Type        string    `json:"type"`
+	Listeners   int       `json:"listeners"`
+	Subscribers int       `json:"subscribers"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // LoadFromJSON load object from json
@@ -65,6 +70,32 @@ func (c *Channel) Init() bool {
 
 // CreateChannel creates a channel
 func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, channel.Name)
+
+	if err != nil {
+		logger.Errorf("Error while creating channel %s: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Error while creating channel %s", channel.Name)
+	}
+
+	if exists {
+		logger.Warningf("Trying to create existent channel %s", channel.Name)
+		return false, fmt.Errorf("Trying to create existent channel %s", channel.Name)
+	}
+
+	result, err := channel.ConvertToJSON()
+
+	if err != nil {
+		logger.Errorf("Something wrong with channel %s data: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Something wrong with channel %s data", channel.Name)
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, channel.Name, result)
+
+	if err != nil {
+		logger.Errorf("Error while creating channel %s: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Error while creating channel %s", channel.Name)
+	}
+
 	return true, nil
 }
 
@@ -72,17 +103,68 @@ func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
 func (c *Channel) GetChannelByName(name string) (ChannelResult, error) {
 	var channelResult ChannelResult
 
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil {
+		logger.Errorf("Error while getting channel %s: %s", name, err.Error())
+		return channelResult, fmt.Errorf("Error while getting channel %s", name)
+	}
+
+	if !exists {
+		logger.Warningf("Trying to get non existent channel %s", name)
+		return channelResult, fmt.Errorf("Trying to get non existent channel %s", name)
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		logger.Errorf("Error while getting channel %s: %s", name, err.Error())
+		return channelResult, fmt.Errorf("Error while getting channel %s", name)
+	}
+
+	_, err = channelResult.LoadFromJSON([]byte(value))
+
+	if err != nil {
+		logger.Errorf("Error while getting channel %s: %s", name, err.Error())
+		return channelResult, fmt.Errorf("Error while getting channel %s", name)
+	}
+
 	return channelResult, nil
 }
 
 // UpdateChannelByName updates a channel by name
 func (c *Channel) UpdateChannelByName(channel ChannelResult) (bool, error) {
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, channel.Name)
+
+	if err != nil {
+		logger.Errorf("Error while updating channel %s: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Error while updating channel %s", channel.Name)
+	}
+
+	if !exists {
+		logger.Warningf("Trying to create non existent channel %s", channel.Name)
+		return false, fmt.Errorf("Trying to create non existent channel %s", channel.Name)
+	}
+
+	result, err := channel.ConvertToJSON()
+
+	if err != nil {
+		logger.Errorf("Something wrong with channel %s data: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Something wrong with channel %s data", channel.Name)
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, channel.Name, result)
+
+	if err != nil {
+		logger.Errorf("Error while updating channel %s: %s", channel.Name, err.Error())
+		return false, fmt.Errorf("Error while updating channel %s", channel.Name)
+	}
+
 	return true, nil
 }
 
 // DeleteChannelByName deletes a channel with name
 func (c *Channel) DeleteChannelByName(name string) (bool, error) {
-
 	deleted, err := c.Driver.HDel(ChannelsHashPrefix, name)
 
 	if err != nil {
@@ -99,4 +181,224 @@ func (c *Channel) DeleteChannelByName(name string) (bool, error) {
 	c.Driver.HTruncate(fmt.Sprintf("%s.subscribers", name))
 
 	return true, nil
+}
+
+// DecrementListeners decrement listeners
+func (c *Channel) DecrementListeners(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Listeners--
+
+	if channelResult.Listeners < 0 {
+		channelResult.Listeners = 0
+	}
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// IncrementListeners increment listeners
+func (c *Channel) IncrementListeners(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Listeners++
+
+	if channelResult.Listeners < 0 {
+		channelResult.Listeners = 0
+	}
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// DecrementSubscribers decrement subscribers
+func (c *Channel) DecrementSubscribers(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Subscribers--
+
+	if channelResult.Subscribers < 0 {
+		channelResult.Subscribers = 0
+	}
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// IncrementSubscribers increment subscribers
+func (c *Channel) IncrementSubscribers(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Subscribers++
+
+	if channelResult.Subscribers < 0 {
+		channelResult.Subscribers = 0
+	}
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// ResetSubscribers resets subscribers
+func (c *Channel) ResetSubscribers(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Subscribers = 0
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// ResetListeners resets listeners
+func (c *Channel) ResetListeners(name string) bool {
+	var channelResult ChannelResult
+
+	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+
+	if err != nil || !exists {
+		return false
+	}
+
+	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+
+	if err != nil {
+		return false
+	}
+
+	channelResult.LoadFromJSON([]byte(value))
+	channelResult.Listeners = 0
+
+	result, err := channelResult.ConvertToJSON()
+
+	if err != nil {
+		return false
+	}
+
+	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
+
+	if err != nil {
+		return false
+	}
+
+	return true
 }
