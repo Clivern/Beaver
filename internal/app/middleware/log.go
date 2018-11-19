@@ -5,8 +5,10 @@
 package middleware
 
 import (
+	"bytes"
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"time"
 )
 
@@ -14,8 +16,14 @@ import (
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// before request
+		var bodyBytes []byte
 		t := time.Now()
-		rawBody, _ := c.GetRawData()
+
+		if c.Request.Body != nil {
+			bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+		}
+
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
 		c.Next()
 
@@ -25,10 +33,10 @@ func Logger() gin.HandlerFunc {
 		size := c.Writer.Size()
 
 		logger.Infof(
-			"Request %s:%s %s - Response Code %d, Size %d Time Spent %s",
+			"Request %s -> %s %s - Response Code %d, Size %d Time Spent %s",
 			c.Request.Method,
 			c.Request.URL,
-			string(rawBody),
+			string(bodyBytes),
 			status,
 			size,
 			latency,
