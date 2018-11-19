@@ -52,6 +52,7 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(middleware.Auth())
 	r.Use(middleware.Logger())
 	r.Static("/static", "./web/static/")
 	r.LoadHTMLGlob("web/template/*")
