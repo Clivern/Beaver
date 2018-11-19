@@ -19,10 +19,10 @@ func Logger() gin.HandlerFunc {
 		var bodyBytes []byte
 		t := time.Now()
 
+		// Workaround for issue https://github.com/gin-gonic/gin/issues/1651
 		if c.Request.Body != nil {
 			bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
 		}
-
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
 		c.Next()
