@@ -105,6 +105,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:398b067cd5b79e0a0c067f5b3a23cf369567d93de8e4d9bf364fda4382b51f63"
+  name = "github.com/nbio/st"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e9e8d9816f3268def6dcbd2dea03301f40e9de94"
+
+[[projects]]
+  branch = "master"
   digest = "1:a3b8912deeef29007fab9a13a9f21b9e9b59c621a2ed61e2fe7b37320a71fbd5"
   name = "github.com/satori/go.uuid"
   packages = ["."]
@@ -121,7 +129,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:11ff1b15d3b5426668a949da8e5d9423de54275ffebc502ebfcac6dee329cfa6"
+  digest = "1:60baeef55cc6621b4bef73f0795a04596662e180500089f5817929ad515eeb6d"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -130,7 +138,7 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "93218def8b18e66adbdab3eca8ec334700329f1f"
+  revision = "ec83556a53fe16b65c452a104ea9d1e86a671852"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -157,6 +165,7 @@
     "github.com/go-redis/redis",
     "github.com/google/logger",
     "github.com/gorilla/websocket",
+    "github.com/nbio/st",
     "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"

@@ -6,10 +6,9 @@ package logger
 
 import (
 	"fmt"
+	"github.com/google/logger"
 	"os"
 	"time"
-
-	"github.com/google/logger"
 )
 
 // Info log

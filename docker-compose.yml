@@ -22,7 +22,7 @@ services:
          - AppLogLevel=info
          - AppDomain=example.com
          - LogPath=var/logs
-         - RedisAddr=127.0.0.1:7001
+         - RedisAddr=redis:6379
          - RedisPassword=
          - RedisDB=0
          - APIToken=123

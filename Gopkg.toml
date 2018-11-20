@@ -52,3 +52,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/dgrijalva/jwt-go"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/nbio/st"
