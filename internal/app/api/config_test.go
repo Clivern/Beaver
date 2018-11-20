@@ -30,4 +30,24 @@ func TestConfigsAPI(t *testing.T) {
 
 	configAPI := &Config{}
 	st.Expect(t, configAPI.Init(), true)
+
+	ok, err = configAPI.CreateConfig("key", "value")
+	st.Expect(t, ok, true)
+	st.Expect(t, err, nil)
+
+	value, err := configAPI.GetConfigByKey("key")
+	st.Expect(t, value, "value")
+	st.Expect(t, err, nil)
+
+	ok, err = configAPI.UpdateConfigByKey("key", "new_value")
+	st.Expect(t, ok, true)
+	st.Expect(t, err, nil)
+
+	value, err = configAPI.GetConfigByKey("key")
+	st.Expect(t, value, "new_value")
+	st.Expect(t, err, nil)
+
+	ok, err = configAPI.DeleteConfigByKey("key")
+	st.Expect(t, ok, true)
+	st.Expect(t, err, nil)
 }

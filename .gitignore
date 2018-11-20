@@ -21,3 +21,5 @@ beaver
 vendor
 
 config.test.json
+coverage.html
+cover.out

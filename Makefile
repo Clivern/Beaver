@@ -53,7 +53,7 @@ test_short:
 ## test: Run test cases.
 test:
 	@echo ">> running all tests"
-	$(GO) test -race -cover $(pkgs)
+	$(GO) test -race -cover -coverprofile=cover.out $(pkgs)
 
 
 ## lint: Lint the code.
@@ -84,6 +84,13 @@ prod_run: build
 	./beaver
 
 
+## coverage: Create HTML coverage report
+coverage:
+	rm -f coverage.html cover.out
+	$(GO) test -coverprofile=cover.out $(pkgs)
+	go tool cover -html=cover.out -o coverage.html
+
+
 ## build: Build the application.
 build:
 	rm -f beaver
@@ -91,7 +98,7 @@ build:
 
 
 ## ci: Run all CI tests.
-ci: style check_license test vet lint
+ci: style check_license test vet lint coverage
 	@echo "\n==> All quality checks passed"
 
 
