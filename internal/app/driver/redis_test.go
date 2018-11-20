@@ -14,8 +14,8 @@ import (
 	"testing"
 )
 
-// TestClientAPI test cases
-func TestClientAPI(t *testing.T) {
+// TestRedisDriver test cases
+func TestRedisDriver(t *testing.T) {
 	// Setup Env Vars
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")

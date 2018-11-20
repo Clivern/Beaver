@@ -7,6 +7,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // GetChannelByName controller
@@ -15,14 +16,14 @@ func GetChannelByName(c *gin.Context) {
 
 	fmt.Println(name)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
 // CreateChannel controller
 func CreateChannel(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
@@ -33,7 +34,7 @@ func DeleteChannelByName(c *gin.Context) {
 
 	fmt.Println(name)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
@@ -44,7 +45,7 @@ func UpdateChannelByName(c *gin.Context) {
 
 	fmt.Println(name)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }

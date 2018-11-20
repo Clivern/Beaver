@@ -7,6 +7,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // GetClientByUUID controller
@@ -15,14 +16,14 @@ func GetClientByUUID(c *gin.Context) {
 
 	fmt.Println(UUID)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
 // CreateClient controller
 func CreateClient(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
@@ -33,7 +34,7 @@ func DeleteClientByUUID(c *gin.Context) {
 
 	fmt.Println(UUID)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
@@ -44,7 +45,7 @@ func UpdateClientByUUID(c *gin.Context) {
 
 	fmt.Println(UUID)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
