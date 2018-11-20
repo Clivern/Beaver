@@ -27,8 +27,5 @@ script:
   - make install_revive
   - make ensure_dep
   - cp config.json config.dist.json
-  - go test -race -coverprofile=coverage.txt -covermode=atomic
   - make ci
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
