@@ -21,6 +21,7 @@ type Config struct {
 	RedisPassword string `json:"redis_password"`
 	RedisDB       string `json:"redis_db"`
 	APIToken      string `json:"api_token"`
+	LogPath       string `json:"log_path"`
 }
 
 // Load method loads configs from json file
@@ -58,6 +59,7 @@ func (e *Config) Cache() {
 		os.Setenv("RedisPassword", e.RedisPassword)
 		os.Setenv("RedisDB", e.RedisDB)
 		os.Setenv("APIToken", e.APIToken)
+		os.Setenv("LogPath", e.LogPath)
 	}
 }
 

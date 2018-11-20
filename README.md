@@ -26,7 +26,7 @@ Then Create a dist config file
 $ cp config.json config.dist.json
 ```
 
-Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `redis_*`, ...etc.
+Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `log_path`, `redis_*`, `api_token` ...etc.
 
 ```json
 {
@@ -34,9 +34,11 @@ Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `redis_*`, 
     "app_port": "8080",
     "app_log_level": "info",
     "app_domain": "example.com",
-    "redis_addr": "127.0.0.1:7001",
+    "log_path": "var/logs",
+    "redis_addr": "127.0.0.1:6379",
     "redis_password": "",
-    "redis_db": 0
+    "redis_db": "0",
+    "api_token": "123"
 }
 ```
 
@@ -49,6 +51,10 @@ $ ./beaver
 // OR
 
 $ go run beaver.go
+
+// To Provide a custom config file
+$ ./beaver -config=/custom/path/config.dist.json
+$ go run beaver.go -config=/custom/path/config.dist.json
 ```
 
 Also running beaver with docker still an option. Just don't forget to update environment variables on `docker-compose.yml` file. Then run the following stuff
