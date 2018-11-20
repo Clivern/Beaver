@@ -53,7 +53,7 @@ test_short:
 ## test: Run test cases.
 test:
 	@echo ">> running all tests"
-	$(GO) test -race -cover -coverprofile=cover.out $(pkgs)
+	$(GO) test -race -cover $(pkgs)
 
 
 ## lint: Lint the code.
@@ -98,7 +98,7 @@ build:
 
 
 ## ci: Run all CI tests.
-ci: style check_license test vet lint coverage
+ci: style check_license test vet lint
 	@echo "\n==> All quality checks passed"
 
 

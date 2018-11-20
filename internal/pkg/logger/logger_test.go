@@ -29,7 +29,9 @@ func TestLogging(t *testing.T) {
 	}
 	config.Cache()
 	config.GinEnv()
-	os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
+	if !strings.Contains(os.Getenv("LogPath"), basePath) {
+		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
+	}
 
 	// Start Test Cases
 	Info("Info")

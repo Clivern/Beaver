@@ -9,6 +9,7 @@ import (
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/nbio/st"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -26,7 +27,20 @@ func TestConfigsAPI(t *testing.T) {
 	}
 	config.Cache()
 	config.GinEnv()
-	os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
+	if !strings.Contains(os.Getenv("LogPath"), basePath) {
+		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
+	}
+
+	configResult := &ConfigResult{Key: "key", Value: "value"}
+	jsonValue, err := configResult.ConvertToJSON()
+	st.Expect(t, jsonValue, `{"key":"key","value":"value"}`)
+	st.Expect(t, err, nil)
+
+	ok, err = configResult.LoadFromJSON([]byte(jsonValue))
+	st.Expect(t, ok, true)
+	st.Expect(t, err, nil)
+	st.Expect(t, configResult.Key, "key")
+	st.Expect(t, configResult.Value, "value")
 
 	configAPI := &Config{}
 	st.Expect(t, configAPI.Init(), true)
@@ -35,13 +49,22 @@ func TestConfigsAPI(t *testing.T) {
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 
+	ok, err = configAPI.CreateConfig("key", "value")
+	st.Expect(t, ok, false)
+
 	value, err := configAPI.GetConfigByKey("key")
 	st.Expect(t, value, "value")
 	st.Expect(t, err, nil)
 
+	value, err = configAPI.GetConfigByKey("not_exist")
+	st.Expect(t, value, "")
+
 	ok, err = configAPI.UpdateConfigByKey("key", "new_value")
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
+
+	ok, err = configAPI.UpdateConfigByKey("not_exist", "new_value")
+	st.Expect(t, ok, false)
 
 	value, err = configAPI.GetConfigByKey("key")
 	st.Expect(t, value, "new_value")
@@ -50,4 +73,7 @@ func TestConfigsAPI(t *testing.T) {
 	ok, err = configAPI.DeleteConfigByKey("key")
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
+
+	ok, err = configAPI.DeleteConfigByKey("not_exist")
+	st.Expect(t, ok, false)
 }
