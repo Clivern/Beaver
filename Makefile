@@ -53,7 +53,7 @@ test_short:
 ## test: Run test cases.
 test:
 	@echo ">> running all tests"
-	$(GO) test -race $(pkgs)
+	$(GO) test -race -cover $(pkgs)
 
 
 ## lint: Lint the code.
