@@ -33,16 +33,28 @@ func init() {
 	}
 }
 
-// TestNodeController test case
-func TestNodeController(t *testing.T) {
+// TestGetConfigByKey test case
+func TestGetConfigByKey(t *testing.T) {
 
 	router := gin.Default()
-	router.GET("/api/node", GetNodeInfo)
+	router.GET("/api/config/:key", GetConfigByKey)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/node", nil)
+	req, _ := http.NewRequest("GET", "/api/config/config_key", nil)
 	router.ServeHTTP(w, req)
 
-	st.Expect(t, 200, w.Code)
-	st.Expect(t, `{"status":"ok"}`, w.Body.String())
+	st.Expect(t, 404, w.Code)
+}
+
+// TestDeleteConfigByKey test case
+func TestDeleteConfigByKey(t *testing.T) {
+
+	router := gin.Default()
+	router.DELETE("/api/config/:key", DeleteConfigByKey)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("DELETE", "/api/config/config_key", nil)
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, 404, w.Code)
 }

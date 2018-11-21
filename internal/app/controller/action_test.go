@@ -7,13 +7,13 @@ package controller
 import (
 	"fmt"
 	"github.com/clivern/beaver/internal/pkg/utils"
-	"github.com/gin-gonic/gin"
-	"github.com/nbio/st"
-	"net/http"
-	"net/http/httptest"
+	_ "github.com/gin-gonic/gin"
+	_ "github.com/nbio/st"
+	_ "net/http"
+	_ "net/http/httptest"
 	"os"
 	"strings"
-	"testing"
+	_ "testing"
 )
 
 func init() {
@@ -31,18 +31,4 @@ func init() {
 	if !strings.Contains(os.Getenv("LogPath"), basePath) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
-}
-
-// TestNodeController test case
-func TestNodeController(t *testing.T) {
-
-	router := gin.Default()
-	router.GET("/api/node", GetNodeInfo)
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/node", nil)
-	router.ServeHTTP(w, req)
-
-	st.Expect(t, 200, w.Code)
-	st.Expect(t, `{"status":"ok"}`, w.Body.String())
 }
