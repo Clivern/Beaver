@@ -11,7 +11,6 @@ import (
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"os"
 	"strconv"
-	"time"
 )
 
 // ChannelsHashPrefix is the hash prefix
@@ -24,12 +23,12 @@ type Channel struct {
 
 // ChannelResult struct
 type ChannelResult struct {
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	Listeners   int       `json:"listeners"`
-	Subscribers int       `json:"subscribers"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Listeners   int    `json:"listeners"`
+	Subscribers int    `json:"subscribers"`
+	CreatedAt   int64  `json:"created_at"`
+	UpdatedAt   int64  `json:"updated_at"`
 }
 
 // LoadFromJSON load object from json

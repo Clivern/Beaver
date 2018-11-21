@@ -13,8 +13,8 @@ import (
 	"testing"
 )
 
-// TestConfigsAPI test cases
-func TestConfigsAPI(t *testing.T) {
+// TestConfigAPI test cases
+func TestConfigAPI(t *testing.T) {
 	// Setup Env Vars
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
