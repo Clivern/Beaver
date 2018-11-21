@@ -21,7 +21,7 @@ func TestLogging(t *testing.T) {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
-	config := &utils.Config{}
+	config := utils.Config{}
 	ok, err := config.Load(configFile)
 
 	if !ok || err != nil {

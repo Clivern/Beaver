@@ -19,7 +19,7 @@ func TestConfigAPI(t *testing.T) {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
-	config := &utils.Config{}
+	config := utils.Config{}
 	ok, err := config.Load(configFile)
 
 	if !ok || err != nil {
@@ -31,7 +31,7 @@ func TestConfigAPI(t *testing.T) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
 
-	configResult := &ConfigResult{Key: "key", Value: "value"}
+	configResult := ConfigResult{Key: "key", Value: "value"}
 	jsonValue, err := configResult.ConvertToJSON()
 	st.Expect(t, jsonValue, `{"key":"key","value":"value"}`)
 	st.Expect(t, err, nil)
@@ -42,7 +42,7 @@ func TestConfigAPI(t *testing.T) {
 	st.Expect(t, configResult.Key, "key")
 	st.Expect(t, configResult.Value, "value")
 
-	configAPI := &Config{}
+	configAPI := Config{}
 	st.Expect(t, configAPI.Init(), true)
 
 	ok, err = configAPI.CreateConfig("key", "value")
