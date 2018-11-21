@@ -7,8 +7,6 @@ package api
 import (
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
-	"os"
-	"strconv"
 )
 
 // ClientsHashPrefix is the hash prefix
@@ -21,13 +19,7 @@ type Client struct {
 
 // Init initialize the redis connection
 func (c *Client) Init() bool {
-	DB, _ := strconv.Atoi(os.Getenv("RedisDB"))
-
-	c.Driver = &driver.Redis{
-		Addr:     os.Getenv("RedisAddr"),
-		Password: os.Getenv("RedisPassword"),
-		DB:       DB,
-	}
+	c.Driver = driver.NewRedisDriver()
 
 	result, err := c.Driver.Connect()
 	if !result {

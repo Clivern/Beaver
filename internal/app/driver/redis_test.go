@@ -9,7 +9,6 @@ import (
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/nbio/st"
 	"os"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -32,13 +31,7 @@ func TestRedisDriver(t *testing.T) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
 
-	DB, _ := strconv.Atoi(os.Getenv("RedisDB"))
-
-	driver := Redis{
-		Addr:     os.Getenv("RedisAddr"),
-		Password: os.Getenv("RedisPassword"),
-		DB:       DB,
-	}
+	driver := NewRedisDriver()
 
 	ok, err = driver.Connect()
 	st.Expect(t, ok, true)

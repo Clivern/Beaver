@@ -13,7 +13,7 @@ import (
 // GetConfigByKey controller
 func GetConfigByKey(c *gin.Context) {
 	key := c.Param("key")
-	config := &api.Config{}
+	config := api.Config{}
 
 	if !config.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
@@ -44,7 +44,7 @@ func CreateConfig(c *gin.Context) {
 
 	var configRequest api.ConfigResult
 
-	config := &api.Config{}
+	config := api.Config{}
 
 	rawBody, err := c.GetRawData()
 
@@ -98,7 +98,7 @@ func CreateConfig(c *gin.Context) {
 // DeleteConfigByKey controller
 func DeleteConfigByKey(c *gin.Context) {
 	key := c.Param("key")
-	config := &api.Config{}
+	config := api.Config{}
 
 	if !config.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
@@ -126,7 +126,7 @@ func UpdateConfigByKey(c *gin.Context) {
 
 	var configRequest api.ConfigResult
 
-	config := &api.Config{}
+	config := api.Config{}
 
 	rawBody, err := c.GetRawData()
 

@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
-	"os"
-	"strconv"
 )
 
 // ChannelsHashPrefix is the hash prefix
@@ -51,13 +49,7 @@ func (c *ChannelResult) ConvertToJSON() (string, error) {
 
 // Init initialize the redis connection
 func (c *Channel) Init() bool {
-	DB, _ := strconv.Atoi(os.Getenv("RedisDB"))
-
-	c.Driver = &driver.Redis{
-		Addr:     os.Getenv("RedisAddr"),
-		Password: os.Getenv("RedisPassword"),
-		DB:       DB,
-	}
+	c.Driver = driver.NewRedisDriver()
 
 	result, err := c.Driver.Connect()
 	if !result {
