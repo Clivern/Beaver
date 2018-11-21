@@ -56,9 +56,9 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 
-	configRequest.LoadFromJSON(rawBody)
+	ok, err := configRequest.LoadFromJSON(rawBody)
 
-	if configRequest.Key == "" || configRequest.Value == "" {
+	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
 			"error":  "Invalid request",
@@ -66,10 +66,10 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 
-	if err != nil {
+	if configRequest.Key == "" || configRequest.Value == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  err.Error(),
+			"error":  "Invalid request",
 		})
 		return
 	}
