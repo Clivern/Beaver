@@ -15,9 +15,8 @@ import (
 	"time"
 )
 
-// TestLogging test cases
-func TestLogging(t *testing.T) {
-	// Setup Env Vars
+// init setup stuff
+func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
@@ -32,6 +31,10 @@ func TestLogging(t *testing.T) {
 	if !strings.Contains(os.Getenv("LogPath"), basePath) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
+}
+
+// TestLogging test cases
+func TestLogging(t *testing.T) {
 
 	// Start Test Cases
 	Info("Info")

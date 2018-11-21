@@ -13,9 +13,8 @@ import (
 	"testing"
 )
 
-// TestConfigAPI test cases
-func TestConfigAPI(t *testing.T) {
-	// Setup Env Vars
+// init setup stuff
+func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
@@ -30,13 +29,17 @@ func TestConfigAPI(t *testing.T) {
 	if !strings.Contains(os.Getenv("LogPath"), basePath) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
+}
+
+// TestConfigAPI test cases
+func TestConfigAPI(t *testing.T) {
 
 	configResult := ConfigResult{Key: "key", Value: "value"}
 	jsonValue, err := configResult.ConvertToJSON()
 	st.Expect(t, jsonValue, `{"key":"key","value":"value"}`)
 	st.Expect(t, err, nil)
 
-	ok, err = configResult.LoadFromJSON([]byte(jsonValue))
+	ok, err := configResult.LoadFromJSON([]byte(jsonValue))
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 	st.Expect(t, configResult.Key, "key")

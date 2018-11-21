@@ -14,9 +14,8 @@ import (
 	"time"
 )
 
-// TestChannelAPI test cases
-func TestChannelAPI(t *testing.T) {
-	// Setup Env Vars
+// init setup stuff
+func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
@@ -31,6 +30,10 @@ func TestChannelAPI(t *testing.T) {
 	if !strings.Contains(os.Getenv("LogPath"), basePath) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
+}
+
+// TestChannelAPI test cases
+func TestChannelAPI(t *testing.T) {
 
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
@@ -40,7 +43,7 @@ func TestChannelAPI(t *testing.T) {
 	st.Expect(t, jsonValue, fmt.Sprintf(`{"name":"name","type":"type","listeners":1,"subscribers":1,"created_at":%d,"updated_at":%d}`, createdAt, updatedAt))
 	st.Expect(t, err, nil)
 
-	ok, err = channelResult.LoadFromJSON([]byte(jsonValue))
+	ok, err := channelResult.LoadFromJSON([]byte(jsonValue))
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 	st.Expect(t, channelResult.Name, "name")

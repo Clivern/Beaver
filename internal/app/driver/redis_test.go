@@ -13,9 +13,8 @@ import (
 	"testing"
 )
 
-// TestRedisDriver test cases
-func TestRedisDriver(t *testing.T) {
-	// Setup Env Vars
+// init setup stuff
+func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
 
@@ -30,10 +29,14 @@ func TestRedisDriver(t *testing.T) {
 	if !strings.Contains(os.Getenv("LogPath"), basePath) {
 		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
 	}
+}
+
+// TestRedisDriver test cases
+func TestRedisDriver(t *testing.T) {
 
 	driver := NewRedisDriver()
 
-	ok, err = driver.Connect()
+	ok, err := driver.Connect()
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 

@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// init setup driver
+// init setup stuff
 func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
@@ -145,4 +145,225 @@ func TestDeleteChannel2(t *testing.T) {
 
 	// Clean After
 	channelAPI.DeleteChannelByName("chan_name")
+}
+
+// TestCreateChannel1 test case
+func TestCreateChannel1(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	channelAPI.DeleteChannelByName("new_chan")
+
+	router := gin.Default()
+	router.POST("/api/channel", CreateChannel)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/channel", strings.NewReader(`{"name":"new_chan", "type":"public"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusCreated, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestCreateChannel2 test case
+func TestCreateChannel2(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	channelAPI.DeleteChannelByName("new_chan")
+
+	router := gin.Default()
+	router.POST("/api/channel", CreateChannel)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/channel", strings.NewReader(`{"name":"new_chan", "type":`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestCreateChannel3 test case
+func TestCreateChannel3(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	channelAPI.DeleteChannelByName("new_chan")
+
+	router := gin.Default()
+	router.POST("/api/channel", CreateChannel)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/channel", strings.NewReader(`{"name":"", "type":""}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestCreateChannel4 test case
+func TestCreateChannel4(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
+
+	channelResult := api.ChannelResult{
+		Name:        "new_chan",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	channelAPI.DeleteChannelByName("new_chan")
+	channelAPI.CreateChannel(channelResult)
+
+	router := gin.Default()
+	router.POST("/api/channel", CreateChannel)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/channel", strings.NewReader(`{"name":"new_chan", "type":"public"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestUpdateChannel1 test case
+func TestUpdateChannel1(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
+
+	channelResult := api.ChannelResult{
+		Name:        "new_chan",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	channelAPI.DeleteChannelByName("new_chan")
+	channelAPI.CreateChannel(channelResult)
+
+	router := gin.Default()
+	router.PUT("/api/channel/:name", UpdateChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/channel/new_chan", strings.NewReader(`{"type":"private"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusOK, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestUpdateChannel2 test case
+func TestUpdateChannel2(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	channelAPI.DeleteChannelByName("new_chan")
+
+	router := gin.Default()
+	router.PUT("/api/channel/:name", UpdateChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/channel/new_chan", strings.NewReader(`{"type":"private"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusNotFound, w.Code)
+}
+
+// TestUpdateChannel3 test case
+func TestUpdateChannel3(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
+
+	channelResult := api.ChannelResult{
+		Name:        "new_chan",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	channelAPI.DeleteChannelByName("new_chan")
+	channelAPI.CreateChannel(channelResult)
+
+	router := gin.Default()
+	router.PUT("/api/channel/:name", UpdateChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/channel/new_chan", strings.NewReader(`{"type":""}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
+}
+
+// TestUpdateChannel4 test case
+func TestUpdateChannel4(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
+
+	channelResult := api.ChannelResult{
+		Name:        "new_chan",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+	channelAPI.DeleteChannelByName("new_chan")
+	channelAPI.CreateChannel(channelResult)
+
+	router := gin.Default()
+	router.PUT("/api/channel/:name", UpdateChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/channel/new_chan", strings.NewReader(`{"type"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("new_chan")
 }
