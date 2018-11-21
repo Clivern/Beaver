@@ -30,8 +30,7 @@ func PrintBanner() {
        ""m "m
     `)
 	fmt.Println("\033[0m")
-	fmt.Println("\033[32mWelcome to Beaver - Pusher Server Implementation (https://github.com/clivern/beaver)\033[0m")
-	fmt.Println("\033[33mBy: Clivern <hello@clivern.com>\033[0m")
+	fmt.Println("\033[32mBeaver - A Real Time Messaging Server.\033[0m")
 }
 
 // PrintCommands show the available commands
@@ -39,9 +38,6 @@ func PrintCommands() {
 	fmt.Print("\033[31m")
 	fmt.Println("\nAvailable Commands:")
 	fmt.Print("\033[0m")
-	fmt.Println("\033[32m  -exec=migrate.up\033[0m")
-	fmt.Println("\033[32m  -exec=migrate.down\033[0m")
-	fmt.Println("\033[32m  -exec=migrate.status\033[0m")
 	fmt.Println("\033[32m  -exec=health\033[0m")
 	fmt.Print("\n")
 }

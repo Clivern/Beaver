@@ -1,19 +1,10 @@
 version: '3'
 services:
-   db:
-      image: "mysql:5.7"
-      environment:
-         - MYSQL_ROOT_PASSWORD=root
-         - MYSQL_DATABASE=beaver
-         - MYSQL_USER=beaver
-         - MYSQL_PASSWORD=secret
-         - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+   redis:
+      image: 'redis:3.2-alpine'
+      volumes:
+         - 'redis_data:/data'
       restart: always
-      healthcheck:
-         test: '/usr/bin/mysql --user=beaver --password=secret --execute "SHOW DATABASES;"'
-         interval: 5s
-         timeout: 2s
-         retries: 5
    web:
       image: "clivern_beaver:1.0.0"
       build: .
@@ -21,7 +12,7 @@ services:
       ports:
          - "8080:8080"
       depends_on:
-         - db
+         - redis
       volumes:
          - './var:/go/src/github.com/clivern/beaver/var'
       restart: always
@@ -30,12 +21,12 @@ services:
          - AppPort=8080
          - AppLogLevel=info
          - AppDomain=example.com
-         - MySQLUsername=root
-         - MySQLPassword=root
-         - MySQLProtocol=tcp
-         - MySQLHost=localhost
-         - MySQLPort=3306
-         - MySQLDatabase=beaver
+         - LogPath=var/logs
+         - RedisAddr=redis:6379
+         - RedisPassword=
+         - RedisDB=0
+         - APIToken=123
+
       restart: always
       healthcheck:
          test: './beaver -exec=health'

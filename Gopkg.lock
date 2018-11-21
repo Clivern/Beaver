@@ -48,14 +48,6 @@
   version = "v6.14.2"
 
 [[projects]]
-  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
-  name = "github.com/go-sql-driver/mysql"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "72cd26f257d44c1114970e19afddcd812016007e"
-  version = "v1.4.1"
-
-[[projects]]
   digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -113,6 +105,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:398b067cd5b79e0a0c067f5b3a23cf369567d93de8e4d9bf364fda4382b51f63"
+  name = "github.com/nbio/st"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e9e8d9816f3268def6dcbd2dea03301f40e9de94"
+
+[[projects]]
+  branch = "master"
   digest = "1:a3b8912deeef29007fab9a13a9f21b9e9b59c621a2ed61e2fe7b37320a71fbd5"
   name = "github.com/satori/go.uuid"
   packages = ["."]
@@ -129,7 +129,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:469c17f357b39eddb38c6a12f4a80bc119beffe87184028432bf9ce18f30412e"
+  digest = "1:60baeef55cc6621b4bef73f0795a04596662e180500089f5817929ad515eeb6d"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -138,15 +138,7 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399"
-
-[[projects]]
-  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
-  name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
-  pruneopts = "UT"
-  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
-  version = "v1.3.0"
+  revision = "ec83556a53fe16b65c452a104ea9d1e86a671852"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -171,9 +163,9 @@
     "github.com/dgrijalva/jwt-go",
     "github.com/gin-gonic/gin",
     "github.com/go-redis/redis",
-    "github.com/go-sql-driver/mysql",
     "github.com/google/logger",
     "github.com/gorilla/websocket",
+    "github.com/nbio/st",
     "github.com/satori/go.uuid",
   ]
   solver-name = "gps-cdcl"

@@ -17,12 +17,11 @@ type Config struct {
 	AppPort       string `json:"app_port"`
 	AppLogLevel   string `json:"app_log_level"`
 	AppDomain     string `json:"app_domain"`
-	MySQLUsername string `json:"mysql_username"`
-	MySQLPassword string `json:"mysql_password"`
-	MySQLProtocol string `json:"mysql_protocol"`
-	MySQLHost     string `json:"mysql_host"`
-	MySQLPort     string `json:"mysql_port"`
-	MySQLDatabase string `json:"mysql_database"`
+	RedisAddr     string `json:"redis_addr"`
+	RedisPassword string `json:"redis_password"`
+	RedisDB       string `json:"redis_db"`
+	APIToken      string `json:"api_token"`
+	LogPath       string `json:"log_path"`
 }
 
 // Load method loads configs from json file
@@ -56,12 +55,11 @@ func (e *Config) Cache() {
 		os.Setenv("AppLogLevel", e.AppLogLevel)
 		os.Setenv("AppPort", e.AppPort)
 		os.Setenv("AppDomain", e.AppDomain)
-		os.Setenv("MySQLUsername", e.MySQLUsername)
-		os.Setenv("MySQLPassword", e.MySQLPassword)
-		os.Setenv("MySQLProtocol", e.MySQLProtocol)
-		os.Setenv("MySQLHost", e.MySQLHost)
-		os.Setenv("MySQLPort", e.MySQLPort)
-		os.Setenv("MySQLDatabase", e.MySQLDatabase)
+		os.Setenv("RedisAddr", e.RedisAddr)
+		os.Setenv("RedisPassword", e.RedisPassword)
+		os.Setenv("RedisDB", e.RedisDB)
+		os.Setenv("APIToken", e.APIToken)
+		os.Setenv("LogPath", e.LogPath)
 	}
 }
 

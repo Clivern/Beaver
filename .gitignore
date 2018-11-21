@@ -19,3 +19,7 @@ beaver
 
 # Ignore vendor and run dep ensure
 vendor
+
+config.test.json
+coverage.html
+cover.out

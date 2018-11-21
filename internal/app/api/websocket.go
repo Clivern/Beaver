@@ -59,7 +59,7 @@ func (e *Websocket) HandleMessages() {
 
 // PushMessages push messages to all clients
 func (e *Websocket) PushMessages(_ http.ResponseWriter, _ *http.Request) {
-	msg := &Message{
+	msg := Message{
 		Data: "HeyBuddy",
 	}
 	// Send it out to every client that is currently connected

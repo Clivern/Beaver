@@ -6,14 +6,10 @@ package logger
 
 import (
 	"fmt"
+	"github.com/google/logger"
 	"os"
 	"time"
-
-	"github.com/google/logger"
 )
-
-// LogsPath defines where we store logs
-const LogsPath = "var/logs"
 
 // Info log
 func Info(v ...interface{}) {
@@ -23,7 +19,7 @@ func Info(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -47,7 +43,7 @@ func Infoln(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -71,7 +67,7 @@ func Infof(format string, v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -95,7 +91,7 @@ func Warning(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -119,7 +115,7 @@ func Warningln(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -143,7 +139,7 @@ func Warningf(format string, v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -167,7 +163,7 @@ func Error(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -191,7 +187,7 @@ func Errorln(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -215,7 +211,7 @@ func Errorf(format string, v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -239,7 +235,7 @@ func Fatal(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -263,7 +259,7 @@ func Fatalln(v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -287,7 +283,7 @@ func Fatalf(format string, v ...interface{}) {
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", LogsPath, currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {

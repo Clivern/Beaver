@@ -6,43 +6,43 @@ package main
 
 import (
 	"flag"
-	"io"
-	"net/http"
-	"os"
-
+	"fmt"
 	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/app/cmd"
 	"github.com/clivern/beaver/internal/app/controller"
+	"github.com/clivern/beaver/internal/app/middleware"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"io"
+	"net/http"
+	"os"
 )
 
 func main() {
 
 	var exec string
+	var configFile string
 
 	utils.PrintBanner()
 
+	flag.StringVar(&exec, "exec", "", "exec")
+	flag.StringVar(&configFile, "config", "config.dist.json", "config")
+	flag.Parse()
+
 	// Load config.json file and store on env
 	config := &utils.Config{}
-	config.Load("config.dist.json")
+	ok, err := config.Load(configFile)
+
+	if !ok || err != nil {
+		panic(err.Error())
+	}
+
 	// This will never override ENV Vars if exists
 	config.Cache()
 	config.GinEnv()
 
-	flag.StringVar(&exec, "exec", "", "exec")
-	flag.Parse()
-
-	cmd.CreateMigrationTable()
-
 	if exec != "" {
 		switch exec {
-		case "migrate.up":
-			cmd.MigrationUp()
-		case "migrate.down":
-			cmd.MigrationDown()
-		case "migrate.status":
-			cmd.MigrationStatus()
 		case "health":
 			cmd.HealthStatus()
 		default:
@@ -51,16 +51,16 @@ func main() {
 		return
 	}
 
-	cmd.MigrationUp()
-
 	if os.Getenv("AppMode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
-		f, _ := os.Create("var/logs/gin.log")
+		f, _ := os.Create(fmt.Sprintf("%s/gin.log", os.Getenv("LogPath")))
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
 
 	r := gin.Default()
+	r.Use(middleware.Auth())
+	r.Use(middleware.Logger())
 	r.Static("/static", "./web/static/")
 	r.LoadHTMLGlob("web/template/*")
 	r.GET("/", controller.Index)

@@ -6,32 +6,33 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Broadcast controller
 func Broadcast(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
 // Unsubscribe controller
 func Unsubscribe(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
 // Subscribe controller
 func Subscribe(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
 // Publish controller
 func Publish(c *gin.Context) {
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
