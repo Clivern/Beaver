@@ -36,6 +36,64 @@ func init() {
 	}
 }
 
+// TestGetChannel1 test case
+func TestGetChannel1(t *testing.T) {
+
+	router := gin.Default()
+	router.GET("/api/channel/:name", GetChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/api/channel/chan_name", nil)
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusNotFound, w.Code)
+}
+
+// TestGetChannel2 test case
+func TestGetChannel2(t *testing.T) {
+
+	channelAPI := api.Channel{}
+	st.Expect(t, channelAPI.Init(), true)
+
+	// Clean Before
+	createdAt := time.Now().Unix()
+	updatedAt := time.Now().Unix()
+
+	channelResult := api.ChannelResult{
+		Name:        "chan_name",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
+
+	incomingChannelResult := api.ChannelResult{}
+
+	channelAPI.DeleteChannelByName("chan_name")
+	channelAPI.CreateChannel(channelResult)
+
+	router := gin.Default()
+	router.GET("/api/channel/:name", GetChannelByName)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/api/channel/chan_name", nil)
+	router.ServeHTTP(w, req)
+
+	incomingChannelResult.LoadFromJSON([]byte(w.Body.String()))
+
+	st.Expect(t, http.StatusOK, w.Code)
+	st.Expect(t, incomingChannelResult.Name, channelResult.Name)
+	st.Expect(t, incomingChannelResult.Type, channelResult.Type)
+	st.Expect(t, incomingChannelResult.Listeners, channelResult.Listeners)
+	st.Expect(t, incomingChannelResult.Subscribers, channelResult.Subscribers)
+	st.Expect(t, incomingChannelResult.CreatedAt, channelResult.CreatedAt)
+	st.Expect(t, incomingChannelResult.UpdatedAt, channelResult.UpdatedAt)
+
+	// Clean After
+	channelAPI.DeleteChannelByName("chan_name")
+}
+
 // TestDeleteChannel1 test case
 func TestDeleteChannel1(t *testing.T) {
 
@@ -65,7 +123,14 @@ func TestDeleteChannel2(t *testing.T) {
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
 
-	channelResult := api.ChannelResult{Name: "chan_name", Type: "type", Listeners: 1, Subscribers: 1, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	channelResult := api.ChannelResult{
+		Name:        "chan_name",
+		Type:        "type",
+		Listeners:   1,
+		Subscribers: 1,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}
 	channelAPI.DeleteChannelByName("chan_name")
 	channelAPI.CreateChannel(channelResult)
 

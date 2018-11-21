@@ -13,12 +13,36 @@ import (
 
 // GetChannelByName controller
 func GetChannelByName(c *gin.Context) {
-	name := c.Param("name")
+	var channelResult api.ChannelResult
 
-	fmt.Println(name)
+	name := c.Param("name")
+	channel := api.Channel{}
+
+	if !channel.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
+
+	channelResult, err := channel.GetChannelByName(name)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+		"name":        channelResult.Name,
+		"type":        channelResult.Type,
+		"listeners":   channelResult.Listeners,
+		"subscribers": channelResult.Subscribers,
+		"created_at":  channelResult.CreatedAt,
+		"updated_at":  channelResult.UpdatedAt,
 	})
 }
 
