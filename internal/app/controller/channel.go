@@ -6,6 +6,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/clivern/beaver/internal/app/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,13 +31,29 @@ func CreateChannel(c *gin.Context) {
 
 // DeleteChannelByName controller
 func DeleteChannelByName(c *gin.Context) {
+
 	name := c.Param("name")
+	channel := api.Channel{}
 
-	fmt.Println(name)
+	if !channel.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
+	_, err := channel.DeleteChannelByName(name)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 // UpdateChannelByName controller

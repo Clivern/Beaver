@@ -17,6 +17,7 @@ import (
 	"testing"
 )
 
+// init setup driver
 func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
