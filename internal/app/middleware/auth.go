@@ -18,7 +18,7 @@ func Auth() gin.HandlerFunc {
 		path := c.Request.URL.Path
 		method := c.Request.Method
 
-		if strings.ContainsAny(path, "/api/") {
+		if strings.Contains(path, "/api/") {
 			authToken := c.GetHeader("X-AUTH-TOKEN")
 			if authToken != os.Getenv("APIToken") {
 				logger.Infof(
