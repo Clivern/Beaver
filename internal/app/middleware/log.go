@@ -25,6 +25,14 @@ func Logger() gin.HandlerFunc {
 		}
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
+		logger.Infof(
+			`Incoming request %s %s %s {"correlationId":"%s"}`,
+			c.Request.Method,
+			c.Request.URL,
+			string(bodyBytes),
+			c.Request.Header.Get("CorrelationID"),
+		)
+
 		c.Next()
 
 		// after request
@@ -33,13 +41,11 @@ func Logger() gin.HandlerFunc {
 		size := c.Writer.Size()
 
 		logger.Infof(
-			"Request %s -> %s %s - Response Code %d, Size %d Time Spent %s",
-			c.Request.Method,
-			c.Request.URL,
-			string(bodyBytes),
+			`Outgoing response code %d, size %d time spent %s {"correlationId":"%s"}`,
 			status,
 			size,
 			latency,
+			c.Request.Header.Get("CorrelationID"),
 		)
 	}
 }

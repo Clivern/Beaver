@@ -22,10 +22,11 @@ func Auth() gin.HandlerFunc {
 			authToken := c.GetHeader("X-AUTH-TOKEN")
 			if authToken != os.Getenv("APIToken") {
 				logger.Infof(
-					"Unauthorized access to %s:%s with token %s",
+					`Unauthorized access to %s:%s with token %s {"correlationId":"%s"}`,
 					method,
 					path,
 					authToken,
+					c.Request.Header.Get("CorrelationID"),
 				)
 				c.AbortWithStatus(http.StatusUnauthorized)
 			}

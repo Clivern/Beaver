@@ -7,3 +7,12 @@ package utils
 // Validator util
 type Validator struct {
 }
+
+func (v *Validator) in(item string, list []string) bool {
+	for _, a := range list {
+		if a == item {
+			return true
+		}
+	}
+	return false
+}
