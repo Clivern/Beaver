@@ -17,7 +17,7 @@ func GetChannelByName(c *gin.Context) {
 
 	name := c.Param("name")
 	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	if !channel.Init() {
@@ -54,7 +54,7 @@ func CreateChannel(c *gin.Context) {
 	var channelResult api.ChannelResult
 
 	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()
@@ -117,7 +117,7 @@ func DeleteChannelByName(c *gin.Context) {
 	name := c.Param("name")
 
 	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	if !channel.Init() {
@@ -148,7 +148,7 @@ func UpdateChannelByName(c *gin.Context) {
 	var currentChannelResult api.ChannelResult
 
 	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()

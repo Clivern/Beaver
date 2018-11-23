@@ -30,7 +30,7 @@ func Logger() gin.HandlerFunc {
 			c.Request.Method,
 			c.Request.URL,
 			string(bodyBytes),
-			c.Request.Header.Get("CorrelationID"),
+			c.Request.Header.Get("X-Correlation-ID"),
 		)
 
 		c.Next()
@@ -45,7 +45,7 @@ func Logger() gin.HandlerFunc {
 			status,
 			size,
 			latency,
-			c.Request.Header.Get("CorrelationID"),
+			c.Request.Header.Get("X-Correlation-ID"),
 		)
 	}
 }

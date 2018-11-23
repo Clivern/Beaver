@@ -14,7 +14,7 @@ import (
 func GetConfigByKey(c *gin.Context) {
 	key := c.Param("key")
 	config := api.Config{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	if !config.Init() {
@@ -47,7 +47,7 @@ func CreateConfig(c *gin.Context) {
 	var configRequest api.ConfigResult
 
 	config := api.Config{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()
@@ -103,7 +103,7 @@ func CreateConfig(c *gin.Context) {
 func DeleteConfigByKey(c *gin.Context) {
 	key := c.Param("key")
 	config := api.Config{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	if !config.Init() {
@@ -133,7 +133,7 @@ func UpdateConfigByKey(c *gin.Context) {
 	var configRequest api.ConfigResult
 
 	config := api.Config{
-		CorrelationID: c.Request.Header.Get("CorrelationID"),
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()

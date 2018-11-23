@@ -26,7 +26,7 @@ func Auth() gin.HandlerFunc {
 					method,
 					path,
 					authToken,
-					c.Request.Header.Get("CorrelationID"),
+					c.Request.Header.Get("X-Correlation-ID"),
 				)
 				c.AbortWithStatus(http.StatusUnauthorized)
 			}
