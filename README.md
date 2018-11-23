@@ -20,7 +20,7 @@ $ curl https://raw.githubusercontent.com/golang/dep/v0.5.0/install.sh | sh
 $ dep ensure
 ```
 
-Then Create a dist config file
+Then Create a dist config file.
 
 ```bash
 $ cp config.json config.dist.json
@@ -42,7 +42,7 @@ Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `log_path`,
 }
 ```
 
-And then run the application, application will auto run the migrations on start.
+And then run the application.
 
 ```bash
 $ go build beaver.go
