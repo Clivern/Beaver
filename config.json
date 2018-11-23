@@ -1,0 +1,11 @@
+{
+    "app_mode": "dev",
+    "app_port": "8080",
+    "app_log_level": "info",
+    "app_domain": "example.com",
+    "log_path": "var/logs",
+    "redis_addr": "localhost:6379",
+    "redis_password": "",
+    "redis_db": "0",
+    "api_token": "123"
+}

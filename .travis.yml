@@ -1,5 +1,8 @@
 language: go
 
+services:
+  - redis-server
+
 go:
   - 1.9.x
   - 1.10.x
@@ -18,9 +21,11 @@ script:
   - mv Clivern/Beaver Clivern/beaver
   - mv Clivern clivern
   - cd clivern/beaver
+  - mv config.travis.json config.test.json
   # Config & execute ci tasks
   - make install_dep
   - make install_revive
   - make ensure_dep
+  - cp config.json config.dist.json
   - make ci
 

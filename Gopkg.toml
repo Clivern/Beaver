@@ -29,6 +29,30 @@
   name = "github.com/gin-gonic/gin"
   version = "1.3.0"
 
+[[constraint]]
+  name = "github.com/go-redis/redis"
+  version = "v6.14.1"
+
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/google/logger"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gorilla/websocket"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/satori/go.uuid"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/dgrijalva/jwt-go"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/nbio/st"
