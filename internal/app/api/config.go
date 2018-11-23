@@ -16,7 +16,8 @@ const ConfigsHashPrefix string = "beaver.config"
 
 // Config struct
 type Config struct {
-	Driver *driver.Redis
+	Driver        *driver.Redis
+	CorrelationID string
 }
 
 // ConfigResult struct
@@ -49,7 +50,7 @@ func (c *Config) Init() bool {
 
 	result, err := c.Driver.Connect()
 	if !result {
-		logger.Errorf("Error while connecting to redis: %s", err.Error())
+		logger.Errorf(`Error while connecting to redis: %s {"correlationId":"%s"}`, err.Error(), c.CorrelationID)
 		return false
 	}
 	return true
@@ -60,19 +61,19 @@ func (c *Config) CreateConfig(key string, value string) (bool, error) {
 	exists, err := c.Driver.HExists(ConfigsHashPrefix, key)
 
 	if err != nil {
-		logger.Errorf("Error while creating config %s: %s", key, err.Error())
+		logger.Errorf(`Error while creating config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return false, fmt.Errorf("Error while creating config %s", key)
 	}
 
 	if exists {
-		logger.Warningf("Trying to create existent config %s", key)
+		logger.Warningf(`Trying to create existent config %s {"correlationId":"%s"}`, key, c.CorrelationID)
 		return false, fmt.Errorf("Trying to create existent config %s", key)
 	}
 
 	_, err = c.Driver.HSet(ConfigsHashPrefix, key, value)
 
 	if err != nil {
-		logger.Errorf("Error while creating config %s: %s", key, err.Error())
+		logger.Errorf(`Error while creating config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return false, fmt.Errorf("Error while creating config %s", key)
 	}
 
@@ -85,19 +86,19 @@ func (c *Config) GetConfigByKey(key string) (string, error) {
 	exists, err := c.Driver.HExists(ConfigsHashPrefix, key)
 
 	if err != nil {
-		logger.Errorf("Error while getting config %s: %s", key, err.Error())
+		logger.Errorf(`Error while getting config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return "", fmt.Errorf("Error while getting config %s", key)
 	}
 
 	if !exists {
-		logger.Warningf("Trying to get non existent config %s", key)
+		logger.Warningf(`Trying to get non existent config %s {"correlationId":"%s"}`, key, c.CorrelationID)
 		return "", fmt.Errorf("Trying to get non existent config %s", key)
 	}
 
 	value, err := c.Driver.HGet(ConfigsHashPrefix, key)
 
 	if err != nil {
-		logger.Errorf("Error while getting config %s: %s", key, err.Error())
+		logger.Errorf(`Error while getting config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return "", fmt.Errorf("Error while getting config %s", key)
 	}
 
@@ -110,19 +111,19 @@ func (c *Config) UpdateConfigByKey(key string, value string) (bool, error) {
 	exists, err := c.Driver.HExists(ConfigsHashPrefix, key)
 
 	if err != nil {
-		logger.Errorf("Error while updating config %s: %s", key, err.Error())
+		logger.Errorf(`Error while updating config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return false, fmt.Errorf("Error while updating config %s", key)
 	}
 
 	if !exists {
-		logger.Warningf("Trying to update non existent config %s", key)
+		logger.Warningf(`Trying to update non existent config %s {"correlationId":"%s"}`, key, c.CorrelationID)
 		return false, fmt.Errorf("Trying to update non existent config %s", key)
 	}
 
 	_, err = c.Driver.HSet(ConfigsHashPrefix, key, value)
 
 	if err != nil {
-		logger.Errorf("Error while updating config %s: %s", key, err.Error())
+		logger.Errorf(`Error while updating config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return false, fmt.Errorf("Error while updating config %s", key)
 	}
 
@@ -136,12 +137,12 @@ func (c *Config) DeleteConfigByKey(key string) (bool, error) {
 	deleted, err := c.Driver.HDel(ConfigsHashPrefix, key)
 
 	if err != nil {
-		logger.Errorf("Error while deleting config %s: %s", key, err.Error())
+		logger.Errorf(`Error while deleting config %s: %s {"correlationId":"%s"}`, key, err.Error(), c.CorrelationID)
 		return false, fmt.Errorf("Error while deleting config %s", key)
 	}
 
 	if deleted <= 0 {
-		logger.Warningf("Trying to delete non existent config %s", key)
+		logger.Warningf(`Trying to delete non existent config %s {"correlationId":"%s"}`, key, c.CorrelationID)
 		return false, fmt.Errorf("Trying to delete non existent config %s", key)
 	}
 

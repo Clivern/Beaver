@@ -6,4 +6,5 @@ package api
 
 // Node struct
 type Node struct {
+	Version string
 }
