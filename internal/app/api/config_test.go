@@ -54,6 +54,7 @@ func TestConfigAPI(t *testing.T) {
 
 	ok, err = configAPI.CreateConfig("key", "value")
 	st.Expect(t, ok, false)
+	st.Expect(t, err.Error(), "Trying to create existent config key")
 
 	value, err := configAPI.GetConfigByKey("key")
 	st.Expect(t, value, "value")
@@ -61,6 +62,7 @@ func TestConfigAPI(t *testing.T) {
 
 	value, err = configAPI.GetConfigByKey("not_exist")
 	st.Expect(t, value, "")
+	st.Expect(t, err.Error(), "Trying to get non existent config not_exist")
 
 	ok, err = configAPI.UpdateConfigByKey("key", "new_value")
 	st.Expect(t, ok, true)
@@ -68,6 +70,7 @@ func TestConfigAPI(t *testing.T) {
 
 	ok, err = configAPI.UpdateConfigByKey("not_exist", "new_value")
 	st.Expect(t, ok, false)
+	st.Expect(t, err.Error(), "Trying to update non existent config not_exist")
 
 	value, err = configAPI.GetConfigByKey("key")
 	st.Expect(t, value, "new_value")
@@ -79,4 +82,5 @@ func TestConfigAPI(t *testing.T) {
 
 	ok, err = configAPI.DeleteConfigByKey("not_exist")
 	st.Expect(t, ok, false)
+	st.Expect(t, err.Error(), "Trying to delete non existent config not_exist")
 }

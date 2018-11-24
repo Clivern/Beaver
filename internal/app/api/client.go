@@ -22,6 +22,8 @@ type Client struct {
 // ClientResult struct
 type ClientResult struct {
 	ID        string `json:"id"` // ident:uuid
+	Ident     string `json:"ident"`
+	UUID      string `json:"uuid"`
 	Token     string `json:"token"`
 	CreatedAt int64  `json:"created_at"`
 }
