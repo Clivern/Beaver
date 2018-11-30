@@ -9,6 +9,9 @@ import (
 	"fmt"
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/clivern/beaver/internal/pkg/utils"
+	"os"
+	"time"
 )
 
 // ClientsHashPrefix is the hash prefix
@@ -47,6 +50,28 @@ func (c *ClientResult) ConvertToJSON() (string, error) {
 		return "", err
 	}
 	return string(data), nil
+}
+
+// GenerateClient generates client ID & Token
+func (c *ClientResult) GenerateClient() (bool, error) {
+	now := time.Now().Unix()
+
+	token, err := utils.GenerateJWTToken(
+		c.Ident,
+		now,
+		os.Getenv("AppSecret"),
+	)
+
+	if err != nil {
+		return false, err
+	}
+
+	c.Token = token
+	c.CreatedAt = now
+	c.UpdatedAt = now
+	c.UUID = utils.GenerateUUID()
+
+	return true, nil
 }
 
 // Init initialize the redis connection
@@ -170,6 +195,7 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 	}
 
 	for _, channel := range client.Channels {
+		// Remove client from channel listeners
 		_, err = c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), ID)
 
 		if err != nil {
@@ -177,6 +203,7 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 			return false, fmt.Errorf("Error while deleting client %s", ID)
 		}
 
+		// Remove client from channel subscribers
 		_, err = c.Driver.HDel(fmt.Sprintf("%s.subscribers", channel), ID)
 
 		if err != nil {
@@ -185,6 +212,7 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 		}
 	}
 
+	// Remove client from clients
 	_, err = c.Driver.HDel(ClientsHashPrefix, ID)
 
 	if err != nil {
