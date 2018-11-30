@@ -139,14 +139,40 @@ func TestDeleteClient2(t *testing.T) {
 	clientAPI.CreateClient(clientResult)
 
 	router := gin.Default()
-	router.GET("/api/client/:id", DeleteClientByID)
+	router.DELETE("/api/client/:id", DeleteClientByID)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", fmt.Sprintf("/api/client/%s", clientResult.ID), nil)
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("/api/client/%s", clientResult.ID), nil)
 	router.ServeHTTP(w, req)
 
 	st.Expect(t, http.StatusNoContent, w.Code)
 
 	// Clean After
 	clientAPI.DeleteClientByID(clientResult.ID)
+}
+
+// TestCreateClient1 test case
+func TestCreateClient1(t *testing.T) {
+
+	router := gin.Default()
+	router.POST("/api/client", CreateClient)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/client", strings.NewReader(`{}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusCreated, w.Code)
+}
+
+// TestCreateClient2 test case
+func TestCreateClient2(t *testing.T) {
+
+	router := gin.Default()
+	router.POST("/api/client", CreateClient)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/client", strings.NewReader(`{"channels":["chat"}`))
+	router.ServeHTTP(w, req)
+
+	st.Expect(t, http.StatusBadRequest, w.Code)
 }
