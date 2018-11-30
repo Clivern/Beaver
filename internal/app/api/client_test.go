@@ -38,16 +38,15 @@ func TestClientAPI(t *testing.T) {
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
 
-	clientResult := ClientResult{ID: "id", Ident: "ident", Token: "token", Channels: []string{}, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	clientResult := ClientResult{ID: "id", Token: "token", Channels: []string{}, CreatedAt: createdAt, UpdatedAt: updatedAt}
 	jsonValue, err := clientResult.ConvertToJSON()
-	st.Expect(t, jsonValue, fmt.Sprintf(`{"id":"id","ident":"ident","token":"token","channels":[],"created_at":%d,"updated_at":%d}`, createdAt, updatedAt))
+	st.Expect(t, jsonValue, fmt.Sprintf(`{"id":"id","token":"token","channels":[],"created_at":%d,"updated_at":%d}`, createdAt, updatedAt))
 	st.Expect(t, err, nil)
 
 	ok, err := clientResult.LoadFromJSON([]byte(jsonValue))
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 	st.Expect(t, clientResult.ID, "id")
-	st.Expect(t, clientResult.Ident, "ident")
 	st.Expect(t, clientResult.Token, "token")
 	st.Expect(t, clientResult.Channels, []string{})
 	st.Expect(t, clientResult.CreatedAt, createdAt)
@@ -69,14 +68,13 @@ func TestClientAPI(t *testing.T) {
 
 	newClientResult, err := clientAPI.GetClientByID(clientResult.ID)
 	st.Expect(t, clientResult.ID, newClientResult.ID)
-	st.Expect(t, clientResult.Ident, newClientResult.Ident)
 	st.Expect(t, clientResult.Token, newClientResult.Token)
 	st.Expect(t, clientResult.Channels, newClientResult.Channels)
 	st.Expect(t, clientResult.CreatedAt, newClientResult.CreatedAt)
 	st.Expect(t, clientResult.UpdatedAt, newClientResult.UpdatedAt)
 	st.Expect(t, err, nil)
 
-	newClientResult.Ident = "n-ident"
+	newClientResult.Token = "n-Token"
 
 	ok, err = clientAPI.UpdateClientByID(newClientResult)
 	st.Expect(t, ok, true)
@@ -84,8 +82,7 @@ func TestClientAPI(t *testing.T) {
 
 	newClientResult, err = clientAPI.GetClientByID(clientResult.ID)
 	st.Expect(t, clientResult.ID, newClientResult.ID)
-	st.Expect(t, "n-ident", newClientResult.Ident)
-	st.Expect(t, clientResult.Token, newClientResult.Token)
+	st.Expect(t, "n-Token", newClientResult.Token)
 	st.Expect(t, clientResult.Channels, newClientResult.Channels)
 	st.Expect(t, clientResult.CreatedAt, newClientResult.CreatedAt)
 	st.Expect(t, clientResult.UpdatedAt, newClientResult.UpdatedAt)

@@ -26,7 +26,6 @@ type Client struct {
 // ClientResult struct
 type ClientResult struct {
 	ID        string   `json:"id"`
-	Ident     string   `json:"ident"`
 	Token     string   `json:"token"`
 	Channels  []string `json:"channels"`
 	CreatedAt int64    `json:"created_at"`
@@ -53,10 +52,12 @@ func (c *ClientResult) ConvertToJSON() (string, error) {
 
 // GenerateClient generates client ID & Token
 func (c *ClientResult) GenerateClient() (bool, error) {
+
 	now := time.Now().Unix()
+	c.ID = utils.GenerateUUID()
 
 	token, err := utils.GenerateJWTToken(
-		c.Ident,
+		fmt.Sprintf("%s@%d", c.ID, now),
 		now,
 		os.Getenv("AppSecret"),
 	)
@@ -68,7 +69,6 @@ func (c *ClientResult) GenerateClient() (bool, error) {
 	c.Token = token
 	c.CreatedAt = now
 	c.UpdatedAt = now
-	c.ID = utils.GenerateUUID()
 
 	return true, nil
 }

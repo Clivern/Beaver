@@ -78,7 +78,6 @@ func main() {
 	r.GET("/api/client/:id", controller.GetClientByID)
 	r.POST("/api/client", controller.CreateClient)
 	r.DELETE("/api/client/:id", controller.DeleteClientByID)
-	r.PUT("/api/client/:id", controller.UpdateClientByID)
 
 	r.GET("/api/node", controller.GetNodeInfo)
 
