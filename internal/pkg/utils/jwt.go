@@ -9,7 +9,7 @@ import (
 )
 
 // GenerateJWTToken generate a jwt token for frontend
-func GenerateJWTToken(data string, timestamp int, secret string) (string, error) {
+func GenerateJWTToken(data string, timestamp int64, secret string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"data":      data,

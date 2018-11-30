@@ -5,47 +5,140 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/clivern/beaver/internal/app/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-// GetClientByUUID controller
-func GetClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+// GetClientByID controller
+func GetClientByID(c *gin.Context) {
 
-	fmt.Println(UUID)
+	var clientResult api.ClientResult
+	ID := c.Param("id")
+
+	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
+
+	if !client.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
+
+	clientResult, err := client.GetClientByID(ID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+		"id":         clientResult.ID,
+		"token":      clientResult.Token,
+		"channels":   clientResult.Channels,
+		"created_at": clientResult.CreatedAt,
+		"updated_at": clientResult.UpdatedAt,
 	})
 }
 
 // CreateClient controller
 func CreateClient(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+
+	var clientResult api.ClientResult
+
+	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
+
+	rawBody, err := c.GetRawData()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	ok, err := clientResult.LoadFromJSON(rawBody)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Invalid request",
+		})
+		return
+	}
+
+	if !client.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
+
+	ok, err = clientResult.GenerateClient()
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	ok, err = client.CreateClient(clientResult)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"id":         clientResult.ID,
+		"token":      clientResult.Token,
+		"channels":   clientResult.Channels,
+		"created_at": clientResult.CreatedAt,
+		"updated_at": clientResult.UpdatedAt,
 	})
 }
 
-// DeleteClientByUUID controller
-func DeleteClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+// DeleteClientByID controller
+func DeleteClientByID(c *gin.Context) {
 
-	fmt.Println(UUID)
+	ID := c.Param("id")
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
-}
+	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
 
-// UpdateClientByUUID controller
-func UpdateClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+	if !client.Init() {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"status": "error",
+			"error":  "Internal server error",
+		})
+		return
+	}
 
-	fmt.Println(UUID)
+	_, err := client.DeleteClientByID(ID)
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status": "error",
+			"error":  err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

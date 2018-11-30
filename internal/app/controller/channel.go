@@ -87,8 +87,8 @@ func CreateChannel(c *gin.Context) {
 
 	if !channel.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status":  "error",
-			"message": "Internal server error",
+			"status": "error",
+			"error":  "Internal server error",
 		})
 		return
 	}

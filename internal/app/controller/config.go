@@ -80,8 +80,8 @@ func CreateConfig(c *gin.Context) {
 
 	if !config.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status":  "error",
-			"message": "Internal server error",
+			"status": "error",
+			"error":  "Internal server error",
 		})
 		return
 	}
