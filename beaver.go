@@ -75,10 +75,10 @@ func main() {
 	r.DELETE("/api/channel/:name", controller.DeleteChannelByName)
 	r.PUT("/api/channel/:name", controller.UpdateChannelByName)
 
-	r.GET("/api/client/:uuid", controller.GetClientByUUID)
+	r.GET("/api/client/:id", controller.GetClientByID)
 	r.POST("/api/client", controller.CreateClient)
-	r.DELETE("/api/client/:uuid", controller.DeleteClientByUUID)
-	r.PUT("/api/client/:uuid", controller.UpdateClientByUUID)
+	r.DELETE("/api/client/:id", controller.DeleteClientByID)
+	r.PUT("/api/client/:id", controller.UpdateClientByID)
 
 	r.GET("/api/node", controller.GetNodeInfo)
 

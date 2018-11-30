@@ -10,11 +10,11 @@ import (
 	"net/http"
 )
 
-// GetClientByUUID controller
-func GetClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+// GetClientByID controller
+func GetClientByID(c *gin.Context) {
+	ID := c.Param("id")
 
-	fmt.Println(UUID)
+	fmt.Println(ID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
@@ -28,22 +28,22 @@ func CreateClient(c *gin.Context) {
 	})
 }
 
-// DeleteClientByUUID controller
-func DeleteClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+// DeleteClientByID controller
+func DeleteClientByID(c *gin.Context) {
+	ID := c.Param("id")
 
-	fmt.Println(UUID)
+	fmt.Println(ID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
 }
 
-// UpdateClientByUUID controller
-func UpdateClientByUUID(c *gin.Context) {
-	UUID := c.Param("uuid")
+// UpdateClientByID controller
+func UpdateClientByID(c *gin.Context) {
+	ID := c.Param("id")
 
-	fmt.Println(UUID)
+	fmt.Println(ID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",

@@ -25,9 +25,8 @@ type Client struct {
 
 // ClientResult struct
 type ClientResult struct {
-	ID        string   `json:"id"` // ident:uuid
+	ID        string   `json:"id"`
 	Ident     string   `json:"ident"`
-	UUID      string   `json:"uuid"`
 	Token     string   `json:"token"`
 	Channels  []string `json:"channels"`
 	CreatedAt int64    `json:"created_at"`
@@ -69,7 +68,7 @@ func (c *ClientResult) GenerateClient() (bool, error) {
 	c.Token = token
 	c.CreatedAt = now
 	c.UpdatedAt = now
-	c.UUID = utils.GenerateUUID()
+	c.ID = utils.GenerateUUID()
 
 	return true, nil
 }
