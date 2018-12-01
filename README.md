@@ -8,7 +8,7 @@
 
 ### Config & Run The Application
 
-Hamster uses [dep](https://github.com/golang/dep) to manage dependencies so you need to install it
+Beaver uses [dep](https://github.com/golang/dep) to manage dependencies so you need to install it
 
 ```bash
 # For latest dep version
