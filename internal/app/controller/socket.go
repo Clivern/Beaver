@@ -16,20 +16,6 @@ func Broadcast(c *gin.Context) {
 	})
 }
 
-// Unsubscribe controller
-func Unsubscribe(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
-}
-
-// Subscribe controller
-func Subscribe(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
-}
-
 // Publish controller
 func Publish(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{

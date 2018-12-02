@@ -142,3 +142,17 @@ func DeleteClientByID(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+// Unsubscribe controller
+func Unsubscribe(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+}
+
+// Subscribe controller
+func Subscribe(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+}
