@@ -33,5 +33,5 @@ func init() {
 // TestValidation test cases
 func TestValidation(t *testing.T) {
 	validate := Validator{}
-	st.Expect(t, validate.in("public", []string{"public", "private"}), true)
+	st.Expect(t, validate.In("public", []string{"public", "private"}), true)
 }

@@ -394,3 +394,27 @@ func (c *Channel) ResetListeners(name string) bool {
 
 	return true
 }
+
+// ChannelsExist checks if channels exist
+func (c *Channel) ChannelsExist(channels []string) (bool, error) {
+	for _, channel := range channels {
+		exists, err := c.Driver.HExists(ChannelsHashPrefix, channel)
+
+		if err != nil {
+			logger.Errorf(`Error while getting channel %s: %s {"correlationId":"%s"}`, channel, err.Error(), c.CorrelationID)
+			return false, fmt.Errorf("Error while getting channel %s", channel)
+		}
+
+		if !exists {
+			logger.Infof(`Channel %s not exist {"correlationId":"%s"}`, channel, c.CorrelationID)
+			return false, fmt.Errorf("Channel %s not exist", channel)
+		}
+	}
+
+	return true, nil
+}
+
+// ChannelExist checks if channel exists
+func (c *Channel) ChannelExist(channel string) (bool, error) {
+	return c.ChannelsExist([]string{channel})
+}

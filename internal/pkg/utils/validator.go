@@ -8,7 +8,8 @@ package utils
 type Validator struct {
 }
 
-func (v *Validator) in(item string, list []string) bool {
+// In checks if item in array
+func (v *Validator) In(item string, list []string) bool {
 	for _, a := range list {
 		if a == item {
 			return true
