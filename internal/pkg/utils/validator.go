@@ -4,6 +4,10 @@
 
 package utils
 
+import (
+	"regexp"
+)
+
 // Validator util
 type Validator struct {
 }
@@ -14,6 +18,23 @@ func (v *Validator) In(item string, list []string) bool {
 		if a == item {
 			return true
 		}
+	}
+	return false
+}
+
+// Slug checks if string is a valid slug
+func (v *Validator) Slug(slug string, min int, max int) bool {
+
+	if len(slug) < min {
+		return false
+	}
+
+	if len(slug) > max {
+		return false
+	}
+
+	if regexp.MustCompile(`^[a-z0-9]+(?:_[a-z0-9]+)*$`).MatchString(slug) {
+		return true
 	}
 	return false
 }
