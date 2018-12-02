@@ -36,5 +36,6 @@ func (v *Validator) Slug(slug string, min int, max int) bool {
 	if regexp.MustCompile(`^[a-z0-9]+(?:_[a-z0-9]+)*$`).MatchString(slug) {
 		return true
 	}
+
 	return false
 }
