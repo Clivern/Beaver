@@ -79,7 +79,11 @@ func (c *Client) Init() bool {
 
 	result, err := c.Driver.Connect()
 	if !result {
-		logger.Errorf(`Error while connecting to redis: %s {"correlationId":"%s"}`, err.Error(), c.CorrelationID)
+		logger.Errorf(
+			`Error while connecting to redis: %s {"correlationId":"%s"}`,
+			err.Error(),
+			c.CorrelationID,
+		)
 		return false
 	}
 	return true
@@ -91,27 +95,65 @@ func (c *Client) CreateClient(client ClientResult) (bool, error) {
 	exists, err := c.Driver.HExists(ClientsHashPrefix, client.ID)
 
 	if err != nil {
-		logger.Errorf(`Error while creating client %s: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while creating client %s", client.ID)
+		logger.Errorf(
+			`Error while creating client %s: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while creating client %s`,
+			client.ID,
+		)
 	}
 
 	if exists {
-		logger.Warningf(`Trying to create existent client %s {"correlationId":"%s"}`, client.ID, c.CorrelationID)
-		return false, fmt.Errorf("Trying to create existent client %s", client.ID)
+		logger.Warningf(
+			`Trying to create existent client %s {"correlationId":"%s"}`,
+			client.ID,
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Trying to create existent client %s`,
+			client.ID,
+		)
 	}
 
 	result, err := client.ConvertToJSON()
 
 	if err != nil {
-		logger.Errorf(`Something wrong with client %s data: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Something wrong with client %s data", client.ID)
+		logger.Errorf(
+			`Something wrong with client %s data: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Something wrong with client %s data`,
+			client.ID,
+		)
 	}
 
 	_, err = c.Driver.HSet(ClientsHashPrefix, client.ID, result)
 
 	if err != nil {
-		logger.Errorf(`Error while creating client %s: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while creating client %s", client.ID)
+		logger.Errorf(
+			`Error while creating client %s: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while creating client %s`,
+			client.ID,
+		)
+	}
+
+	for _, channel := range client.Channels {
+		ok, err := c.AddToChannel(client.ID, channel)
+		if !ok || err != nil {
+			return false, err
+		}
 	}
 
 	return true, nil
@@ -157,27 +199,58 @@ func (c *Client) UpdateClientByID(client ClientResult) (bool, error) {
 	exists, err := c.Driver.HExists(ClientsHashPrefix, client.ID)
 
 	if err != nil {
-		logger.Errorf(`Error while updating client %s: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while updating client %s", client.ID)
+		logger.Errorf(
+			`Error while updating client %s: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while updating client %s`,
+			client.ID,
+		)
 	}
 
 	if !exists {
-		logger.Warningf(`Trying to create non existent client %s {"correlationId":"%s"}`, client.ID, c.CorrelationID)
-		return false, fmt.Errorf("Trying to create non existent client %s", client.ID)
+		logger.Warningf(
+			`Trying to create non existent client %s {"correlationId":"%s"}`,
+			client.ID,
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Trying to create non existent client %s`,
+			client.ID,
+		)
 	}
 
 	result, err := client.ConvertToJSON()
 
 	if err != nil {
-		logger.Errorf(`Something wrong with client %s data: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Something wrong with client %s data", client.ID)
+		logger.Errorf(
+			`Something wrong with client %s data: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Something wrong with client %s data`,
+			client.ID,
+		)
 	}
 
 	_, err = c.Driver.HSet(ClientsHashPrefix, client.ID, result)
 
 	if err != nil {
-		logger.Errorf(`Error while updating client %s: %s {"correlationId":"%s"}`, client.ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while updating client %s", client.ID)
+		logger.Errorf(
+			`Error while updating client %s: %s {"correlationId":"%s"}`,
+			client.ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while updating client %s`,
+			client.ID,
+		)
 	}
 
 	return true, nil
@@ -189,8 +262,16 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 	client, err := c.GetClientByID(ID)
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s: %s {"correlationId":"%s"}`, ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while deleting client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while deleting client %s`,
+			ID,
+		)
 	}
 
 	for _, channel := range client.Channels {
@@ -204,8 +285,16 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 	_, err = c.Driver.HDel(ClientsHashPrefix, ID)
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s: %s {"correlationId":"%s"}`, ID, err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while deleting client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while deleting client %s`,
+			ID,
+		)
 	}
 
 	return true, nil
@@ -263,16 +352,36 @@ func (c *Client) AddToChannel(ID string, channel string) (bool, error) {
 	_, err := c.Driver.HSet(fmt.Sprintf("%s.listeners", channel), ID, "")
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s from channel %s: %s {"correlationId":"%s"}`, ID, fmt.Sprintf("%s.listeners", channel), err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
+			ID,
+			fmt.Sprintf("%s.listeners", channel),
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while adding client %s to channel %s`,
+			ID,
+			fmt.Sprintf("%s.listeners", channel),
+		)
 	}
 
 	// Remove client from channel subscribers
 	_, err = c.Driver.HSet(fmt.Sprintf("%s.subscribers", channel), ID, "")
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s from channel %s: %s {"correlationId":"%s"}`, ID, fmt.Sprintf("%s.subscribers", channel), err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
+			ID,
+			fmt.Sprintf("%s.subscribers", channel),
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while adding client %s to channel %s`,
+			ID,
+			fmt.Sprintf("%s.subscribers", channel),
+		)
 	}
 
 	return true, nil
@@ -284,16 +393,32 @@ func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
 	_, err := c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), ID)
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s from channel %s: %s {"correlationId":"%s"}`, ID, fmt.Sprintf("%s.listeners", channel), err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
+			ID,
+			fmt.Sprintf("%s.listeners", channel),
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf("Error while removing client %s from %s", ID, fmt.Sprintf("%s.listeners", channel))
 	}
 
 	// Remove client from channel subscribers
 	_, err = c.Driver.HDel(fmt.Sprintf("%s.subscribers", channel), ID)
 
 	if err != nil {
-		logger.Errorf(`Error while deleting client %s from channel %s: %s {"correlationId":"%s"}`, ID, fmt.Sprintf("%s.subscribers", channel), err.Error(), c.CorrelationID)
-		return false, fmt.Errorf("Error while deleting client %s", ID)
+		logger.Errorf(
+			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
+			ID,
+			fmt.Sprintf("%s.subscribers", channel),
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while removing client %s from %s`,
+			ID,
+			fmt.Sprintf("%s.subscribers", channel),
+		)
 	}
 
 	return true, nil

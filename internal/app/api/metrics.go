@@ -26,7 +26,11 @@ func (m *Metrics) Init() bool {
 
 	result, err := m.Driver.Connect()
 	if !result {
-		logger.Errorf(`Error while connecting to redis: %s {"correlationId":"%s"}`, err.Error(), m.CorrelationID)
+		logger.Errorf(
+			`Error while connecting to redis: %s {"correlationId":"%s"}`,
+			err.Error(),
+			m.CorrelationID,
+		)
 		return false
 	}
 	return true
