@@ -311,7 +311,7 @@ func (c *Client) Unsubscribe(ID string, channels []string) (bool, error) {
 	}
 
 	for i, channel := range channels {
-		if validator.In(channel, clientResult.Channels) {
+		if validator.IsIn(channel, clientResult.Channels) {
 			ok, err := c.RemoveFromChannel(ID, channel)
 			if !ok || err != nil {
 				return false, err
@@ -334,7 +334,7 @@ func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
 	}
 
 	for _, channel := range channels {
-		if !validator.In(channel, clientResult.Channels) {
+		if !validator.IsIn(channel, clientResult.Channels) {
 			ok, err := c.AddToChannel(ID, channel)
 			if !ok || err != nil {
 				return false, err

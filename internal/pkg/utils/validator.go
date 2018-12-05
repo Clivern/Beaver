@@ -12,8 +12,8 @@ import (
 type Validator struct {
 }
 
-// In checks if item in array
-func (v *Validator) In(item string, list []string) bool {
+// IsIn checks if item in array
+func (v *Validator) IsIn(item string, list []string) bool {
 	for _, a := range list {
 		if a == item {
 			return true
@@ -22,8 +22,8 @@ func (v *Validator) In(item string, list []string) bool {
 	return false
 }
 
-// Slug checks if string is a valid slug
-func (v *Validator) Slug(slug string, min int, max int) bool {
+// IsSlug checks if string is a valid slug
+func (v *Validator) IsSlug(slug string, min int, max int) bool {
 
 	if len(slug) < min {
 		return false
