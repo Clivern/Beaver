@@ -6,6 +6,7 @@ package controller
 
 import (
 	"github.com/clivern/beaver/internal/app/api"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -13,6 +14,16 @@ import (
 // GetConfigByKey controller
 func GetConfigByKey(c *gin.Context) {
 	key := c.Param("key")
+	validate := utils.Validator{}
+
+	if validate.IsEmpty(key) || !validate.IsSlug(key, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
 	config := api.Config{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
@@ -44,6 +55,7 @@ func GetConfigByKey(c *gin.Context) {
 // CreateConfig controller
 func CreateConfig(c *gin.Context) {
 
+	validate := utils.Validator{}
 	var configRequest api.ConfigResult
 
 	config := api.Config{
@@ -70,10 +82,18 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 
-	if configRequest.Key == "" || configRequest.Value == "" {
+	if validate.IsEmpty(configRequest.Key) || !validate.IsSlug(configRequest.Key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Invalid request",
+			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
+	if validate.IsEmpty(configRequest.Value) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Config value must not be empty",
 		})
 		return
 	}
@@ -102,6 +122,16 @@ func CreateConfig(c *gin.Context) {
 // DeleteConfigByKey controller
 func DeleteConfigByKey(c *gin.Context) {
 	key := c.Param("key")
+	validate := utils.Validator{}
+
+	if validate.IsEmpty(key) || !validate.IsSlug(key, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
 	config := api.Config{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
@@ -131,6 +161,7 @@ func DeleteConfigByKey(c *gin.Context) {
 func UpdateConfigByKey(c *gin.Context) {
 
 	var configRequest api.ConfigResult
+	validate := utils.Validator{}
 
 	config := api.Config{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -149,10 +180,18 @@ func UpdateConfigByKey(c *gin.Context) {
 	configRequest.LoadFromJSON(rawBody)
 	configRequest.Key = c.Param("key")
 
-	if configRequest.Key == "" || configRequest.Value == "" {
+	if validate.IsEmpty(configRequest.Key) || !validate.IsSlug(configRequest.Key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Invalid request",
+			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
+	if validate.IsEmpty(configRequest.Value) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Config value must not be empty",
 		})
 		return
 	}

@@ -5,7 +5,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
@@ -24,7 +23,7 @@ func GetChannelByName(c *gin.Context) {
 	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  fmt.Sprintf("Channel name %s must be alphanumeric with lenght from %d to %d", name, 3, 60),
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
 		})
 		return
 	}
@@ -94,7 +93,7 @@ func CreateChannel(c *gin.Context) {
 	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  fmt.Sprintf("Channel name %s must be alphanumeric with lenght from %d to %d", channelResult.Name, 3, 60),
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
 		})
 		return
 	}
@@ -143,7 +142,7 @@ func DeleteChannelByName(c *gin.Context) {
 	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  fmt.Sprintf("Channel name %s must be alphanumeric with lenght from %d to %d", name, 3, 60),
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
 		})
 		return
 	}
@@ -200,7 +199,7 @@ func UpdateChannelByName(c *gin.Context) {
 	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  fmt.Sprintf("Channel name %s must be alphanumeric with lenght from %d to %d", channelResult.Name, 3, 60),
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
 		})
 		return
 	}
