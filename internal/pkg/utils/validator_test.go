@@ -41,4 +41,8 @@ func TestValidation(t *testing.T) {
 	st.Expect(t, validate.IsSlug("customers_chat_0123_", 5, 60), false)
 	st.Expect(t, validate.IsSlug("cu", 5, 60), false)
 	st.Expect(t, validate.IsSlug("cu263hd53t3g363g3g36362gr3", 5, 10), false)
+	st.Expect(t, validate.IsEmpty(" "), true)
+	st.Expect(t, validate.IsEmpty(" Test \t "), false)
+	st.Expect(t, validate.IsEmpty(" Test "), false)
+	st.Expect(t, validate.IsEmpty(" \t "), true)
 }

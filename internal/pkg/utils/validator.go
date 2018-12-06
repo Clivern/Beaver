@@ -6,6 +6,7 @@ package utils
 
 import (
 	"regexp"
+	"strings"
 )
 
 // Validator util
@@ -37,5 +38,13 @@ func (v *Validator) IsSlug(slug string, min int, max int) bool {
 		return true
 	}
 
+	return false
+}
+
+// IsEmpty checks if item is empty
+func (v *Validator) IsEmpty(item string) bool {
+	if strings.TrimSpace(item) == "" {
+		return true
+	}
 	return false
 }
