@@ -6,6 +6,7 @@ package controller
 
 import (
 	"github.com/clivern/beaver/internal/app/api"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,7 +15,17 @@ import (
 func GetClientByID(c *gin.Context) {
 
 	var clientResult api.ClientResult
+	validate := utils.Validator{}
+
 	ID := c.Param("id")
+
+	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Client ID is invalid.",
+		})
+		return
+	}
 
 	client := api.Client{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -51,8 +62,12 @@ func GetClientByID(c *gin.Context) {
 func CreateClient(c *gin.Context) {
 
 	var clientResult api.ClientResult
+	validate := utils.Validator{}
 
 	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
+	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
@@ -76,10 +91,28 @@ func CreateClient(c *gin.Context) {
 		return
 	}
 
-	if !client.Init() {
+	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Provided client channels are invalid.",
+		})
+		return
+	}
+
+	if !client.Init() || !channel.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status": "error",
 			"error":  "Internal server error",
+		})
+		return
+	}
+
+	ok, err = channel.ChannelsExist(clientResult.Channels)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -116,7 +149,16 @@ func CreateClient(c *gin.Context) {
 // DeleteClientByID controller
 func DeleteClientByID(c *gin.Context) {
 
+	validate := utils.Validator{}
 	ID := c.Param("id")
+
+	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Client ID is invalid.",
+		})
+		return
+	}
 
 	client := api.Client{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -147,9 +189,21 @@ func DeleteClientByID(c *gin.Context) {
 func Unsubscribe(c *gin.Context) {
 
 	var clientResult api.ClientResult
+	validate := utils.Validator{}
 	ID := c.Param("id")
 
+	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Client ID is invalid.",
+		})
+		return
+	}
+
 	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
+	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
@@ -173,10 +227,28 @@ func Unsubscribe(c *gin.Context) {
 		return
 	}
 
-	if !client.Init() {
+	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Provided client channels are invalid.",
+		})
+		return
+	}
+
+	if !client.Init() || !channel.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status": "error",
 			"error":  "Internal server error",
+		})
+		return
+	}
+
+	ok, err = channel.ChannelsExist(clientResult.Channels)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -198,9 +270,21 @@ func Unsubscribe(c *gin.Context) {
 func Subscribe(c *gin.Context) {
 
 	var clientResult api.ClientResult
+	validate := utils.Validator{}
 	ID := c.Param("id")
 
+	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Client ID is invalid.",
+		})
+		return
+	}
+
 	client := api.Client{
+		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
+	}
+	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
@@ -224,10 +308,28 @@ func Subscribe(c *gin.Context) {
 		return
 	}
 
-	if !client.Init() {
+	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Provided client channels are invalid.",
+		})
+		return
+	}
+
+	if !client.Init() || !channel.Init() {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status": "error",
 			"error":  "Internal server error",
+		})
+		return
+	}
+
+	ok, err = channel.ChannelsExist(clientResult.Channels)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  err.Error(),
 		})
 		return
 	}

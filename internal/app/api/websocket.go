@@ -86,7 +86,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
 
-	clientID := utils.GenerateUUID()
+	clientID := utils.GenerateUUID4()
 
 	// Register our new client
 	e.Clients[clientID] = ws

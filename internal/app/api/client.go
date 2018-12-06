@@ -54,7 +54,7 @@ func (c *ClientResult) ConvertToJSON() (string, error) {
 func (c *ClientResult) GenerateClient() (bool, error) {
 
 	now := time.Now().Unix()
-	c.ID = utils.GenerateUUID()
+	c.ID = utils.GenerateUUID4()
 
 	token, err := utils.GenerateJWTToken(
 		fmt.Sprintf("%s@%d", c.ID, now),

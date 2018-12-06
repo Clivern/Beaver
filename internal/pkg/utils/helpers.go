@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-// GenerateUUID create a UUID
-func GenerateUUID() string {
+// GenerateUUID4 create a UUID
+func GenerateUUID4() string {
 	u := uuid.Must(uuid.NewV4())
 	return u.String()
 }
