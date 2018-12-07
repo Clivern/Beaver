@@ -17,8 +17,10 @@ import (
 
 // Message struct
 type Message struct {
-	Client string `json:"client"`
-	Data   string `json:"data"`
+	FromClient string `json:"from_client"`
+	ToClient   string `json:"to_client"`
+	Channel    string `json:"channel"`
+	Data       string `json:"data"`
 }
 
 // BroadcastRequest struct
@@ -150,7 +152,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 			break
 		}
 
-		msg.Client = ID
+		msg.FromClient = ID
 
 		// Send the newly received message to the broadcast channel
 		e.Broadcast <- msg
@@ -159,24 +161,57 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 
 // HandleMessages send messages to a specific connected client
 func (e *Websocket) HandleMessages() {
+
+	validate := utils.Validator{}
+
 	for {
 		// Grab the next message from the broadcast channel
 		msg := <-e.Broadcast
 
-		// The client id
-		ID := msg.Client
-
-		// Push message to that client if it still connected
-		// or remove from clients if we can't deliver messages to
-		// it anymore
-		if client, ok := e.Clients[ID]; ok {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				// Remove client from listeners list
-				fmt.Printf("error: %v", err)
-				client.Close()
-				delete(e.Clients, ID)
+		// Send to Client
+		if !validate.IsEmpty(msg.ToClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.ToClient) {
+			// Push message to that client if it still connected
+			// or remove from clients if we can't deliver messages to
+			// it anymore
+			if client, ok := e.Clients[msg.ToClient]; ok {
+				err := client.WriteJSON(msg)
+				if err != nil {
+					// Remove client from listeners list
+					fmt.Printf("error: %v", err)
+					client.Close()
+					delete(e.Clients, msg.ToClient)
+				}
 			}
+		}
+
+		// Send to client Peers on a channel
+		if !validate.IsEmpty(msg.FromClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.FromClient) {
+
+			channel := api.Channel{}
+			channel.Init()
+			iter := channel.ChannelScan(msg.Channel).Iterator()
+
+			for iter.Next() {
+
+				if msg.FromClient == iter.Val() {
+					continue
+				}
+
+				msg.ToClient = iter.Val()
+
+				if msg.ToClient != "" && validate.IsUUID4(msg.ToClient) {
+					if client, ok := e.Clients[msg.ToClient]; ok {
+						err := client.WriteJSON(msg)
+						if err != nil {
+							// Remove client from listeners list
+							fmt.Printf("error: %v", err)
+							client.Close()
+							delete(e.Clients, msg.ToClient)
+						}
+					}
+				}
+			}
+
 		}
 	}
 }
@@ -223,7 +258,6 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 	}
 
 	for _, name := range broadcastRequest.Channels {
-
 		// Push message to all subscribed clients
 		iter := channel.ChannelScan(name).Iterator()
 
@@ -231,8 +265,9 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 			key = iter.Val()
 			if key != "" && validate.IsUUID4(key) {
 				msg = Message{
-					Client: key,
-					Data:   broadcastRequest.Data,
+					ToClient: key,
+					Data:     broadcastRequest.Data,
+					Channel:  name,
 				}
 
 				e.Broadcast <- msg
@@ -291,8 +326,9 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 		key = iter.Val()
 		if key != "" && validate.IsUUID4(key) {
 			msg = Message{
-				Client: key,
-				Data:   publishRequest.Data,
+				ToClient: key,
+				Data:     publishRequest.Data,
+				Channel:  publishRequest.Channel,
 			}
 
 			e.Broadcast <- msg
