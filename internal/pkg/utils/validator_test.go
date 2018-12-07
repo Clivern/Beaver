@@ -33,5 +33,16 @@ func init() {
 // TestValidation test cases
 func TestValidation(t *testing.T) {
 	validate := Validator{}
-	st.Expect(t, validate.in("public", []string{"public", "private"}), true)
+	st.Expect(t, validate.IsIn("public", []string{"public", "private"}), true)
+	st.Expect(t, validate.IsSlug("customers_chat_0123", 5, 60), true)
+	st.Expect(t, validate.IsSlug("customers_chat-0123", 5, 60), false)
+	st.Expect(t, validate.IsSlug(" customers_chat_0123", 5, 60), false)
+	st.Expect(t, validate.IsSlug("-customers_chat_0123", 5, 60), false)
+	st.Expect(t, validate.IsSlug("customers_chat_0123_", 5, 60), false)
+	st.Expect(t, validate.IsSlug("cu", 5, 60), false)
+	st.Expect(t, validate.IsSlug("cu263hd53t3g363g3g36362gr3", 5, 10), false)
+	st.Expect(t, validate.IsEmpty(" "), true)
+	st.Expect(t, validate.IsEmpty(" Test \t "), false)
+	st.Expect(t, validate.IsEmpty(" Test "), false)
+	st.Expect(t, validate.IsEmpty(" \t "), true)
 }

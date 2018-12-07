@@ -7,7 +7,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/app/cmd"
 	"github.com/clivern/beaver/internal/app/controller"
 	"github.com/clivern/beaver/internal/app/middleware"
@@ -78,9 +77,10 @@ func main() {
 	r.GET("/api/client/:id", controller.GetClientByID)
 	r.POST("/api/client", controller.CreateClient)
 	r.DELETE("/api/client/:id", controller.DeleteClientByID)
+	r.PUT("/api/client/:id/unsubscribe", controller.Unsubscribe)
+	r.PUT("/api/client/:id/subscribe", controller.Subscribe)
 
 	r.GET("/api/node", controller.GetNodeInfo)
-
 	r.GET("/api/metrics", controller.GetMetrics)
 
 	r.GET("/api/config/:key", controller.GetConfigByKey)
@@ -88,18 +88,41 @@ func main() {
 	r.DELETE("/api/config/:key", controller.DeleteConfigByKey)
 	r.PUT("/api/config/:key", controller.UpdateConfigByKey)
 
-	r.POST("/api/broadcast", controller.Broadcast)
-	r.POST("/api/unsubscribe", controller.Unsubscribe)
-	r.POST("/api/subscribe", controller.Subscribe)
-	r.POST("/api/publish", controller.Publish)
-
-	socket := &api.Websocket{}
+	socket := &controller.Websocket{}
 	socket.Init()
-	r.GET("/ws", func(c *gin.Context) {
-		socket.HandleConnections(c.Writer, c.Request)
+
+	r.GET("/ws/:id/:token", func(c *gin.Context) {
+		socket.HandleConnections(
+			c.Writer,
+			c.Request,
+			c.Param("id"),
+			c.Param("token"),
+			c.Request.Header.Get("X-Correlation-ID"),
+		)
 	})
-	r.GET("/push", func(c *gin.Context) {
-		socket.PushMessages(c.Writer, c.Request)
+
+	r.POST("/api/broadcast", func(c *gin.Context) {
+		rawBody, err := c.GetRawData()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status": "error",
+				"error":  "Invalid request",
+			})
+			return
+		}
+		socket.BroadcastAction(c, rawBody)
+	})
+
+	r.POST("/api/publish", func(c *gin.Context) {
+		rawBody, err := c.GetRawData()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status": "error",
+				"error":  "Invalid request",
+			})
+			return
+		}
+		socket.PublishAction(c, rawBody)
 	})
 
 	go socket.HandleMessages()

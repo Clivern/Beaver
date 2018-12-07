@@ -166,3 +166,8 @@ func (r *Redis) HTruncate(key string) (int64, error) {
 
 	return result.Val(), nil
 }
+
+// HScan return an iterative obj for a hash
+func (r *Redis) HScan(key string, cursor uint64, match string, count int64) *redis.ScanCmd {
+	return r.Client.HScan(key, cursor, match, count)
+}

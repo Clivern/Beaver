@@ -15,7 +15,7 @@ func Correlation() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		corralationID := c.Request.Header.Get("X-Correlation-ID")
 		if strings.TrimSpace(corralationID) == "" {
-			c.Request.Header.Add("X-Correlation-ID", utils.GenerateUUID())
+			c.Request.Header.Add("X-Correlation-ID", utils.GenerateUUID4())
 		}
 		c.Next()
 	}

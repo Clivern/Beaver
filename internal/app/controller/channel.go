@@ -6,6 +6,7 @@ package controller
 
 import (
 	"github.com/clivern/beaver/internal/app/api"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -13,9 +14,20 @@ import (
 
 // GetChannelByName controller
 func GetChannelByName(c *gin.Context) {
+
 	var channelResult api.ChannelResult
+	validate := utils.Validator{}
 
 	name := c.Param("name")
+
+	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
 	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
@@ -52,6 +64,7 @@ func GetChannelByName(c *gin.Context) {
 func CreateChannel(c *gin.Context) {
 
 	var channelResult api.ChannelResult
+	validate := utils.Validator{}
 
 	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -77,10 +90,18 @@ func CreateChannel(c *gin.Context) {
 		return
 	}
 
-	if channelResult.Name == "" || channelResult.Type == "" {
+	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Invalid request",
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
+	if !validate.IsIn(channelResult.Type, []string{"public", "private", "presence"}) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Channel type must be public, private or presence",
 		})
 		return
 	}
@@ -114,7 +135,17 @@ func CreateChannel(c *gin.Context) {
 // DeleteChannelByName controller
 func DeleteChannelByName(c *gin.Context) {
 
+	validate := utils.Validator{}
+
 	name := c.Param("name")
+
+	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
 
 	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -146,6 +177,7 @@ func UpdateChannelByName(c *gin.Context) {
 
 	var channelResult api.ChannelResult
 	var currentChannelResult api.ChannelResult
+	validate := utils.Validator{}
 
 	channel := api.Channel{
 		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
@@ -164,10 +196,18 @@ func UpdateChannelByName(c *gin.Context) {
 	channelResult.LoadFromJSON(rawBody)
 	channelResult.Name = c.Param("name")
 
-	if channelResult.Name == "" || channelResult.Type == "" {
+	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Invalid request",
+			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+		})
+		return
+	}
+
+	if !validate.IsIn(channelResult.Type, []string{"public", "private", "presence"}) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Channel type must be public, private or presence",
 		})
 		return
 	}

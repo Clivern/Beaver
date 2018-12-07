@@ -28,7 +28,7 @@ func Info(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Info(v...)
@@ -52,7 +52,7 @@ func Infoln(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Infoln(v...)
@@ -76,7 +76,7 @@ func Infof(format string, v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Infof(format, v...)
@@ -100,7 +100,7 @@ func Warning(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Warning(v...)
@@ -124,7 +124,7 @@ func Warningln(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Warningln(v...)
@@ -148,7 +148,7 @@ func Warningf(format string, v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Warningf(format, v...)
@@ -172,7 +172,7 @@ func Error(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Error(v...)
@@ -196,7 +196,7 @@ func Errorln(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Errorln(v...)
@@ -220,7 +220,7 @@ func Errorf(format string, v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Errorf(format, v...)
@@ -244,7 +244,7 @@ func Fatal(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Fatal(v...)
@@ -268,7 +268,7 @@ func Fatalln(v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Fatalln(v...)
@@ -292,7 +292,7 @@ func Fatalf(format string, v ...interface{}) {
 
 		defer lf.Close()
 
-		out := logger.Init("Hamster", false, false, lf)
+		out := logger.Init("Beaver", false, false, lf)
 		defer out.Close()
 
 		out.Fatalf(format, v...)
