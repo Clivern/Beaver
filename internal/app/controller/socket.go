@@ -89,23 +89,6 @@ func (e *Websocket) Init() {
 	}
 }
 
-// PushMessages push messages to all clients
-func (e *Websocket) PushMessages(_ http.ResponseWriter, _ *http.Request) {
-	msg := Message{
-		Data: "HeyBuddy",
-	}
-	// Send it out to every client that is currently connected
-	for id, client := range e.Clients {
-		msg.Client = id
-		err := client.WriteJSON(msg)
-		if err != nil {
-			fmt.Printf("error: %v", err)
-			client.Close()
-			delete(e.Clients, id)
-		}
-	}
-}
-
 // HandleConnections manage new clients
 func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID string, token string, correlationID string) {
 
