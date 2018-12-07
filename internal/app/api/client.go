@@ -348,26 +348,8 @@ func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
 
 // AddToChannel adds a client to a channel
 func (c *Client) AddToChannel(ID string, channel string) (bool, error) {
-	// Remove client from channel listeners
-	_, err := c.Driver.HSet(fmt.Sprintf("%s.listeners", channel), ID, "")
-
-	if err != nil {
-		logger.Errorf(
-			`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
-			ID,
-			fmt.Sprintf("%s.listeners", channel),
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while adding client %s to channel %s`,
-			ID,
-			fmt.Sprintf("%s.listeners", channel),
-		)
-	}
-
 	// Remove client from channel subscribers
-	_, err = c.Driver.HSet(fmt.Sprintf("%s.subscribers", channel), ID, "")
+	_, err := c.Driver.HSet(fmt.Sprintf("%s.subscribers", channel), ID, "")
 
 	if err != nil {
 		logger.Errorf(
@@ -389,22 +371,8 @@ func (c *Client) AddToChannel(ID string, channel string) (bool, error) {
 
 // RemoveFromChannel removes a client from a channel
 func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
-	// Remove client from channel listeners
-	_, err := c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
-			ID,
-			fmt.Sprintf("%s.listeners", channel),
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf("Error while removing client %s from %s", ID, fmt.Sprintf("%s.listeners", channel))
-	}
-
 	// Remove client from channel subscribers
-	_, err = c.Driver.HDel(fmt.Sprintf("%s.subscribers", channel), ID)
+	_, err := c.Driver.HDel(fmt.Sprintf("%s.subscribers", channel), ID)
 
 	if err != nil {
 		logger.Errorf(
@@ -419,6 +387,56 @@ func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
 			ID,
 			fmt.Sprintf("%s.subscribers", channel),
 		)
+	}
+
+	return true, nil
+}
+
+// Connect a client
+func (c *Client) Connect(clientResult ClientResult) (bool, error) {
+	for _, channel := range clientResult.Channels {
+		// Remove client from channel listeners
+		_, err := c.Driver.HSet(fmt.Sprintf("%s.listeners", channel), clientResult.ID, "")
+
+		if err != nil {
+			logger.Errorf(
+				`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
+				clientResult.ID,
+				fmt.Sprintf("%s.listeners", channel),
+				err.Error(),
+				c.CorrelationID,
+			)
+			return false, fmt.Errorf(
+				`Error while adding client %s to channel %s`,
+				clientResult.ID,
+				fmt.Sprintf("%s.listeners", channel),
+			)
+		}
+	}
+
+	return true, nil
+}
+
+// Disconnect a client
+func (c *Client) Disconnect(clientResult ClientResult) (bool, error) {
+	for _, channel := range clientResult.Channels {
+		// Remove client from channel listeners
+		_, err := c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), clientResult.ID)
+
+		if err != nil {
+			logger.Errorf(
+				`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
+				clientResult.ID,
+				fmt.Sprintf("%s.listeners", channel),
+				err.Error(),
+				c.CorrelationID,
+			)
+			return false, fmt.Errorf(
+				"Error while removing client %s from %s",
+				clientResult.ID,
+				fmt.Sprintf("%s.listeners", channel),
+			)
+		}
 	}
 
 	return true, nil

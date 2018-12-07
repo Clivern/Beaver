@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/go-redis/redis"
 )
 
 // ChannelsHashPrefix is the hash prefix
@@ -544,4 +545,9 @@ func (c *Channel) ChannelsExist(channels []string) (bool, error) {
 // ChannelExist checks if channel exists
 func (c *Channel) ChannelExist(channel string) (bool, error) {
 	return c.ChannelsExist([]string{channel})
+}
+
+// ChannelScan get clients under channel listeners (connected clients)
+func (c *Channel) ChannelScan(channel string) *redis.ScanCmd {
+	return c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0)
 }
