@@ -23,7 +23,7 @@ func GetChannelByName(c *gin.Context) {
 	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+			"error":  "Channel name must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -93,7 +93,7 @@ func CreateChannel(c *gin.Context) {
 	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+			"error":  "Channel name must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -142,7 +142,7 @@ func DeleteChannelByName(c *gin.Context) {
 	if validate.IsEmpty(name) || !validate.IsSlug(name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+			"error":  "Channel name must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -199,7 +199,7 @@ func UpdateChannelByName(c *gin.Context) {
 	if validate.IsEmpty(channelResult.Name) || !validate.IsSlug(channelResult.Name, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Channel name must be alphanumeric with lenght from 3 to 60",
+			"error":  "Channel name must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}

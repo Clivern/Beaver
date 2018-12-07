@@ -19,7 +19,7 @@ func GetConfigByKey(c *gin.Context) {
 	if validate.IsEmpty(key) || !validate.IsSlug(key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+			"error":  "Config key must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -85,7 +85,7 @@ func CreateConfig(c *gin.Context) {
 	if validate.IsEmpty(configRequest.Key) || !validate.IsSlug(configRequest.Key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+			"error":  "Config key must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -127,7 +127,7 @@ func DeleteConfigByKey(c *gin.Context) {
 	if validate.IsEmpty(key) || !validate.IsSlug(key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+			"error":  "Config key must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
@@ -183,7 +183,7 @@ func UpdateConfigByKey(c *gin.Context) {
 	if validate.IsEmpty(configRequest.Key) || !validate.IsSlug(configRequest.Key, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"error":  "Config key must be alphanumeric with lenght from 3 to 60",
+			"error":  "Config key must be alphanumeric with length from 3 to 60",
 		})
 		return
 	}
