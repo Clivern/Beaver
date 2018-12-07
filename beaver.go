@@ -92,7 +92,13 @@ func main() {
 	socket.Init()
 
 	r.GET("/ws/:id/:token", func(c *gin.Context) {
-		socket.HandleConnections(c.Writer, c.Request, c.Param("id"), c.Param("token"), c.Request.Header.Get("X-Correlation-ID"))
+		socket.HandleConnections(
+			c.Writer,
+			c.Request,
+			c.Param("id"),
+			c.Param("token"),
+			c.Request.Header.Get("X-Correlation-ID"),
+		)
 	})
 
 	r.POST("/api/broadcast", func(c *gin.Context) {
