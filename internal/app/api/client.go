@@ -389,6 +389,24 @@ func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
 		)
 	}
 
+	// Delete from listeners if stale
+	_, err = c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), ID)
+
+	if err != nil {
+		logger.Errorf(
+			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
+			ID,
+			fmt.Sprintf("%s.listeners", channel),
+			err.Error(),
+			c.CorrelationID,
+		)
+		return false, fmt.Errorf(
+			`Error while removing client %s from %s`,
+			ID,
+			fmt.Sprintf("%s.listeners", channel),
+		)
+	}
+
 	return true, nil
 }
 

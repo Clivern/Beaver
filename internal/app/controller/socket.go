@@ -6,7 +6,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"github.com/clivern/beaver/internal/pkg/utils"
@@ -140,6 +139,8 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	// Register our new client
 	e.Clients[ID] = ws
 
+	logger.Infof("Client %s connected", ID)
+
 	for {
 		var msg Message
 
@@ -147,8 +148,9 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		err := ws.ReadJSON(&msg)
 
 		if err != nil {
-			fmt.Printf("error: %v", err)
 			delete(e.Clients, ID)
+			client.Disconnect(clientResult)
+			logger.Infof("Client %s disconnected", ID)
 			break
 		}
 
@@ -176,8 +178,6 @@ func (e *Websocket) HandleMessages() {
 			if client, ok := e.Clients[msg.ToClient]; ok {
 				err := client.WriteJSON(msg)
 				if err != nil {
-					// Remove client from listeners list
-					fmt.Printf("error: %v", err)
 					client.Close()
 					delete(e.Clients, msg.ToClient)
 				}
@@ -203,8 +203,6 @@ func (e *Websocket) HandleMessages() {
 					if client, ok := e.Clients[msg.ToClient]; ok {
 						err := client.WriteJSON(msg)
 						if err != nil {
-							// Remove client from listeners list
-							fmt.Printf("error: %v", err)
 							client.Close()
 							delete(e.Clients, msg.ToClient)
 						}
