@@ -53,8 +53,8 @@ func GetChannelByName(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"name":        channelResult.Name,
 		"type":        channelResult.Type,
-		"listeners":   channelResult.Listeners,
-		"subscribers": channelResult.Subscribers,
+		"subscribers": channel.CountSubscribers(name),
+		"listeners":   channel.CountListeners(name),
 		"created_at":  channelResult.CreatedAt,
 		"updated_at":  channelResult.UpdatedAt,
 	})
@@ -114,8 +114,6 @@ func CreateChannel(c *gin.Context) {
 		return
 	}
 
-	channelResult.Listeners = 0
-	channelResult.Subscribers = 0
 	channelResult.CreatedAt = time.Now().Unix()
 	channelResult.UpdatedAt = time.Now().Unix()
 

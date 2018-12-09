@@ -60,12 +60,10 @@ func TestGetChannel2(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "chan_name",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "chan_name",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 
 	incomingChannelResult := api.ChannelResult{}
@@ -85,8 +83,6 @@ func TestGetChannel2(t *testing.T) {
 	st.Expect(t, http.StatusOK, w.Code)
 	st.Expect(t, incomingChannelResult.Name, channelResult.Name)
 	st.Expect(t, incomingChannelResult.Type, channelResult.Type)
-	st.Expect(t, incomingChannelResult.Listeners, channelResult.Listeners)
-	st.Expect(t, incomingChannelResult.Subscribers, channelResult.Subscribers)
 	st.Expect(t, incomingChannelResult.CreatedAt, channelResult.CreatedAt)
 	st.Expect(t, incomingChannelResult.UpdatedAt, channelResult.UpdatedAt)
 
@@ -124,12 +120,10 @@ func TestDeleteChannel2(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "chan_name",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "chan_name",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 	channelAPI.DeleteChannelByName("chan_name")
 	channelAPI.CreateChannel(channelResult)
@@ -224,12 +218,10 @@ func TestCreateChannel4(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "new_chan",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "new_chan",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 	channelAPI.DeleteChannelByName("new_chan")
 	channelAPI.CreateChannel(channelResult)
@@ -258,12 +250,10 @@ func TestUpdateChannel1(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "new_chan",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "new_chan",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 	channelAPI.DeleteChannelByName("new_chan")
 	channelAPI.CreateChannel(channelResult)
@@ -311,12 +301,10 @@ func TestUpdateChannel3(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "new_chan",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "new_chan",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 	channelAPI.DeleteChannelByName("new_chan")
 	channelAPI.CreateChannel(channelResult)
@@ -345,12 +333,10 @@ func TestUpdateChannel4(t *testing.T) {
 	updatedAt := time.Now().Unix()
 
 	channelResult := api.ChannelResult{
-		Name:        "new_chan",
-		Type:        "type",
-		Listeners:   1,
-		Subscribers: 1,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Name:      "new_chan",
+		Type:      "type",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 	channelAPI.DeleteChannelByName("new_chan")
 	channelAPI.CreateChannel(channelResult)
