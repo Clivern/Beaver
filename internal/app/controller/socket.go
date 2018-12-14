@@ -130,7 +130,12 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf(
+			`Error while upgrading the GET request to a websocket for client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			correlationID,
+		)
 	}
 
 	// Make sure we close the connection when the function returns
@@ -139,7 +144,11 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	// Register our new client
 	e.Clients[ID] = ws
 
-	logger.Infof("Client %s connected", ID)
+	logger.Infof(
+		`Client %s connected {"correlationId":"%s"}`,
+		ID,
+		correlationID,
+	)
 
 	for {
 		var msg Message
@@ -150,7 +159,11 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		if err != nil {
 			delete(e.Clients, ID)
 			client.Disconnect(clientResult)
-			logger.Infof("Client %s disconnected", ID)
+			logger.Infof(
+				`Client %s disconnected {"correlationId":"%s"}`,
+				ID,
+				correlationID,
+			)
 			break
 		}
 
@@ -209,7 +222,6 @@ func (e *Websocket) HandleMessages() {
 					}
 				}
 			}
-
 		}
 	}
 }

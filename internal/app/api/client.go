@@ -167,27 +167,58 @@ func (c *Client) GetClientByID(ID string) (ClientResult, error) {
 	exists, err := c.Driver.HExists(ClientsHashPrefix, ID)
 
 	if err != nil {
-		logger.Errorf(`Error while getting client %s: %s {"correlationId":"%s"}`, ID, err.Error(), c.CorrelationID)
-		return clientResult, fmt.Errorf("Error while getting client %s", ID)
+		logger.Errorf(
+			`Error while getting client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return clientResult, fmt.Errorf(
+			"Error while getting client %s",
+			ID,
+		)
 	}
 
 	if !exists {
-		logger.Warningf(`Trying to get non existent client %s {"correlationId":"%s"}`, ID, c.CorrelationID)
-		return clientResult, fmt.Errorf("Trying to get non existent client %s", ID)
+		logger.Warningf(
+			`Trying to get non existent client %s {"correlationId":"%s"}`,
+			ID,
+			c.CorrelationID,
+		)
+		return clientResult, fmt.Errorf(
+			"Trying to get non existent client %s",
+			ID,
+		)
 	}
 
 	value, err := c.Driver.HGet(ClientsHashPrefix, ID)
 
 	if err != nil {
-		logger.Errorf(`Error while getting client %s: %s {"correlationId":"%s"}`, ID, err.Error(), c.CorrelationID)
-		return clientResult, fmt.Errorf("Error while getting client %s", ID)
+		logger.Errorf(
+			`Error while getting client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return clientResult, fmt.Errorf(
+			"Error while getting client %s",
+			ID,
+		)
 	}
 
 	_, err = clientResult.LoadFromJSON([]byte(value))
 
 	if err != nil {
-		logger.Errorf(`Error while getting client %s: %s {"correlationId":"%s"}`, ID, err.Error(), c.CorrelationID)
-		return clientResult, fmt.Errorf("Error while getting client %s", ID)
+		logger.Errorf(
+			`Error while getting client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return clientResult, fmt.Errorf(
+			"Error while getting client %s",
+			ID,
+		)
 	}
 
 	return clientResult, nil
