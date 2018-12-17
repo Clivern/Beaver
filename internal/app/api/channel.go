@@ -61,6 +61,12 @@ func (c *Channel) Init() bool {
 		)
 		return false
 	}
+
+	logger.Infof(
+		`Redis connection established {"correlationId":"%s"}`,
+		c.CorrelationID,
+	)
+
 	return true
 }
 
@@ -122,6 +128,13 @@ func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
 			channel.Name,
 		)
 	}
+
+	logger.Infof(
+		`Channel %s with type %s got created {"correlationId":"%s"}`,
+		channel.Name,
+		channel.Type,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }
@@ -249,6 +262,13 @@ func (c *Channel) UpdateChannelByName(channel ChannelResult) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Channel %s got updated to type %s {"correlationId":"%s"}`,
+		channel.Name,
+		channel.Type,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -283,6 +303,12 @@ func (c *Channel) DeleteChannelByName(name string) (bool, error) {
 
 	c.Driver.HTruncate(fmt.Sprintf("%s.listeners", name))
 	c.Driver.HTruncate(fmt.Sprintf("%s.subscribers", name))
+
+	logger.Infof(
+		`Channel %s got deleted {"correlationId":"%s"}`,
+		name,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }

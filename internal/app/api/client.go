@@ -86,6 +86,12 @@ func (c *Client) Init() bool {
 		)
 		return false
 	}
+
+	logger.Infof(
+		`Redis connection established {"correlationId":"%s"}`,
+		c.CorrelationID,
+	)
+
 	return true
 }
 
@@ -148,6 +154,12 @@ func (c *Client) CreateClient(client ClientResult) (bool, error) {
 			client.ID,
 		)
 	}
+
+	logger.Infof(
+		`Client %s got created {"correlationId":"%s"}`,
+		client.ID,
+		c.CorrelationID,
+	)
 
 	for _, channel := range client.Channels {
 		ok, err := c.AddToChannel(client.ID, channel)
@@ -284,6 +296,12 @@ func (c *Client) UpdateClientByID(client ClientResult) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Client %s got updated {"correlationId":"%s"}`,
+		client.ID,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -327,6 +345,12 @@ func (c *Client) DeleteClientByID(ID string) (bool, error) {
 			ID,
 		)
 	}
+
+	logger.Infof(
+		`Client %s got deleted {"correlationId":"%s"}`,
+		ID,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }
@@ -397,6 +421,13 @@ func (c *Client) AddToChannel(ID string, channel string) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Client %s added to channel %s {"correlationId":"%s"}`,
+		ID,
+		channel,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -438,6 +469,13 @@ func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Client %s removed from channel %s {"correlationId":"%s"}`,
+		ID,
+		channel,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -463,6 +501,12 @@ func (c *Client) Connect(clientResult ClientResult) (bool, error) {
 		}
 	}
 
+	logger.Infof(
+		`Client %s connected to all subscribed channels %s {"correlationId":"%s"}`,
+		clientResult.ID,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -487,6 +531,12 @@ func (c *Client) Disconnect(clientResult ClientResult) (bool, error) {
 			)
 		}
 	}
+
+	logger.Infof(
+		`Client %s disconnected from all subscribed channels %s {"correlationId":"%s"}`,
+		clientResult.ID,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }
