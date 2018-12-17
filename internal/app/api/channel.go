@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/go-redis/redis"
 )
 
@@ -365,4 +366,40 @@ func (c *Channel) ChannelExist(channel string) (bool, error) {
 // ChannelScan get clients under channel listeners (connected clients)
 func (c *Channel) ChannelScan(channel string) *redis.ScanCmd {
 	return c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0)
+}
+
+// GetListeners gets a list of listeners with channel name
+func (c *Channel) GetListeners(channel string) []string {
+	var result []string
+	var key string
+	validate := utils.Validator{}
+
+	iter := c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0).Iterator()
+
+	for iter.Next() {
+		key = iter.Val()
+		if key != "" && validate.IsUUID4(key) {
+			result = append(result, key)
+		}
+	}
+
+	return result
+}
+
+// GetSubscribers gets a list of subscribers with channel name
+func (c *Channel) GetSubscribers(channel string) []string {
+	var result []string
+	var key string
+	validate := utils.Validator{}
+
+	iter := c.Driver.HScan(fmt.Sprintf("%s.subscribers", channel), 0, "", 0).Iterator()
+
+	for iter.Next() {
+		key = iter.Val()
+		if key != "" && validate.IsUUID4(key) {
+			result = append(result, key)
+		}
+	}
+
+	return result
 }
