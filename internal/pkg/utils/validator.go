@@ -115,8 +115,8 @@ func (v *Validator) IsUUID5(uuid string) bool {
 	return false
 }
 
-// IsJson validates a JSON string
-func (v *Validator) IsJson(str string) bool {
+// IsJSON validates a JSON string
+func (v *Validator) IsJSON(str string) bool {
 	var jsonStr map[string]interface{}
 	err := json.Unmarshal([]byte(str), &jsonStr)
 	return err == nil
