@@ -41,6 +41,12 @@ type Websocket struct {
 	Upgrader  websocket.Upgrader
 }
 
+// IsValid checks if message is valid
+func (m *Message) IsValid() bool {
+	validator := utils.Validator{}
+	return validator.IsJSON(m.Data)
+}
+
 // LoadFromJSON load object from json
 func (c *BroadcastRequest) LoadFromJSON(data []byte) (bool, error) {
 	err := json.Unmarshal(data, &c)
@@ -169,8 +175,10 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 
 		msg.FromClient = ID
 
-		// Send the newly received message to the broadcast channel
-		e.Broadcast <- msg
+		if msg.IsValid() {
+			// Send the newly received message to the broadcast channel
+			e.Broadcast <- msg
+		}
 	}
 }
 
@@ -184,7 +192,7 @@ func (e *Websocket) HandleMessages() {
 		msg := <-e.Broadcast
 
 		// Send to Client
-		if !validate.IsEmpty(msg.ToClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.ToClient) {
+		if msg.IsValid() && !validate.IsEmpty(msg.ToClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.ToClient) {
 			// Push message to that client if it still connected
 			// or remove from clients if we can't deliver messages to
 			// it anymore
@@ -198,7 +206,7 @@ func (e *Websocket) HandleMessages() {
 		}
 
 		// Send to client Peers on a channel
-		if !validate.IsEmpty(msg.FromClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.FromClient) {
+		if msg.IsValid() && !validate.IsEmpty(msg.FromClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.FromClient) {
 
 			channel := api.Channel{}
 			channel.Init()
@@ -267,6 +275,14 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 		return
 	}
 
+	if !validate.IsJSON(broadcastRequest.Data) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Message data is invalid JSON",
+		})
+		return
+	}
+
 	for _, name := range broadcastRequest.Channels {
 		// Push message to all subscribed clients
 		iter := channel.ChannelScan(name).Iterator()
@@ -325,6 +341,14 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
 			"error":  err.Error(),
+		})
+		return
+	}
+
+	if !validate.IsJSON(publishRequest.Data) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Message data is invalid JSON",
 		})
 		return
 	}

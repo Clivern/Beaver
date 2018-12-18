@@ -253,7 +253,7 @@ func (c *Config) DeleteConfigByKey(key string) (bool, error) {
 	}
 
 	logger.Infof(
-		`Config %s got created {"correlationId":"%s"}`,
+		`Config %s got deleted {"correlationId":"%s"}`,
 		key,
 		c.CorrelationID,
 	)
