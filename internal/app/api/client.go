@@ -502,7 +502,7 @@ func (c *Client) Connect(clientResult ClientResult) (bool, error) {
 	}
 
 	logger.Infof(
-		`Client %s connected to all subscribed channels %s {"correlationId":"%s"}`,
+		`Client %s connected to all subscribed channels {"correlationId":"%s"}`,
 		clientResult.ID,
 		c.CorrelationID,
 	)
@@ -533,7 +533,7 @@ func (c *Client) Disconnect(clientResult ClientResult) (bool, error) {
 	}
 
 	logger.Infof(
-		`Client %s disconnected from all subscribed channels %s {"correlationId":"%s"}`,
+		`Client %s disconnected from all subscribed channels {"correlationId":"%s"}`,
 		clientResult.ID,
 		c.CorrelationID,
 	)
