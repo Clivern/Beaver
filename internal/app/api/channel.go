@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/clivern/beaver/internal/app/driver"
 	"github.com/clivern/beaver/internal/pkg/logger"
+	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/go-redis/redis"
 )
 
@@ -23,12 +24,10 @@ type Channel struct {
 
 // ChannelResult struct
 type ChannelResult struct {
-	Name        string `json:"name"`
-	Type        string `json:"type"`
-	Listeners   int    `json:"listeners"`
-	Subscribers int    `json:"subscribers"`
-	CreatedAt   int64  `json:"created_at"`
-	UpdatedAt   int64  `json:"updated_at"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 // LoadFromJSON load object from json
@@ -62,6 +61,12 @@ func (c *Channel) Init() bool {
 		)
 		return false
 	}
+
+	logger.Infof(
+		`Redis connection established {"correlationId":"%s"}`,
+		c.CorrelationID,
+	)
+
 	return true
 }
 
@@ -123,6 +128,13 @@ func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
 			channel.Name,
 		)
 	}
+
+	logger.Infof(
+		`Channel %s with type %s got created {"correlationId":"%s"}`,
+		channel.Name,
+		channel.Type,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }
@@ -250,6 +262,13 @@ func (c *Channel) UpdateChannelByName(channel ChannelResult) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Channel %s got updated to type %s {"correlationId":"%s"}`,
+		channel.Name,
+		channel.Type,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
@@ -285,227 +304,50 @@ func (c *Channel) DeleteChannelByName(name string) (bool, error) {
 	c.Driver.HTruncate(fmt.Sprintf("%s.listeners", name))
 	c.Driver.HTruncate(fmt.Sprintf("%s.subscribers", name))
 
+	logger.Infof(
+		`Channel %s got deleted {"correlationId":"%s"}`,
+		name,
+		c.CorrelationID,
+	)
+
 	return true, nil
 }
 
-// DecrementListeners decrement listeners
-func (c *Channel) DecrementListeners(name string) bool {
-	var channelResult ChannelResult
+// CountListeners counts channel listeners
+func (c *Channel) CountListeners(name string) int64 {
 
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+	count, err := c.Driver.HLen(fmt.Sprintf("%s.listeners", name))
 
 	if err != nil {
-		return false
+		logger.Errorf(
+			`Error while counting %s listeners %s {"correlationId":"%s"}`,
+			name,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return 0
 	}
 
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Listeners--
+	return count
 
-	if channelResult.Listeners < 0 {
-		channelResult.Listeners = 0
-	}
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
 }
 
-// IncrementListeners increment listeners
-func (c *Channel) IncrementListeners(name string) bool {
-	var channelResult ChannelResult
+// CountSubscribers counts channel subscribers
+func (c *Channel) CountSubscribers(name string) int64 {
 
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
+	count, err := c.Driver.HLen(fmt.Sprintf("%s.subscribers", name))
 
 	if err != nil {
-		return false
+		logger.Errorf(
+			`Error while counting %s subscribers %s {"correlationId":"%s"}`,
+			name,
+			err.Error(),
+			c.CorrelationID,
+		)
+		return 0
 	}
 
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Listeners++
-
-	if channelResult.Listeners < 0 {
-		channelResult.Listeners = 0
-	}
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-// DecrementSubscribers decrement subscribers
-func (c *Channel) DecrementSubscribers(name string) bool {
-	var channelResult ChannelResult
-
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
-
-	if err != nil {
-		return false
-	}
-
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Subscribers--
-
-	if channelResult.Subscribers < 0 {
-		channelResult.Subscribers = 0
-	}
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-// IncrementSubscribers increment subscribers
-func (c *Channel) IncrementSubscribers(name string) bool {
-	var channelResult ChannelResult
-
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
-
-	if err != nil {
-		return false
-	}
-
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Subscribers++
-
-	if channelResult.Subscribers < 0 {
-		channelResult.Subscribers = 0
-	}
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-// ResetSubscribers resets subscribers
-func (c *Channel) ResetSubscribers(name string) bool {
-	var channelResult ChannelResult
-
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
-
-	if err != nil {
-		return false
-	}
-
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Subscribers = 0
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-// ResetListeners resets listeners
-func (c *Channel) ResetListeners(name string) bool {
-	var channelResult ChannelResult
-
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
-
-	if err != nil || !exists {
-		return false
-	}
-
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
-
-	if err != nil {
-		return false
-	}
-
-	channelResult.LoadFromJSON([]byte(value))
-	channelResult.Listeners = 0
-
-	result, err := channelResult.ConvertToJSON()
-
-	if err != nil {
-		return false
-	}
-
-	_, err = c.Driver.HSet(ChannelsHashPrefix, name, result)
-
-	if err != nil {
-		return false
-	}
-
-	return true
+	return count
 }
 
 // ChannelsExist checks if channels exist
@@ -550,4 +392,40 @@ func (c *Channel) ChannelExist(channel string) (bool, error) {
 // ChannelScan get clients under channel listeners (connected clients)
 func (c *Channel) ChannelScan(channel string) *redis.ScanCmd {
 	return c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0)
+}
+
+// GetListeners gets a list of listeners with channel name
+func (c *Channel) GetListeners(channel string) []string {
+	var result []string
+	var key string
+	validate := utils.Validator{}
+
+	iter := c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0).Iterator()
+
+	for iter.Next() {
+		key = iter.Val()
+		if key != "" && validate.IsUUID4(key) {
+			result = append(result, key)
+		}
+	}
+
+	return result
+}
+
+// GetSubscribers gets a list of subscribers with channel name
+func (c *Channel) GetSubscribers(channel string) []string {
+	var result []string
+	var key string
+	validate := utils.Validator{}
+
+	iter := c.Driver.HScan(fmt.Sprintf("%s.subscribers", channel), 0, "", 0).Iterator()
+
+	for iter.Next() {
+		key = iter.Val()
+		if key != "" && validate.IsUUID4(key) {
+			result = append(result, key)
+		}
+	}
+
+	return result
 }

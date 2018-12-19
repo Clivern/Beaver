@@ -57,6 +57,12 @@ func (c *Config) Init() bool {
 		)
 		return false
 	}
+
+	logger.Infof(
+		`Redis connection established {"correlationId":"%s"}`,
+		c.CorrelationID,
+	)
+
 	return true
 }
 
@@ -103,6 +109,12 @@ func (c *Config) CreateConfig(key string, value string) (bool, error) {
 			key,
 		)
 	}
+
+	logger.Infof(
+		`Config %s got created {"correlationId":"%s"}`,
+		key,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }
@@ -200,6 +212,12 @@ func (c *Config) UpdateConfigByKey(key string, value string) (bool, error) {
 		)
 	}
 
+	logger.Infof(
+		`Config %s got updated {"correlationId":"%s"}`,
+		key,
+		c.CorrelationID,
+	)
+
 	return true, nil
 
 }
@@ -233,6 +251,12 @@ func (c *Config) DeleteConfigByKey(key string) (bool, error) {
 			key,
 		)
 	}
+
+	logger.Infof(
+		`Config %s got deleted {"correlationId":"%s"}`,
+		key,
+		c.CorrelationID,
+	)
 
 	return true, nil
 }

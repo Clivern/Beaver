@@ -50,13 +50,27 @@ func GetChannelByName(c *gin.Context) {
 		return
 	}
 
+	if channelResult.Type == "presence" {
+		c.JSON(http.StatusOK, gin.H{
+			"name":              channelResult.Name,
+			"type":              channelResult.Type,
+			"subscribers_count": channel.CountSubscribers(name),
+			"listeners_count":   channel.CountListeners(name),
+			"subscribers":       channel.GetSubscribers(name),
+			"listeners":         channel.GetListeners(name),
+			"created_at":        channelResult.CreatedAt,
+			"updated_at":        channelResult.UpdatedAt,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"name":        channelResult.Name,
-		"type":        channelResult.Type,
-		"listeners":   channelResult.Listeners,
-		"subscribers": channelResult.Subscribers,
-		"created_at":  channelResult.CreatedAt,
-		"updated_at":  channelResult.UpdatedAt,
+		"name":              channelResult.Name,
+		"type":              channelResult.Type,
+		"subscribers_count": channel.CountSubscribers(name),
+		"listeners_count":   channel.CountListeners(name),
+		"created_at":        channelResult.CreatedAt,
+		"updated_at":        channelResult.UpdatedAt,
 	})
 }
 
@@ -114,8 +128,6 @@ func CreateChannel(c *gin.Context) {
 		return
 	}
 
-	channelResult.Listeners = 0
-	channelResult.Subscribers = 0
 	channelResult.CreatedAt = time.Now().Unix()
 	channelResult.UpdatedAt = time.Now().Unix()
 

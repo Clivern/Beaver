@@ -5,6 +5,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"regexp"
 	"strings"
 )
@@ -112,4 +113,11 @@ func (v *Validator) IsUUID5(uuid string) bool {
 	}
 
 	return false
+}
+
+// IsJSON validates a JSON string
+func (v *Validator) IsJSON(str string) bool {
+	var jsonStr map[string]interface{}
+	err := json.Unmarshal([]byte(str), &jsonStr)
+	return err == nil
 }

@@ -38,9 +38,9 @@ func TestChannelAPI(t *testing.T) {
 	createdAt := time.Now().Unix()
 	updatedAt := time.Now().Unix()
 
-	channelResult := ChannelResult{Name: "name", Type: "type", Listeners: 1, Subscribers: 1, CreatedAt: createdAt, UpdatedAt: updatedAt}
+	channelResult := ChannelResult{Name: "name", Type: "type", CreatedAt: createdAt, UpdatedAt: updatedAt}
 	jsonValue, err := channelResult.ConvertToJSON()
-	st.Expect(t, jsonValue, fmt.Sprintf(`{"name":"name","type":"type","listeners":1,"subscribers":1,"created_at":%d,"updated_at":%d}`, createdAt, updatedAt))
+	st.Expect(t, jsonValue, fmt.Sprintf(`{"name":"name","type":"type","created_at":%d,"updated_at":%d}`, createdAt, updatedAt))
 	st.Expect(t, err, nil)
 
 	ok, err := channelResult.LoadFromJSON([]byte(jsonValue))
@@ -48,8 +48,6 @@ func TestChannelAPI(t *testing.T) {
 	st.Expect(t, err, nil)
 	st.Expect(t, channelResult.Name, "name")
 	st.Expect(t, channelResult.Type, "type")
-	st.Expect(t, channelResult.Listeners, 1)
-	st.Expect(t, channelResult.Subscribers, 1)
 	st.Expect(t, channelResult.CreatedAt, createdAt)
 	st.Expect(t, channelResult.UpdatedAt, updatedAt)
 
@@ -66,8 +64,6 @@ func TestChannelAPI(t *testing.T) {
 	newChannelResult, err := channelAPI.GetChannelByName(channelResult.Name)
 	st.Expect(t, channelResult.Name, newChannelResult.Name)
 	st.Expect(t, channelResult.Type, newChannelResult.Type)
-	st.Expect(t, channelResult.Listeners, newChannelResult.Listeners)
-	st.Expect(t, channelResult.Subscribers, newChannelResult.Subscribers)
 	st.Expect(t, channelResult.CreatedAt, newChannelResult.CreatedAt)
 	st.Expect(t, channelResult.UpdatedAt, newChannelResult.UpdatedAt)
 	st.Expect(t, err, nil)
@@ -78,50 +74,15 @@ func TestChannelAPI(t *testing.T) {
 	st.Expect(t, ok, true)
 	st.Expect(t, err, nil)
 
-	ok = channelAPI.IncrementSubscribers(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
-	ok = channelAPI.IncrementListeners(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
 	newChannelResult, err = channelAPI.GetChannelByName(channelResult.Name)
 	st.Expect(t, channelResult.Name, newChannelResult.Name)
 	st.Expect(t, "new_type", newChannelResult.Type)
-	st.Expect(t, channelResult.Listeners+1, newChannelResult.Listeners)
-	st.Expect(t, channelResult.Subscribers+1, newChannelResult.Subscribers)
 	st.Expect(t, channelResult.CreatedAt, newChannelResult.CreatedAt)
 	st.Expect(t, channelResult.UpdatedAt, newChannelResult.UpdatedAt)
 	st.Expect(t, err, nil)
 
-	ok = channelAPI.DecrementSubscribers(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
-	ok = channelAPI.DecrementListeners(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
-	newChannelResult, err = channelAPI.GetChannelByName(channelResult.Name)
-	st.Expect(t, channelResult.Name, newChannelResult.Name)
-	st.Expect(t, "new_type", newChannelResult.Type)
-	st.Expect(t, channelResult.Listeners, newChannelResult.Listeners)
-	st.Expect(t, channelResult.Subscribers, newChannelResult.Subscribers)
-	st.Expect(t, channelResult.CreatedAt, newChannelResult.CreatedAt)
-	st.Expect(t, channelResult.UpdatedAt, newChannelResult.UpdatedAt)
-	st.Expect(t, err, nil)
-
-	ok = channelAPI.ResetSubscribers(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
-	ok = channelAPI.ResetListeners(newChannelResult.Name)
-	st.Expect(t, ok, true)
-
-	newChannelResult, err = channelAPI.GetChannelByName(channelResult.Name)
-	st.Expect(t, channelResult.Name, newChannelResult.Name)
-	st.Expect(t, "new_type", newChannelResult.Type)
-	st.Expect(t, channelResult.Listeners-1, newChannelResult.Listeners)
-	st.Expect(t, channelResult.Subscribers-1, newChannelResult.Subscribers)
-	st.Expect(t, channelResult.CreatedAt, newChannelResult.CreatedAt)
-	st.Expect(t, channelResult.UpdatedAt, newChannelResult.UpdatedAt)
-	st.Expect(t, err, nil)
+	st.Expect(t, 0, int(channelAPI.CountSubscribers(channelResult.Name)))
+	st.Expect(t, 0, int(channelAPI.CountListeners(channelResult.Name)))
 
 	ok, err = channelAPI.DeleteChannelByName(newChannelResult.Name)
 	st.Expect(t, ok, true)

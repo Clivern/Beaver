@@ -45,4 +45,9 @@ func TestValidation(t *testing.T) {
 	st.Expect(t, validate.IsEmpty(" Test \t "), false)
 	st.Expect(t, validate.IsEmpty(" Test "), false)
 	st.Expect(t, validate.IsEmpty(" \t "), true)
+
+	st.Expect(t, validate.IsJSON(`{"id": "12", "name": "Joe"}`), true)
+	st.Expect(t, validate.IsJSON(`"id": "12", "name": "Joe"}`), false)
+	st.Expect(t, validate.IsJSON(`{"id": "12" "name": "Joe"}`), false)
+	st.Expect(t, validate.IsJSON(`{"id": "12", "name": "Joe}`), false)
 }

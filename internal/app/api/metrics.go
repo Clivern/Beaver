@@ -33,6 +33,12 @@ func (m *Metrics) Init() bool {
 		)
 		return false
 	}
+
+	logger.Infof(
+		`Redis connection established {"correlationId":"%s"}`,
+		m.CorrelationID,
+	)
+
 	return true
 }
 

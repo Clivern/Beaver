@@ -1,14 +1,17 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
-before:
-  hooks:
-    # you may remove this if you don't use vgo
-    - go mod download
-    # you may remove this if you don't need go generate
-    - go generate ./...
-builds:
-- env:
-  - CGO_ENABLED=0
+# goreleaser release --skip-publish --snapshot
+build:
+  goos:
+    - linux
+    - darwin
+    - windows
+  goarch:
+    - 386
+    - amd64
+    - arm
+    - arm64
+  ignore:
+    - goos: darwin
+      goarch: 386
 archive:
   replacements:
     darwin: Darwin
@@ -16,13 +19,24 @@ archive:
     windows: Windows
     386: i386
     amd64: x86_64
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
-changelog:
-  sort: asc
-  filters:
-    exclude:
-    - '^docs:'
-    - '^test:'
+  format_overrides:
+    - goos: windows
+      format: zip
+brew:
+  github:
+    owner: clivern
+    name: beaver
+  folder: Formula
+  homepage: https://github.com/clivern/beaver
+  description: A Real Time Messaging Server
+  dependencies:
+    - git
+nfpm:
+  homepage: https://github.com/clivern/beaver
+  description: A Real Time Messaging Server
+  maintainer: A.F <hello@clivern.com>
+  vendor: Beaver
+  formats:
+    - deb
+  dependencies:
+    - git

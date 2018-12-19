@@ -6,7 +6,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/clivern/beaver/internal/app/api"
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"github.com/clivern/beaver/internal/pkg/utils"
@@ -40,6 +39,12 @@ type Websocket struct {
 	Clients   map[string]*websocket.Conn
 	Broadcast chan Message
 	Upgrader  websocket.Upgrader
+}
+
+// IsValid checks if message is valid
+func (m *Message) IsValid() bool {
+	validator := utils.Validator{}
+	return validator.IsJSON(m.Data)
 }
 
 // LoadFromJSON load object from json
@@ -131,7 +136,12 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf(
+			`Error while upgrading the GET request to a websocket for client %s: %s {"correlationId":"%s"}`,
+			ID,
+			err.Error(),
+			correlationID,
+		)
 	}
 
 	// Make sure we close the connection when the function returns
@@ -140,6 +150,12 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	// Register our new client
 	e.Clients[ID] = ws
 
+	logger.Infof(
+		`Client %s connected {"correlationId":"%s"}`,
+		ID,
+		correlationID,
+	)
+
 	for {
 		var msg Message
 
@@ -147,15 +163,22 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		err := ws.ReadJSON(&msg)
 
 		if err != nil {
-			fmt.Printf("error: %v", err)
 			delete(e.Clients, ID)
+			client.Disconnect(clientResult)
+			logger.Infof(
+				`Client %s disconnected {"correlationId":"%s"}`,
+				ID,
+				correlationID,
+			)
 			break
 		}
 
 		msg.FromClient = ID
 
-		// Send the newly received message to the broadcast channel
-		e.Broadcast <- msg
+		if msg.IsValid() {
+			// Send the newly received message to the broadcast channel
+			e.Broadcast <- msg
+		}
 	}
 }
 
@@ -169,15 +192,13 @@ func (e *Websocket) HandleMessages() {
 		msg := <-e.Broadcast
 
 		// Send to Client
-		if !validate.IsEmpty(msg.ToClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.ToClient) {
+		if msg.IsValid() && !validate.IsEmpty(msg.ToClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.ToClient) {
 			// Push message to that client if it still connected
 			// or remove from clients if we can't deliver messages to
 			// it anymore
 			if client, ok := e.Clients[msg.ToClient]; ok {
 				err := client.WriteJSON(msg)
 				if err != nil {
-					// Remove client from listeners list
-					fmt.Printf("error: %v", err)
 					client.Close()
 					delete(e.Clients, msg.ToClient)
 				}
@@ -185,7 +206,7 @@ func (e *Websocket) HandleMessages() {
 		}
 
 		// Send to client Peers on a channel
-		if !validate.IsEmpty(msg.FromClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.FromClient) {
+		if msg.IsValid() && !validate.IsEmpty(msg.FromClient) && !validate.IsEmpty(msg.Channel) && validate.IsUUID4(msg.FromClient) {
 
 			channel := api.Channel{}
 			channel.Init()
@@ -203,15 +224,12 @@ func (e *Websocket) HandleMessages() {
 					if client, ok := e.Clients[msg.ToClient]; ok {
 						err := client.WriteJSON(msg)
 						if err != nil {
-							// Remove client from listeners list
-							fmt.Printf("error: %v", err)
 							client.Close()
 							delete(e.Clients, msg.ToClient)
 						}
 					}
 				}
 			}
-
 		}
 	}
 }
@@ -253,6 +271,14 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
 			"error":  err.Error(),
+		})
+		return
+	}
+
+	if !validate.IsJSON(broadcastRequest.Data) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Message data is invalid JSON",
 		})
 		return
 	}
@@ -315,6 +341,14 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
 			"error":  err.Error(),
+		})
+		return
+	}
+
+	if !validate.IsJSON(publishRequest.Data) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error":  "Message data is invalid JSON",
 		})
 		return
 	}
