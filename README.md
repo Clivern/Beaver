@@ -26,7 +26,7 @@ Then Create a dist config file.
 $ cp config.yml config.dist.yml
 ```
 
-Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `log_path`, `redis_*`, `api_token` ...etc.
+Then add your `app.*`, `log.*`, `redis_*`, `api.*` ...etc.
 
 ```yml
 app:
