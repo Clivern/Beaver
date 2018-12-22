@@ -16,18 +16,7 @@ services:
       volumes:
          - './var:/go/src/github.com/clivern/beaver/var'
       restart: always
-      environment:
-         - AppMode=prod
-         - AppPort=8080
-         - AppLogLevel=info
-         - AppDomain=example.com
-         - LogPath=var/logs
-         - RedisAddr=redis:6379
-         - RedisPassword=
-         - RedisDB=0
-         - APIToken=123
 
-      restart: always
       healthcheck:
          test: './beaver -exec=health'
          interval: 5s

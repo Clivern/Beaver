@@ -6,7 +6,8 @@ package logger
 
 import (
 	"fmt"
-	"github.com/clivern/beaver/internal/pkg/utils"
+	"github.com/micro/go-config"
+	"github.com/micro/go-config/source/file"
 	"github.com/nbio/st"
 	"io/ioutil"
 	"os"
@@ -18,23 +19,31 @@ import (
 // init setup stuff
 func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
-	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.json")
+	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.yml")
 
-	config := utils.Config{}
-	ok, err := config.Load(configFile)
+	config.Load(file.NewSource(
+		file.WithPath(configFile),
+	))
 
-	if !ok || err != nil {
-		panic(err.Error())
+	if config.Get("app", "mode").String("") == "" {
+		panic("Error! Config file not loaded")
 	}
-	config.Cache()
-	config.GinEnv()
-	if !strings.Contains(os.Getenv("LogPath"), basePath) {
-		os.Setenv("LogPath", fmt.Sprintf("%s/%s", basePath, os.Getenv("LogPath")))
-	}
+
+	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
+	os.Setenv("PORT", config.Get("app", "port").String("8080"))
 }
 
 // TestLogging test cases
 func TestLogging(t *testing.T) {
+
+	currentTime := time.Now().Local()
+
+	logFile := fmt.Sprintf(
+		"%s%s/%s.log",
+		os.Getenv("BeaverBasePath"),
+		config.Get("log", "path").String("var/logs"),
+		currentTime.Format("2006-01-02"),
+	)
 
 	// Start Test Cases
 	Info("Info")
@@ -44,8 +53,7 @@ func TestLogging(t *testing.T) {
 	Warningln("Warningln")
 	Warningf("Warningf")
 
-	currentTime := time.Now().Local()
-	data, err := ioutil.ReadFile(fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02")))
+	data, err := ioutil.ReadFile(logFile)
 
 	if err != nil {
 		panic(err.Error())
@@ -58,5 +66,5 @@ func TestLogging(t *testing.T) {
 	st.Expect(t, strings.Contains(string(data), "Warningln\n"), true)
 	st.Expect(t, strings.Contains(string(data), "Warningf\n"), true)
 
-	os.Remove(fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02")))
+	os.Remove(logFile)
 }

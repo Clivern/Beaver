@@ -7,6 +7,7 @@ package logger
 import (
 	"fmt"
 	"github.com/google/logger"
+	"github.com/micro/go-config"
 	"os"
 	"time"
 )
@@ -14,12 +15,17 @@ import (
 // Info log
 func Info(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -38,12 +44,17 @@ func Info(v ...interface{}) {
 // Infoln log
 func Infoln(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -62,12 +73,17 @@ func Infoln(v ...interface{}) {
 // Infof log
 func Infof(format string, v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -86,12 +102,17 @@ func Infof(format string, v ...interface{}) {
 // Warning log
 func Warning(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -110,12 +131,17 @@ func Warning(v ...interface{}) {
 // Warningln log
 func Warningln(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -134,12 +160,17 @@ func Warningln(v ...interface{}) {
 // Warningf log
 func Warningf(format string, v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -158,12 +189,17 @@ func Warningf(format string, v ...interface{}) {
 // Error log
 func Error(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -182,12 +218,17 @@ func Error(v ...interface{}) {
 // Errorln log
 func Errorln(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -206,12 +247,17 @@ func Errorln(v ...interface{}) {
 // Errorf log
 func Errorf(format string, v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -230,12 +276,17 @@ func Errorf(format string, v ...interface{}) {
 // Fatal log
 func Fatal(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -254,12 +305,17 @@ func Fatal(v ...interface{}) {
 // Fatalln log
 func Fatalln(v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
@@ -278,12 +334,17 @@ func Fatalln(v ...interface{}) {
 // Fatalf log
 func Fatalf(format string, v ...interface{}) {
 
-	logLevel := os.Getenv("AppLogLevel")
+	logLevel := config.Get("log", "level").String("info")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
 		currentTime := time.Now().Local()
-		file := fmt.Sprintf("%s/%s.log", os.Getenv("LogPath"), currentTime.Format("2006-01-02"))
+		file := fmt.Sprintf(
+			"%s%s/%s.log",
+			os.Getenv("BeaverBasePath"),
+			config.Get("log", "path").String("var/logs"),
+			currentTime.Format("2006-01-02"),
+		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {

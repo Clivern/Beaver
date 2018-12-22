@@ -12,6 +12,8 @@ import (
 	"github.com/clivern/beaver/internal/app/middleware"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/micro/go-config"
+	"github.com/micro/go-config/source/file"
 	"io"
 	"net/http"
 	"os"
@@ -25,20 +27,16 @@ func main() {
 	utils.PrintBanner()
 
 	flag.StringVar(&exec, "exec", "", "exec")
-	flag.StringVar(&configFile, "config", "config.dist.json", "config")
+	flag.StringVar(&configFile, "config", "config.dist.yml", "config")
 	flag.Parse()
 
-	// Load config.json file and store on env
-	config := &utils.Config{}
-	ok, err := config.Load(configFile)
+	config.Load(file.NewSource(
+		file.WithPath(configFile),
+	))
 
-	if !ok || err != nil {
-		panic(err.Error())
+	if config.Get("app", "mode").String("") == "" {
+		panic("Error! Config file not loaded")
 	}
-
-	// This will never override ENV Vars if exists
-	config.Cache()
-	config.GinEnv()
 
 	if exec != "" {
 		switch exec {
@@ -50,10 +48,12 @@ func main() {
 		return
 	}
 
-	if os.Getenv("AppMode") == "prod" {
+	os.Setenv("PORT", config.Get("app", "port").String("8080"))
+
+	if config.Get("app", "mode").String("dev") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
-		f, _ := os.Create(fmt.Sprintf("%s/gin.log", os.Getenv("LogPath")))
+		f, _ := os.Create(fmt.Sprintf("%s/gin.log", config.Get("log", "path").String("var/logs")))
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
 

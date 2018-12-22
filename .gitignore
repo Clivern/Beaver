@@ -12,7 +12,7 @@
 *.out
 
 # Config file
-config.dist.json
+config.dist.yml
 
 # App build
 beaver
@@ -20,6 +20,6 @@ beaver
 # Ignore vendor and run dep ensure
 vendor
 
-config.test.json
+config.test.yml
 coverage.html
 cover.out

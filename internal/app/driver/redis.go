@@ -6,8 +6,7 @@ package driver
 
 import (
 	"github.com/go-redis/redis"
-	"os"
-	"strconv"
+	"github.com/micro/go-config"
 	"time"
 )
 
@@ -21,12 +20,10 @@ type Redis struct {
 
 // NewRedisDriver create a new instance
 func NewRedisDriver() *Redis {
-	DB, _ := strconv.Atoi(os.Getenv("RedisDB"))
-
 	return &Redis{
-		Addr:     os.Getenv("RedisAddr"),
-		Password: os.Getenv("RedisPassword"),
-		DB:       DB,
+		Addr:     config.Get("redis", "addr").String("localhost:6379"),
+		Password: config.Get("redis", "password").String(""),
+		DB:       config.Get("redis", "db").Int(0),
 	}
 }
 

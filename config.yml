@@ -1,0 +1,17 @@
+app:
+    mode: dev
+    port: 8080
+    domain: example.com
+    secret: 123
+
+log:
+    level: info
+    path: var/logs
+
+redis:
+    addr: localhost:6379
+    password:
+    db: 0
+
+api:
+    token: 123
