@@ -23,23 +23,29 @@ $ dep ensure
 Then Create a dist config file.
 
 ```bash
-$ cp config.json config.dist.json
+$ cp config.yml config.dist.yml
 ```
 
 Then add your `app_mode`, `app_port`, `app_log_level`, `app_domain`, `log_path`, `redis_*`, `api_token` ...etc.
 
-```json
-{
-    "app_mode": "dev",
-    "app_port": "8080",
-    "app_log_level": "info",
-    "app_domain": "example.com",
-    "log_path": "var/logs",
-    "redis_addr": "127.0.0.1:6379",
-    "redis_password": "",
-    "redis_db": "0",
-    "api_token": "123"
-}
+```yml
+app:
+    mode: dev
+    port: 8080
+    domain: example.com
+    secret: 123
+
+log:
+    level: info
+    path: var/logs
+
+redis:
+    addr: localhost:6379
+    password:
+    db: 0
+
+api:
+    token: 123
 ```
 
 And then run the application.
@@ -53,8 +59,8 @@ $ ./beaver
 $ go run beaver.go
 
 // To Provide a custom config file
-$ ./beaver -config=/custom/path/config.dist.json
-$ go run beaver.go -config=/custom/path/config.dist.json
+$ ./beaver -config=/custom/path/config.dist.yml
+$ go run beaver.go -config=/custom/path/config.dist.yml
 ```
 
 Also running beaver with docker still an option. Just don't forget to update environment variables on `docker-compose.yml` file. Then run the following stuff

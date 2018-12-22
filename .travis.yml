@@ -21,11 +21,11 @@ script:
   - mv Clivern/Beaver Clivern/beaver
   - mv Clivern clivern
   - cd clivern/beaver
-  - mv config.travis.json config.test.json
+  - mv config.travis.yml config.test.yml
   # Config & execute ci tasks
   - make install_dep
   - make install_revive
   - make ensure_dep
-  - cp config.json config.dist.json
+  - cp config.yml config.dist.yml
   - make ci
 
