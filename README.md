@@ -63,9 +63,10 @@ $ ./beaver -config=/custom/path/config.dist.yml
 $ go run beaver.go -config=/custom/path/config.dist.yml
 ```
 
-Also running beaver with docker still an option. Just don't forget to update environment variables on `docker-compose.yml` file. Then run the following stuff
+Also running beaver with docker still an option.
 
 ```bash
+$ cp config.yml config.dist.yml
 $ docker-compose build
 $ docker-compose up -d
 ```
