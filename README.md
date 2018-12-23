@@ -76,13 +76,18 @@ $ docker-compose up -d
 Create a Config `app_name`:
 
 ```bash
-$ curl -X POST -H "Content-Type: application/json" -d '{"key":"app_name","value":"Beaver"}' "http://localhost:8080/api/config"
+$ curl -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"key":"app_name","value":"Beaver"}' \
+    "http://localhost:8080/api/config"
 ```
 
 Get a Config `app_name`:
 
 ```bash
-$ curl -X GET -H "Content-Type: application/json" "http://localhost:8080/api/config/app_name"
+$ curl -X GET \
+    -H "Content-Type: application/json" \
+    "http://localhost:8080/api/config/app_name"
 
 {"key":"app_name","value":"Beaver"}
 ```
@@ -90,13 +95,18 @@ $ curl -X GET -H "Content-Type: application/json" "http://localhost:8080/api/con
 Update a Config `app_name`:
 
 ```bash
-$ curl -X PUT -H "Content-Type: application/json" -d '{"value":"Beaver"}' "http://localhost:8080/api/config/app_name"
+$ curl -X PUT \
+    -H "Content-Type: application/json" \
+    -d '{"value":"Beaver"}' \
+    "http://localhost:8080/api/config/app_name"
 ```
 
 Delete a Config `app_name`:
 
 ```bash
-$ curl -X DELETE -H "Content-Type: application/json" "http://localhost:8080/api/config/app_name"
+$ curl -X DELETE \
+    -H "Content-Type: application/json" \
+    "http://localhost:8080/api/config/app_name"
 ```
 
 Create a Channel:
