@@ -274,20 +274,41 @@ $ curl -X DELETE \
     'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427'
 ```
 
-Broadcast to Channels:
+Publish to a Channel `app_x_chatroom_1`:
 
 ```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channel": "app_x_chatroom_1", "data": "{\"message\": \"Hello World\"}"}' \
+    'http://localhost:8080/api/publish'
 ```
 
-Publish to a Channel:
+Broadcast to Channels `["app_x_chatroom_1"]`:
 
 ```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_x_chatroom_1"], "data": "{\"message\": \"Hello World\"}"}' \
+    'http://localhost:8080/api/broadcast'
 ```
 
-Frontend Client:
+Sample Frontend Client
 
 ```js
+function Socket(url){
+    ws = new WebSocket(url);
+    ws.onmessage = function(e) { console.log(e); };
+    ws.onclose = function(){
+        // Try to reconnect in 5 seconds
+        setTimeout(function(){Socket(url)}, 5000);
+    };
+}
+
+Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 ```
+
 
 ## Badges
 
