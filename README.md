@@ -70,6 +70,90 @@ $ docker-compose build
 $ docker-compose up -d
 ```
 
+
+### API Endpoints
+
+Create a Config:
+
+```bash
+```
+
+Get a Config:
+
+```bash
+```
+
+Update a Config:
+
+```bash
+```
+
+Delete a Config:
+
+```bash
+```
+
+Create a Channel:
+
+```bash
+```
+
+Get a Channel:
+
+```bash
+```
+
+Update a Channel:
+
+```bash
+```
+
+Delete a Channel:
+
+```bash
+```
+
+Create a Client:
+
+```bash
+```
+
+Get a Client:
+
+```bash
+```
+
+Subscribe a Client to a Channel:
+
+```bash
+```
+
+Unsubscribe a Client from a Channel:
+
+```bash
+```
+
+Delete a Client:
+
+
+```bash
+```
+
+Broadcast to Channels:
+
+```bash
+```
+
+Publish to a Channel:
+
+```bash
+```
+
+Frontend Client:
+
+```js
+```
+
 ## Badges
 
 [![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
