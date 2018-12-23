@@ -33,7 +33,7 @@ app:
     mode: dev
     port: 8080
     domain: example.com
-    secret: 123
+    secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
 
 log:
     level: info
@@ -45,7 +45,7 @@ redis:
     db: 0
 
 api:
-    token: 123
+    token: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
 ```
 
 And then run the application.
@@ -78,6 +78,7 @@ Create a Config `app_name`:
 ```bash
 $ curl -X POST \
     -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
     -d '{"key":"app_name","value":"Beaver"}' \
     "http://localhost:8080/api/config"
 ```
@@ -87,6 +88,7 @@ Get a Config `app_name`:
 ```bash
 $ curl -X GET \
     -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
     "http://localhost:8080/api/config/app_name"
 
 {"key":"app_name","value":"Beaver"}
@@ -97,6 +99,7 @@ Update a Config `app_name`:
 ```bash
 $ curl -X PUT \
     -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
     -d '{"value":"Beaver"}' \
     "http://localhost:8080/api/config/app_name"
 ```
@@ -106,6 +109,7 @@ Delete a Config `app_name`:
 ```bash
 $ curl -X DELETE \
     -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
     "http://localhost:8080/api/config/app_name"
 ```
 

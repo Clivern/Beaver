@@ -2,7 +2,7 @@ app:
     mode: dev
     port: 8080
     domain: example.com
-    secret: 123
+    secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
 
 log:
     level: info
@@ -14,4 +14,4 @@ redis:
     db: 0
 
 api:
-    token: 123
+    token: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
