@@ -186,74 +186,92 @@ $ curl -X GET \
 }
 ```
 
-Update a Channel:
+Update a Channel `app_y_chatroom_1`:
 
 ```bash
 $ curl -X PUT \
     -H 'Content-Type: application/json' \
     -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
     -d '{"type": "private"}' \
-    'http://localhost:8080/api/channel/app_x_chatroom_1'
-
-$ curl -X PUT \
-    -H 'Content-Type: application/json' \
-    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
-    -d '{"type": "public"}' \
     'http://localhost:8080/api/channel/app_y_chatroom_1'
-
-$ curl -X PUT \
-    -H 'Content-Type: application/json' \
-    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
-    -d '{"type": "presence"}' \
-    'http://localhost:8080/api/channel/app_z_chatroom_5'
 ```
 
-Delete a Channel:
+Delete a Channel `app_y_chatroom_1`:
 
 ```bash
-$ curl -X DELETE \
-    -H 'Content-Type: application/json' \
-    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
-    -d '' \
-    'http://localhost:8080/api/channel/app_x_chatroom_1'
-
 $ curl -X DELETE \
     -H 'Content-Type: application/json' \
     -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
     -d '' \
     'http://localhost:8080/api/channel/app_y_chatroom_1'
+```
 
-$ curl -X DELETE \
+Create a Client and add to `app_x_chatroom_1` Channel:
+
+```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_x_chatroom_1"]}' \
+    'http://localhost:8080/api/client'
+{
+    "channels": [
+        "app_x_chatroom_1"
+    ],
+    "created_at": 1545575142,
+    "id": "69775af3-5f68-4725-8162-09cab63e8427",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNjk3NzVhZjMtNWY2OC00NzI1LTgxNjItMDljYWI2M2U4NDI3QDE1NDU1NzUxNDIiLCJ0aW1lc3RhbXAiOjE1NDU1NzUxNDJ9.EqL-nWwu5p7hJXWrKdZN3Ds2cxWVjNYmeP1mbl562nU",
+    "updated_at": 1545575142
+}
+```
+
+Get a Client `69775af3-5f68-4725-8162-09cab63e8427`:
+
+```bash
+$ curl -X GET \
     -H 'Content-Type: application/json' \
     -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
     -d '' \
-    'http://localhost:8080/api/channel/app_z_chatroom_5'
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427'
+{
+    "channels": [
+        "app_x_chatroom_1"
+    ],
+    "created_at": 1545575142,
+    "id": "69775af3-5f68-4725-8162-09cab63e8427",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNjk3NzVhZjMtNWY2OC00NzI1LTgxNjItMDljYWI2M2U4NDI3QDE1NDU1NzUxNDIiLCJ0aW1lc3RhbXAiOjE1NDU1NzUxNDJ9.EqL-nWwu5p7hJXWrKdZN3Ds2cxWVjNYmeP1mbl562nU",
+    "updated_at": 1545575142
+}
 ```
 
-Create a Client:
+Subscribe a Client `69775af3-5f68-4725-8162-09cab63e8427` to a Channel `app_z_chatroom_5`:
 
 ```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_z_chatroom_5"]}' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427/subscribe'
 ```
 
-Get a Client:
+Unsubscribe a Client `69775af3-5f68-4725-8162-09cab63e8427` from a Channel `app_z_chatroom_5`:
 
 ```bash
-```
-
-Subscribe a Client to a Channel:
-
-```bash
-```
-
-Unsubscribe a Client from a Channel:
-
-```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_z_chatroom_5"]}' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427/unsubscribe'
 ```
 
 Delete a Client:
 
-
 ```bash
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427'
 ```
 
 Broadcast to Channels:
