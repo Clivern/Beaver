@@ -16,7 +16,6 @@ services:
       volumes:
          - './var:/go/src/github.com/clivern/beaver/var'
       restart: always
-
       healthcheck:
          test: './beaver -exec=health'
          interval: 5s
