@@ -30,12 +30,16 @@ func main() {
 	flag.StringVar(&configFile, "config", "config.dist.yml", "config")
 	flag.Parse()
 
-	config.Load(file.NewSource(
+	err := config.Load(file.NewSource(
 		file.WithPath(configFile),
 	))
 
-	if config.Get("app", "mode").String("") == "" {
-		panic("Error! Config file not loaded")
+	if err != nil {
+		panic(fmt.Sprintf(
+			"Error while loading config file [%s]: %s",
+			configFile,
+			err.Error(),
+		))
 	}
 
 	if exec != "" {

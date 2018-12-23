@@ -18,12 +18,16 @@ func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.yml")
 
-	config.Load(file.NewSource(
+	err := config.Load(file.NewSource(
 		file.WithPath(configFile),
 	))
 
-	if config.Get("app", "mode").String("") == "" {
-		panic("Error! Config file not loaded")
+	if err != nil {
+		panic(fmt.Sprintf(
+			"Error while loading config file [%s]: %s",
+			configFile,
+			err.Error(),
+		))
 	}
 
 	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
