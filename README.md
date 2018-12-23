@@ -33,7 +33,7 @@ app:
     mode: dev
     port: 8080
     domain: example.com
-    secret: 123
+    secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
 
 log:
     level: info
@@ -45,7 +45,7 @@ redis:
     db: 0
 
 api:
-    token: 123
+    token: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
 ```
 
 And then run the application.
@@ -69,6 +69,246 @@ Also running beaver with docker still an option. Just don't forget to update env
 $ docker-compose build
 $ docker-compose up -d
 ```
+
+
+### API Endpoints
+
+Create a Config `app_name`:
+
+```bash
+$ curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
+    -d '{"key":"app_name","value":"Beaver"}' \
+    "http://localhost:8080/api/config"
+```
+
+Get a Config `app_name`:
+
+```bash
+$ curl -X GET \
+    -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
+    "http://localhost:8080/api/config/app_name"
+
+{"key":"app_name","value":"Beaver"}
+```
+
+Update a Config `app_name`:
+
+```bash
+$ curl -X PUT \
+    -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
+    -d '{"value":"Beaver"}' \
+    "http://localhost:8080/api/config/app_name"
+```
+
+Delete a Config `app_name`:
+
+```bash
+$ curl -X DELETE \
+    -H "Content-Type: application/json" \
+    -H "X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD" \
+    "http://localhost:8080/api/config/app_name"
+```
+
+Create a Channel:
+
+```bash
+# Private Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_x_chatroom_1", "type": "private"}' \
+    'http://localhost:8080/api/channel'
+
+# Public Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_y_chatroom_1", "type": "public"}' \
+    'http://localhost:8080/api/channel'
+
+# Presence Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_z_chatroom_5", "type": "presence"}' \
+    'http://localhost:8080/api/channel'
+```
+
+Get a Channel:
+
+```bash
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_x_chatroom_1'
+{
+    "created_at":1545573214,
+    "listeners_count":0,
+    "name":"app_x_chatroom_1",
+    "subscribers_count":0,
+    "type":"private",
+    "updated_at":1545573214
+}
+
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+{
+    "created_at":1545573219,
+    "listeners_count":0,
+    "name":"app_y_chatroom_1",
+    "subscribers_count":0,
+    "type":"public",
+    "updated_at":1545573219
+}
+
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_z_chatroom_5'
+{
+    "created_at": 1545573225,
+    "listeners": null,
+    "listeners_count": 0,
+    "name": "app_z_chatroom_5",
+    "subscribers": null,
+    "subscribers_count": 0,
+    "type": "presence",
+    "updated_at": 1545573225
+}
+```
+
+Update a Channel `app_y_chatroom_1`:
+
+```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"type": "private"}' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+```
+
+Delete a Channel `app_y_chatroom_1`:
+
+```bash
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+```
+
+Create a Client and add to `app_x_chatroom_1` Channel:
+
+```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_x_chatroom_1"]}' \
+    'http://localhost:8080/api/client'
+{
+    "channels": [
+        "app_x_chatroom_1"
+    ],
+    "created_at": 1545575142,
+    "id": "69775af3-5f68-4725-8162-09cab63e8427",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNjk3NzVhZjMtNWY2OC00NzI1LTgxNjItMDljYWI2M2U4NDI3QDE1NDU1NzUxNDIiLCJ0aW1lc3RhbXAiOjE1NDU1NzUxNDJ9.EqL-nWwu5p7hJXWrKdZN3Ds2cxWVjNYmeP1mbl562nU",
+    "updated_at": 1545575142
+}
+```
+
+Get a Client `69775af3-5f68-4725-8162-09cab63e8427`:
+
+```bash
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427'
+{
+    "channels": [
+        "app_x_chatroom_1"
+    ],
+    "created_at": 1545575142,
+    "id": "69775af3-5f68-4725-8162-09cab63e8427",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNjk3NzVhZjMtNWY2OC00NzI1LTgxNjItMDljYWI2M2U4NDI3QDE1NDU1NzUxNDIiLCJ0aW1lc3RhbXAiOjE1NDU1NzUxNDJ9.EqL-nWwu5p7hJXWrKdZN3Ds2cxWVjNYmeP1mbl562nU",
+    "updated_at": 1545575142
+}
+```
+
+Subscribe a Client `69775af3-5f68-4725-8162-09cab63e8427` to a Channel `app_z_chatroom_5`:
+
+```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_z_chatroom_5"]}' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427/subscribe'
+```
+
+Unsubscribe a Client `69775af3-5f68-4725-8162-09cab63e8427` from a Channel `app_z_chatroom_5`:
+
+```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_z_chatroom_5"]}' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427/unsubscribe'
+```
+
+Delete a Client:
+
+```bash
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/client/69775af3-5f68-4725-8162-09cab63e8427'
+```
+
+Publish to a Channel `app_x_chatroom_1`:
+
+```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channel": "app_x_chatroom_1", "data": "{\"message\": \"Hello World\"}"}' \
+    'http://localhost:8080/api/publish'
+```
+
+Broadcast to Channels `["app_x_chatroom_1"]`:
+
+```bash
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"channels": ["app_x_chatroom_1"], "data": "{\"message\": \"Hello World\"}"}' \
+    'http://localhost:8080/api/broadcast'
+```
+
+Sample Frontend Client
+
+```js
+function Socket(url){
+    ws = new WebSocket(url);
+    ws.onmessage = function(e) { console.log(e); };
+    ws.onclose = function(){
+        // Try to reconnect in 5 seconds
+        setTimeout(function(){Socket(url)}, 5000);
+    };
+}
+
+Socket("ws://localhost:8080/ws/$ID/$TOKEN");
+```
+
 
 ## Badges
 
