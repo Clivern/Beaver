@@ -116,21 +116,118 @@ $ curl -X DELETE \
 Create a Channel:
 
 ```bash
+# Private Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_x_chatroom_1", "type": "private"}' \
+    'http://localhost:8080/api/channel'
+
+# Public Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_y_chatroom_1", "type": "public"}' \
+    'http://localhost:8080/api/channel'
+
+# Presence Channel
+$ curl -X POST \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"name": "app_z_chatroom_5", "type": "presence"}' \
+    'http://localhost:8080/api/channel'
 ```
 
 Get a Channel:
 
 ```bash
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_x_chatroom_1'
+{
+    "created_at":1545573214,
+    "listeners_count":0,
+    "name":"app_x_chatroom_1",
+    "subscribers_count":0,
+    "type":"private",
+    "updated_at":1545573214
+}
+
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+{
+    "created_at":1545573219,
+    "listeners_count":0,
+    "name":"app_y_chatroom_1",
+    "subscribers_count":0,
+    "type":"public",
+    "updated_at":1545573219
+}
+
+$ curl -X GET \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_z_chatroom_5'
+{
+    "created_at": 1545573225,
+    "listeners": null,
+    "listeners_count": 0,
+    "name": "app_z_chatroom_5",
+    "subscribers": null,
+    "subscribers_count": 0,
+    "type": "presence",
+    "updated_at": 1545573225
+}
 ```
 
 Update a Channel:
 
 ```bash
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"type": "private"}' \
+    'http://localhost:8080/api/channel/app_x_chatroom_1'
+
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"type": "public"}' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+
+$ curl -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '{"type": "presence"}' \
+    'http://localhost:8080/api/channel/app_z_chatroom_5'
 ```
 
 Delete a Channel:
 
 ```bash
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_x_chatroom_1'
+
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_y_chatroom_1'
+
+$ curl -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'X-AUTH-TOKEN: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD' \
+    -d '' \
+    'http://localhost:8080/api/channel/app_z_chatroom_5'
 ```
 
 Create a Client:
