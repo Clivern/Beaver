@@ -147,7 +147,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:73d960945bec76dc2d0f5e434a9ec348e07d4f880e3f05e1d808eb1cbe293764"
+  digest = "1:e2fd456541de3991d3965eab6083e9f4234e384e6dcb6587e375f1942b96163b"
   name = "github.com/micro/go-config"
   packages = [
     ".",
@@ -165,7 +165,7 @@
     "source/file",
   ]
   pruneopts = "UT"
-  revision = "2880ed9153f56ac581d5878976a40db72f0afdf4"
+  revision = "1bf51c5c888a67d4ddf8d3e447bf4e9a6e2453da"
 
 [[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
@@ -246,7 +246,6 @@
     "github.com/google/logger",
     "github.com/gorilla/websocket",
     "github.com/micro/go-config",
-    "github.com/micro/go-config/source/file",
     "github.com/nbio/st",
     "github.com/satori/go.uuid",
   ]
