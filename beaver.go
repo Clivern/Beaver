@@ -13,7 +13,6 @@ import (
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-config"
-	"github.com/micro/go-config/source/file"
 	"io"
 	"net/http"
 	"os"
@@ -30,9 +29,7 @@ func main() {
 	flag.StringVar(&configFile, "config", "config.dist.yml", "config")
 	flag.Parse()
 
-	err := config.Load(file.NewSource(
-		file.WithPath(configFile),
-	))
+	err := config.LoadFile(configFile)
 
 	if err != nil {
 		panic(fmt.Sprintf(

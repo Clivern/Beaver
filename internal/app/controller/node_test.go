@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-config"
-	"github.com/micro/go-config/source/file"
 	"github.com/nbio/st"
 	"net/http"
 	"net/http/httptest"
@@ -21,9 +20,7 @@ func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.yml")
 
-	err := config.Load(file.NewSource(
-		file.WithPath(configFile),
-	))
+	err := config.LoadFile(configFile)
 
 	if err != nil {
 		panic(fmt.Sprintf(
