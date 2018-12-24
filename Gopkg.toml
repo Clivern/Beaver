@@ -56,3 +56,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/nbio/st"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/micro/go-config"

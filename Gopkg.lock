@@ -97,11 +97,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fbf6ef64ade9cc8474adb1bc22d1679a3837c6f083666d6313bc0cadabc055f0"
+  digest = "1:521455a43b348afa7e4deb79c471f3ed8ff04a71d7d9b88ab0d149b9eb905fe2"
   name = "github.com/gorilla/websocket"
   packages = ["."]
   pruneopts = "UT"
-  revision = "483fb8d7c32fcb4b5636cd293a92e3935932e2f4"
+  revision = "95ba29eb981bbb27d92e1f70bf8a1949452d926b"
 
 [[projects]]
   digest = "1:ea40c24cdbacd054a6ae9de03e62c5f252479b96c716375aace5c120d68647c8"
@@ -146,7 +146,8 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:5cadde2a6d0117e3fb205217be9e28d64c95302582e2322e2fb49c97df9f21e0"
+  branch = "master"
+  digest = "1:73d960945bec76dc2d0f5e434a9ec348e07d4f880e3f05e1d808eb1cbe293764"
   name = "github.com/micro/go-config"
   packages = [
     ".",
@@ -164,8 +165,7 @@
     "source/file",
   ]
   pruneopts = "UT"
-  revision = "c6de52c5ef31e1c20bc9a563f2107ca16ac752e2"
-  version = "v0.12.0"
+  revision = "2880ed9153f56ac581d5878976a40db72f0afdf4"
 
 [[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
@@ -209,7 +209,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:60baeef55cc6621b4bef73f0795a04596662e180500089f5817929ad515eeb6d"
+  digest = "1:a8b1900d94a9d18b13087127110d3ba80db6063a0d7957ebf5599ab3fcf4d895"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -218,7 +218,7 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "ec83556a53fe16b65c452a104ea9d1e86a671852"
+  revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -229,12 +229,12 @@
   version = "v8.18.2"
 
 [[projects]]
-  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
+  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
-  version = "v2.2.1"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+  version = "v2.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
