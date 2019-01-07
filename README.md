@@ -4,6 +4,8 @@
     <p align="center">A Real Time Messaging Server.</p>
 </p>
 
+Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
+
 ## Documentation
 
 ### Config & Run The Application
