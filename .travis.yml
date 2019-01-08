@@ -9,6 +9,9 @@ go:
   - 1.11.x
   - master
 
+env:
+  - GO111MODULE=on
+
 install: true
 
 # Fix this by renaming the directory before testing.
@@ -23,9 +26,7 @@ script:
   - cd clivern/beaver
   - mv config.travis.yml config.test.yml
   # Config & execute ci tasks
-  - make install_dep
   - make install_revive
-  - make ensure_dep
   - cp config.yml config.dist.yml
   - make ci
 

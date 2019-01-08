@@ -16,6 +16,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -49,7 +50,7 @@ func main() {
 		return
 	}
 
-	os.Setenv("PORT", config.Get("app", "port").String("8080"))
+	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
 
 	if config.Get("app", "mode").String("dev") == "prod" {
 		gin.SetMode(gin.ReleaseMode)

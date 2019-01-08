@@ -9,18 +9,6 @@ install_revive:
 	$(GO) get github.com/mgechev/revive
 
 
-## install_dep: Install dep v0.5.0.
-install_dep:
-	@echo ">> Install dep v0.5.0"
-	curl https://raw.githubusercontent.com/golang/dep/v0.5.0/install.sh | sh
-
-
-## ensure_dep: Install all dependencies.
-ensure_dep:
-	@echo ">> Install all dependencies"
-	dep ensure
-
-
 ## style: Check code style.
 style:
 	@echo ">> checking code style"
