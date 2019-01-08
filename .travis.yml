@@ -4,6 +4,8 @@ services:
   - redis-server
 
 go:
+  - 1.9.x
+  - 1.10.x
   - 1.11.x
   - master
 
@@ -27,4 +29,10 @@ script:
   - make install_revive
   - cp config.yml config.dist.yml
   - make ci
-
+  
+matrix:
+  include:
+  allow_failures:
+  - go: 1.9.x
+  - go: 1.10.x
+  
