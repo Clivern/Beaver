@@ -10,6 +10,7 @@ import (
 	"github.com/nbio/st"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -31,7 +32,7 @@ func init() {
 	}
 
 	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
-	os.Setenv("PORT", config.Get("app", "port").String("8080"))
+	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
 }
 
 // TestLogging test cases

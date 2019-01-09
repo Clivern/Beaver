@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -31,7 +32,7 @@ func init() {
 	}
 
 	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
-	os.Setenv("PORT", config.Get("app", "port").String("8080"))
+	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
 }
 
 // TestNodeController test case
