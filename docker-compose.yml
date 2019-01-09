@@ -6,7 +6,7 @@ services:
          - 'redis_data:/data'
       restart: always
    web:
-      image: "clivern_beaver:1.0.0"
+      image: "clivern_beaver:1.1.0"
       build: .
       command: './beaver'
       ports:

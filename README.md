@@ -10,19 +10,7 @@ Beaver is a real-time messaging server. With beaver you can easily build scalabl
 
 ### Config & Run The Application
 
-Beaver uses [dep](https://github.com/golang/dep) to manage dependencies so you need to install it
-
-```bash
-# For latest dep version
-$ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
-# For latest stable version
-$ curl https://raw.githubusercontent.com/golang/dep/v0.5.0/install.sh | sh
-
-$ dep ensure
-```
-
-Then Create a dist config file.
+Beaver uses [Go Modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. First Create a dist config file.
 
 ```bash
 $ cp config.yml config.dist.yml
@@ -63,6 +51,13 @@ $ go run beaver.go
 // To Provide a custom config file
 $ ./beaver -config=/custom/path/config.dist.yml
 $ go run beaver.go -config=/custom/path/config.dist.yml
+```
+
+Or [download a pre-built Beaver binary](https://github.com/Clivern/Beaver/releases) for your operating system.
+
+```bash
+curl -sL https://github.com/Clivern/Beaver/releases/download/x.x.x/beaver_x.x.x_OS.tar.gz | tar xz
+./beaver -config=config.dist.yml
 ```
 
 Also running beaver with docker still an option.
@@ -317,11 +312,18 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 
 [![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
 [![GitHub license](https://img.shields.io/github/license/Clivern/Beaver.svg)](https://github.com/Clivern/Beaver/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.0-red.svg)](https://github.com/Clivern/Beaver/releases)
+[![Version](https://img.shields.io/badge/Version-1.1.0-red.svg)](https://github.com/Clivern/Beaver/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
 
 
 ## Changelog
+
+* Version 1.1.0:
+```
+Switch to go 1.11 modules.
+Use goreleaser to deliver pre-built binaries.
+Upgrade dependencies.
+```
 
 * Version 1.0.0:
 ```

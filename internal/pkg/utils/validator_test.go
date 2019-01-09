@@ -9,6 +9,7 @@ import (
 	"github.com/micro/go-config"
 	"github.com/nbio/st"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -27,7 +28,7 @@ func init() {
 		))
 	}
 
-	os.Setenv("PORT", config.Get("app", "port").String("8080"))
+	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
 }
 
 // TestValidation test cases

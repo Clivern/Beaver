@@ -1,17 +1,6 @@
-# goreleaser release --skip-publish --snapshot
-build:
-  goos:
-    - linux
-    - darwin
-    - windows
-  goarch:
-    - 386
-    - amd64
-    - arm
-    - arm64
-  ignore:
-    - goos: darwin
-      goarch: 386
+builds:
+- env:
+  - CGO_ENABLED=0
 archive:
   replacements:
     darwin: Darwin
@@ -19,24 +8,13 @@ archive:
     windows: Windows
     386: i386
     amd64: x86_64
-  format_overrides:
-    - goos: windows
-      format: zip
-brew:
-  github:
-    owner: clivern
-    name: beaver
-  folder: Formula
-  homepage: https://github.com/clivern/beaver
-  description: A Real Time Messaging Server
-  dependencies:
-    - git
-nfpm:
-  homepage: https://github.com/clivern/beaver
-  description: A Real Time Messaging Server
-  maintainer: A.F <hello@clivern.com>
-  vendor: Beaver
-  formats:
-    - deb
-  dependencies:
-    - git
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
