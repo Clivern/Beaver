@@ -1,5 +1,11 @@
 language: go
 
+# needed for the nfpm pipe
+addons:
+  apt:
+    packages:
+    - rpm
+
 services:
   - redis-server
 
@@ -29,10 +35,25 @@ script:
   - make install_revive
   - cp config.yml config.dist.yml
   - make ci
-  
+  # Workaround to clear any package used for testing only
+  - git status
+  - git diff > diff.log
+  - cat diff.log
+  - git clean -fd
+  - git reset --hard
+
 matrix:
   include:
   allow_failures:
   - go: 1.9.x
   - go: 1.10.x
-  
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL http://git.io/goreleaser | bash
+  on:
+    tags: true
+    go: 1.11.x
+    condition: $TRAVIS_OS_NAME = linux
+    
