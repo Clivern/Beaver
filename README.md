@@ -10,19 +10,7 @@ Beaver is a real-time messaging server. With beaver you can easily build scalabl
 
 ### Config & Run The Application
 
-Beaver uses [dep](https://github.com/golang/dep) to manage dependencies so you need to install it
-
-```bash
-# For latest dep version
-$ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
-# For latest stable version
-$ curl https://raw.githubusercontent.com/golang/dep/v0.5.0/install.sh | sh
-
-$ dep ensure
-```
-
-Then Create a dist config file.
+Beaver uses [Go Modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. First Create a dist config file.
 
 ```bash
 $ cp config.yml config.dist.yml
@@ -63,6 +51,13 @@ $ go run beaver.go
 // To Provide a custom config file
 $ ./beaver -config=/custom/path/config.dist.yml
 $ go run beaver.go -config=/custom/path/config.dist.yml
+```
+
+Or [download a pre-built Beaver binary](https://github.com/Clivern/Beaver/releases) for your operating system.
+
+```bash
+curl -sL https://github.com/Clivern/Beaver/releases/download/x.x.x/beaver_x.x.x_OS.tar.gz | tar xz
+./beaver -config=config.dist.yml
 ```
 
 Also running beaver with docker still an option.
