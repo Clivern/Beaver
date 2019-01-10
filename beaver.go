@@ -63,8 +63,6 @@ func main() {
 	r.Use(middleware.Correlation())
 	r.Use(middleware.Auth())
 	r.Use(middleware.Logger())
-	r.Static("/static", "./web/static/")
-	r.LoadHTMLGlob("web/template/*")
 	r.GET("/", controller.Index)
 	r.GET("/_healthcheck", controller.HealthCheck)
 	r.GET("/favicon.ico", func(c *gin.Context) {
