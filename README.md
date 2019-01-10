@@ -56,8 +56,8 @@ $ go run beaver.go -config=/custom/path/config.dist.yml
 Or [download a pre-built Beaver binary](https://github.com/Clivern/Beaver/releases) for your operating system.
 
 ```bash
-curl -sL https://github.com/Clivern/Beaver/releases/download/x.x.x/beaver_x.x.x_OS.tar.gz | tar xz
-./beaver -config=config.dist.yml
+$ curl -sL https://github.com/Clivern/Beaver/releases/download/x.x.x/beaver_x.x.x_OS.tar.gz | tar xz
+$ ./beaver -config=config.dist.yml
 ```
 
 Also running beaver with docker still an option.
