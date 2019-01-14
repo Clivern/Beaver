@@ -6,7 +6,7 @@ services:
          - 'redis_data:/data'
       restart: always
    web:
-      image: "clivern_beaver:1.1.0"
+      image: "clivern_beaver:1.2.0"
       build: .
       command: './beaver'
       ports:
@@ -21,3 +21,5 @@ services:
          interval: 5s
          timeout: 2s
          retries: 5
+volumes:
+    redis_data: null
