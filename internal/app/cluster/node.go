@@ -4,8 +4,6 @@
 
 package cluster
 
-
 // Node driver
 type Node struct {
-
 }

@@ -4,8 +4,6 @@
 
 package driver
 
-
 // RabbitMQ driver
 type RabbitMQ struct {
-
 }
