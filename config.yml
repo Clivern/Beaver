@@ -3,6 +3,10 @@ app:
     port: 8080
     domain: example.com
     secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
+    tls:
+        status: off
+        pemPath: cert/server.pem
+        keyPath: cert/server.key
 
 log:
     level: info
@@ -15,3 +19,13 @@ redis:
 
 api:
     token: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
+
+cluster:
+    status: off
+    node:
+        id: beaver-01
+        capacity: 500
+        balancing: fillup #round_robin
+    broker:
+        type: rabbitmq
+        connection: amqp://user:pass@host:10000/vhost

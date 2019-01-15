@@ -21,6 +21,7 @@ require (
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
 	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
+	github.com/streadway/amqp v0.0.0-20181205114330-a314942b2fd9 // indirect
 	github.com/ugorji/go v1.1.1
 	golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6
 	gopkg.in/go-playground/validator.v8 v8.18.2
