@@ -4,6 +4,9 @@ services:
       image: 'redis:5.0.3-alpine'
       volumes:
          - 'redis_data:/data'
+      # Allow connection from docker host machine
+      # ports:
+      #   - "6379:6379"
       restart: always
    web:
       image: "clivern_beaver:1.1.1"
