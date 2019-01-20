@@ -81,6 +81,7 @@ $ cp config.yml ./configs/config.dist.yml
 $ rm config.yml
 # Update log.path to be the absolute path to config file on host machine ($HOME/srv/beaver/logs)
 $ sed -i "s|var/logs|${HOME}/srv/beaver/logs|g" ./configs/config.dist.yml
+$ sed -i "s|localhost:6379|redis:6379|g" ./configs/config.dist.yml
 
 # Build and run containers
 $ cd $HOME/srv/beaver/
