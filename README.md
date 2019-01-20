@@ -319,6 +319,43 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 [![Version](https://img.shields.io/badge/Version-1.1.1-red.svg)](https://github.com/Clivern/Beaver/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
 
+## For contributors
+
+To run beaver locally for development or even testing, please follow the following:
+
+```bash
+# Use src/github.com/clivern/beaver
+$ mkdir -p $GOPATH/src/github.com/clivern/beaver
+$ git clone https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
+$ cd $GOPATH/src/github.com/clivern/beaver
+
+# Create a feature branch
+$ git branch feature/x
+$ git checkout feature/x
+
+$ export GO111MODULE=on
+$ cp config.yml config.dist.yml
+$ cp config.yml config.test.yml
+
+# Add redis to config.test.yml and config.dist.yml
+
+# to run beaver
+$ go run beaver.go
+$ go build beaver.go
+
+# To run test cases
+$ make ci
+
+# To create a testing redis & rabbitMQ container
+$ docker run -d --name redis -p 6379:6379 redis
+$ docker pull rabbitmq
+$ docker run -d --hostname my-rabbit --name some-rabbit -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 15672:15672 rabbitmq
+$ docker exec some-rabbit rabbitmq-plugins enable rabbitmq_management
+# Login at http://localhost:15672/ (or the IP of your docker host)
+# using guest/guest
+```
+
+Then Create a PR with the master branch.
 
 ## Changelog
 
