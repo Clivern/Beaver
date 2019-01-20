@@ -24,11 +24,6 @@ RUN mkdir -p /go/configs/beaver
 FROM alpine:3.8
 RUN apk --no-cache add ca-certificates
 
-# Import from builder.
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /etc/passwd /etc/passwd
-
 # Copy our static executable
 COPY --from=builder /go/bin/beaver /go/bin/beaver
 COPY --from=builder /go/logs/beaver /go/logs/beaver
