@@ -67,7 +67,23 @@ $ ./beaver -config=config.dist.yml
 Also running beaver with docker still an option.
 
 ```bash
-$ cp config.yml config.dist.yml
+$ mkdir -p $HOME/srv/beaver
+$ mkdir -p $HOME/srv/beaver/configs
+$ mkdir -p $HOME/srv/beaver/logs
+
+$ cd $HOME/srv/beaver
+
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/Dockerfile
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/docker-compose.yml
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/config.yml
+
+$ cp config.yml ./configs/config.dist.yml
+$ rm config.yml
+# Update log.path to be the absolute path to config file on host machine ($HOME/srv/beaver/logs)
+$ sed -i "s|var/logs|${HOME}/srv/beaver/logs|g" ./configs/config.dist.yml
+
+# Build and run containers
+$ cd $HOME/srv/beaver/
 $ docker-compose build
 $ docker-compose up -d
 ```

@@ -1,14 +1,40 @@
-FROM golang:1.11.1
+FROM golang:1.11.1 as builder
 
 ENV GO111MODULE=on
 
-RUN mkdir -p /go/src/github.com/clivern/beaver/
+ARG BEAVER_VERSION=1.1.1
 
-ADD . /go/src/github.com/clivern/beaver/
+RUN mkdir -p $GOPATH/src/github.com/clivern
 
-WORKDIR /go/src/github.com/clivern/beaver
+RUN git clone -b master https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
 
-RUN go build -o beaver beaver.go
+WORKDIR $GOPATH/src/github.com/clivern/beaver
+
+RUN git checkout tags/$BEAVER_VERSION
+
+RUN go mod download
+
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/beaver .
+
+RUN mkdir -p /go/logs/beaver
+RUN mkdir -p /go/configs/beaver
+
+# Build a small image
+FROM alpine:3.8
+RUN apk --no-cache add ca-certificates
+
+# Import from builder.
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /etc/passwd /etc/passwd
+
+# Copy our static executable
+COPY --from=builder /go/bin/beaver /go/bin/beaver
+COPY --from=builder /go/logs/beaver /go/logs/beaver
+COPY --from=builder /go/configs/beaver /go/configs/beaver
+
+WORKDIR /go/bin/
 
 EXPOSE 8080
 

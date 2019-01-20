@@ -11,16 +11,17 @@ services:
    web:
       image: "clivern_beaver:1.1.1"
       build: .
-      command: './beaver'
+      command: './beaver -config=/go/configs/beaver/config.dist.yml'
       ports:
          - "8080:8080"
       depends_on:
          - redis
       volumes:
-         - './var:/go/src/github.com/clivern/beaver/var'
+         - './logs:/go/logs/beaver'
+         - './configs:/go/configs/beaver'
       restart: always
       healthcheck:
-         test: './beaver -exec=health'
+         test: './beaver -config=/go/configs/beaver/config.dist.yml -exec=health'
          interval: 5s
          timeout: 2s
          retries: 5
