@@ -6,6 +6,10 @@
 
 Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
 
+<p align="center">
+    <img alt="Beaver Single Node" src="https://raw.githubusercontent.com/Clivern/Beaver/master/assets/charts/single_node.png" />
+</p>
+
 ## Documentation
 
 ### Config & Run The Application
@@ -63,7 +67,24 @@ $ ./beaver -config=config.dist.yml
 Also running beaver with docker still an option.
 
 ```bash
-$ cp config.yml config.dist.yml
+$ mkdir -p $HOME/srv/beaver
+$ mkdir -p $HOME/srv/beaver/configs
+$ mkdir -p $HOME/srv/beaver/logs
+
+$ cd $HOME/srv/beaver
+
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/Dockerfile
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/docker-compose.yml
+$ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/config.yml
+
+$ cp config.yml ./configs/config.dist.yml
+$ rm config.yml
+# Update log.path to be the absolute path to config file on host machine ($HOME/srv/beaver/logs)
+$ sed -i "s|var/logs|${HOME}/srv/beaver/logs|g" ./configs/config.dist.yml
+$ sed -i "s|localhost:6379|redis:6379|g" ./configs/config.dist.yml
+
+# Build and run containers
+$ cd $HOME/srv/beaver/
 $ docker-compose build
 $ docker-compose up -d
 ```
@@ -312,11 +333,45 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 
 [![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
 [![GitHub license](https://img.shields.io/github/license/Clivern/Beaver.svg)](https://github.com/Clivern/Beaver/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.1.1-red.svg)](https://github.com/Clivern/Beaver/releases)
+[![Version](https://img.shields.io/badge/Version-1.1.2-red.svg)](https://github.com/Clivern/Beaver/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
 
+## For contributors
+
+To run beaver locally for development or even testing, please follow the following:
+
+```bash
+# Use src/github.com/clivern/beaver
+$ mkdir -p $GOPATH/src/github.com/clivern/beaver
+$ git clone https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
+$ cd $GOPATH/src/github.com/clivern/beaver
+
+# Create a feature branch
+$ git branch feature/x
+$ git checkout feature/x
+
+$ export GO111MODULE=on
+$ cp config.yml config.dist.yml
+$ cp config.yml config.test.yml
+
+# Add redis to config.test.yml and config.dist.yml
+
+# to run beaver
+$ go run beaver.go
+$ go build beaver.go
+
+# To run test cases
+$ make ci
+```
+
+Then Create a PR with the master branch.
 
 ## Changelog
+
+* Version 1.1.2:
+```
+Update Docs.
+```
 
 * Version 1.1.1:
 ```
