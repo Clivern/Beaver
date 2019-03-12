@@ -28,6 +28,10 @@ app:
     port: 8080
     domain: example.com
     secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
+    tls:
+        status: off
+        pemPath: cert/server.pem
+        keyPath: cert/server.key
 
 log:
     level: info
@@ -333,7 +337,7 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 
 [![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
 [![GitHub license](https://img.shields.io/github/license/Clivern/Beaver.svg)](https://github.com/Clivern/Beaver/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.1.2-red.svg)](https://github.com/Clivern/Beaver/releases)
+[![Version](https://img.shields.io/badge/Version-1.1.3-red.svg)](https://github.com/Clivern/Beaver/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
 
 ## For contributors
@@ -367,6 +371,11 @@ $ make ci
 Then Create a PR with the master branch.
 
 ## Changelog
+
+* Version 1.1.3:
+```
+Support TLS.
+```
 
 * Version 1.1.2:
 ```

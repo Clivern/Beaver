@@ -50,8 +50,6 @@ func main() {
 		return
 	}
 
-	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
-
 	if config.Get("app", "mode").String("dev") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
@@ -127,5 +125,15 @@ func main() {
 
 	go socket.HandleMessages()
 
-	r.Run()
+	if config.Get("app", "tls", "status").Bool(false) {
+		r.RunTLS(
+			fmt.Sprintf(":%s", strconv.Itoa(config.Get("app", "port").Int(8080))),
+			config.Get("app", "tls", "pemPath").String(""),
+			config.Get("app", "tls", "keyPath").String(""),
+		)
+	} else {
+		r.Run(
+			fmt.Sprintf(":%s", strconv.Itoa(config.Get("app", "port").Int(8080))),
+		)
+	}
 }
