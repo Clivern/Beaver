@@ -12,7 +12,7 @@ import (
 	"github.com/clivern/beaver/internal/app/middleware"
 	"github.com/clivern/beaver/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-config"
+	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"os"
@@ -30,7 +30,9 @@ func main() {
 	flag.StringVar(&configFile, "config", "config.dist.yml", "config")
 	flag.Parse()
 
-	err := config.LoadFile(configFile)
+	viper.SetConfigFile(configFile)
+
+	err := viper.ReadInConfig()
 
 	if err != nil {
 		panic(fmt.Sprintf(
@@ -50,10 +52,10 @@ func main() {
 		return
 	}
 
-	if config.Get("app", "mode").String("dev") == "prod" {
+	if viper.GetString("app.mode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
-		f, _ := os.Create(fmt.Sprintf("%s/gin.log", config.Get("log", "path").String("var/logs")))
+		f, _ := os.Create(fmt.Sprintf("%s/gin.log", viper.GetString("log.path")))
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
 
@@ -125,15 +127,15 @@ func main() {
 
 	go socket.HandleMessages()
 
-	if config.Get("app", "tls", "status").Bool(false) {
+	if viper.GetBool("app.tls.status") {
 		r.RunTLS(
-			fmt.Sprintf(":%s", strconv.Itoa(config.Get("app", "port").Int(8080))),
-			config.Get("app", "tls", "pemPath").String(""),
-			config.Get("app", "tls", "keyPath").String(""),
+			fmt.Sprintf(":%s", strconv.Itoa(viper.GetInt("app.port"))),
+			viper.GetString("app.tls.pemPath"),
+			viper.GetString("app.tls.keyPath"),
 		)
 	} else {
 		r.Run(
-			fmt.Sprintf(":%s", strconv.Itoa(config.Get("app", "port").Int(8080))),
+			fmt.Sprintf(":%s", strconv.Itoa(viper.GetInt("app.port"))),
 		)
 	}
 }
