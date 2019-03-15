@@ -12,7 +12,7 @@
 *.out
 
 # Config file
-config.dist.yml
+config.prod.yml
 
 # App build
 beaver
