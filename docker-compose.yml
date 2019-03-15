@@ -11,7 +11,7 @@ services:
    web:
       image: "clivern_beaver:1.1.2"
       build: .
-      command: './beaver -config=/go/configs/beaver/config.dist.yml'
+      command: './beaver -config=/go/configs/beaver/config.prod.yml'
       ports:
          - "8080:8080"
       depends_on:
@@ -21,7 +21,7 @@ services:
          - './configs:/go/configs/beaver'
       restart: always
       healthcheck:
-         test: './beaver -config=/go/configs/beaver/config.dist.yml -exec=health'
+         test: './beaver -config=/go/configs/beaver/config.prod.yml -exec=health'
          interval: 5s
          timeout: 2s
          retries: 5

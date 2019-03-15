@@ -14,10 +14,10 @@ Beaver is a real-time messaging server. With beaver you can easily build scalabl
 
 ### Config & Run The Application
 
-Beaver uses [Go Modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. First Create a dist config file.
+Beaver uses [Go Modules](https://github.com/golang/go/wiki/Modules) to manage dependencies. First Create a prod config file.
 
 ```bash
-$ cp config.yml config.dist.yml
+$ cp config.yml config.prod.yml
 ```
 
 Then add your `app.*`, `log.*`, `redis_*`, `api.*` ...etc.
@@ -57,15 +57,15 @@ $ ./beaver
 $ go run beaver.go
 
 // To Provide a custom config file
-$ ./beaver -config=/custom/path/config.dist.yml
-$ go run beaver.go -config=/custom/path/config.dist.yml
+$ ./beaver -config=/custom/path/config.prod.yml
+$ go run beaver.go -config=/custom/path/config.prod.yml
 ```
 
 Or [download a pre-built Beaver binary](https://github.com/Clivern/Beaver/releases) for your operating system.
 
 ```bash
 $ curl -sL https://github.com/Clivern/Beaver/releases/download/x.x.x/beaver_x.x.x_OS.tar.gz | tar xz
-$ ./beaver -config=config.dist.yml
+$ ./beaver -config=config.prod.yml
 ```
 
 Also running beaver with docker still an option.
@@ -81,11 +81,11 @@ $ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/Dockerfile
 $ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/docker-compose.yml
 $ curl -OL https://raw.githubusercontent.com/Clivern/Beaver/master/config.yml
 
-$ cp config.yml ./configs/config.dist.yml
+$ cp config.yml ./configs/config.prod.yml
 $ rm config.yml
 # Update log.path to be the absolute path to config file on host machine ($HOME/srv/beaver/logs)
-$ sed -i "s|var/logs|${HOME}/srv/beaver/logs|g" ./configs/config.dist.yml
-$ sed -i "s|localhost:6379|redis:6379|g" ./configs/config.dist.yml
+$ sed -i "s|var/logs|${HOME}/srv/beaver/logs|g" ./configs/config.prod.yml
+$ sed -i "s|localhost:6379|redis:6379|g" ./configs/config.prod.yml
 
 # Build and run containers
 $ cd $HOME/srv/beaver/
@@ -355,10 +355,10 @@ $ git branch feature/x
 $ git checkout feature/x
 
 $ export GO111MODULE=on
-$ cp config.yml config.dist.yml
+$ cp config.yml config.prod.yml
 $ cp config.yml config.test.yml
 
-# Add redis to config.test.yml and config.dist.yml
+# Add redis to config.test.yml and config.prod.yml
 
 # to run beaver
 $ go run beaver.go

@@ -33,7 +33,7 @@ script:
   - mv config.travis.yml config.test.yml
   # Config & execute ci tasks
   - make install_revive
-  - cp config.yml config.dist.yml
+  - cp config.yml config.prod.yml
   - make ci
   # Workaround to clear any package used for testing only
   - git status
@@ -56,4 +56,4 @@ deploy:
     tags: true
     go: 1.11.x
     condition: $TRAVIS_OS_NAME = linux
-    
+

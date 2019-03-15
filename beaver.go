@@ -27,7 +27,7 @@ func main() {
 	utils.PrintBanner()
 
 	flag.StringVar(&exec, "exec", "", "exec")
-	flag.StringVar(&configFile, "config", "config.dist.yml", "config")
+	flag.StringVar(&configFile, "config", "config.prod.yml", "config")
 	flag.Parse()
 
 	viper.SetConfigFile(configFile)
