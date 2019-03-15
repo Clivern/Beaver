@@ -337,7 +337,7 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 
 [![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
 [![GitHub license](https://img.shields.io/github/license/Clivern/Beaver.svg)](https://github.com/Clivern/Beaver/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.1.3-red.svg)](https://github.com/Clivern/Beaver/releases)
+[![Version](https://img.shields.io/badge/Version-1.2.0-red.svg)](https://github.com/Clivern/Beaver/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
 
 ## For contributors
@@ -372,9 +372,11 @@ Then Create a PR with the master branch.
 
 ## Changelog
 
-* Version 1.1.3:
+* Version 1.2.0:
 ```
 Support TLS.
+Upgrade dependencies.
+Switch to spf13/viper.
 ```
 
 * Version 1.1.2:
