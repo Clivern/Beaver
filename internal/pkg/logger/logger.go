@@ -7,7 +7,7 @@ package logger
 import (
 	"fmt"
 	"github.com/google/logger"
-	"github.com/micro/go-config"
+	"github.com/spf13/viper"
 	"os"
 	"time"
 )
@@ -15,7 +15,7 @@ import (
 // Info log
 func Info(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info"
 
 	if ok {
@@ -23,7 +23,7 @@ func Info(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -44,7 +44,7 @@ func Info(v ...interface{}) {
 // Infoln log
 func Infoln(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info"
 
 	if ok {
@@ -52,7 +52,7 @@ func Infoln(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -73,7 +73,7 @@ func Infoln(v ...interface{}) {
 // Infof log
 func Infof(format string, v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info"
 
 	if ok {
@@ -81,7 +81,7 @@ func Infof(format string, v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -102,7 +102,7 @@ func Infof(format string, v ...interface{}) {
 // Warning log
 func Warning(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
@@ -110,7 +110,7 @@ func Warning(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -131,7 +131,7 @@ func Warning(v ...interface{}) {
 // Warningln log
 func Warningln(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
@@ -139,7 +139,7 @@ func Warningln(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -160,7 +160,7 @@ func Warningln(v ...interface{}) {
 // Warningf log
 func Warningf(format string, v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning"
 
 	if ok {
@@ -168,7 +168,7 @@ func Warningf(format string, v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -189,7 +189,7 @@ func Warningf(format string, v ...interface{}) {
 // Error log
 func Error(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
@@ -197,7 +197,7 @@ func Error(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -218,7 +218,7 @@ func Error(v ...interface{}) {
 // Errorln log
 func Errorln(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
@@ -226,7 +226,7 @@ func Errorln(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -247,7 +247,7 @@ func Errorln(v ...interface{}) {
 // Errorf log
 func Errorf(format string, v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error"
 
 	if ok {
@@ -255,7 +255,7 @@ func Errorf(format string, v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -276,7 +276,7 @@ func Errorf(format string, v ...interface{}) {
 // Fatal log
 func Fatal(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
@@ -284,7 +284,7 @@ func Fatal(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -305,7 +305,7 @@ func Fatal(v ...interface{}) {
 // Fatalln log
 func Fatalln(v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
@@ -313,7 +313,7 @@ func Fatalln(v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
@@ -334,7 +334,7 @@ func Fatalln(v ...interface{}) {
 // Fatalf log
 func Fatalf(format string, v ...interface{}) {
 
-	logLevel := config.Get("log", "level").String("info")
+	logLevel := viper.GetString("log.level")
 	ok := logLevel == "info" || logLevel == "warning" || logLevel == "error" || logLevel == "fatal"
 
 	if ok {
@@ -342,7 +342,7 @@ func Fatalf(format string, v ...interface{}) {
 		file := fmt.Sprintf(
 			"%s%s/%s.log",
 			os.Getenv("BeaverBasePath"),
-			config.Get("log", "path").String("var/logs"),
+			viper.GetString("log.path"),
 			currentTime.Format("2006-01-02"),
 		)
 		lf, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
