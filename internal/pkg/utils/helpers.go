@@ -15,7 +15,7 @@ import (
 
 // GenerateUUID4 create a UUID
 func GenerateUUID4() string {
-	u := uuid.Must(uuid.NewV4())
+	u := uuid.Must(uuid.NewV4(), nil)
 	return u.String()
 }
 

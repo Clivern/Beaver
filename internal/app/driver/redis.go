@@ -6,7 +6,7 @@ package driver
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/micro/go-config"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -21,9 +21,9 @@ type Redis struct {
 // NewRedisDriver create a new instance
 func NewRedisDriver() *Redis {
 	return &Redis{
-		Addr:     config.Get("redis", "addr").String("localhost:6379"),
-		Password: config.Get("redis", "password").String(""),
-		DB:       config.Get("redis", "db").Int(0),
+		Addr:     viper.GetString("redis.addr"),
+		Password: viper.GetString("redis.password"),
+		DB:       viper.GetInt("redis.db"),
 	}
 }
 

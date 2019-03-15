@@ -7,8 +7,8 @@ package controller
 import (
 	"fmt"
 	_ "github.com/gin-gonic/gin"
-	"github.com/micro/go-config"
 	_ "github.com/nbio/st"
+	"github.com/spf13/viper"
 	_ "net/http"
 	_ "net/http/httptest"
 	"os"
@@ -21,7 +21,9 @@ func init() {
 	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
 	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.yml")
 
-	err := config.LoadFile(configFile)
+	viper.SetConfigFile(configFile)
+
+	err := viper.ReadInConfig()
 
 	if err != nil {
 		panic(fmt.Sprintf(
@@ -32,5 +34,5 @@ func init() {
 	}
 
 	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
-	os.Setenv("PORT", strconv.Itoa(config.Get("app", "port").Int(8080)))
+	os.Setenv("PORT", strconv.Itoa(viper.GetInt("app.port")))
 }

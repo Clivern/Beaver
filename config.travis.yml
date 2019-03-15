@@ -3,6 +3,10 @@ app:
     port: 8080
     domain: example.com
     secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
+    tls:
+        status: off
+        pemPath: cert/server.pem
+        keyPath: cert/server.key
 
 log:
     level: info

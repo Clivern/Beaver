@@ -7,7 +7,7 @@ package middleware
 import (
 	"github.com/clivern/beaver/internal/pkg/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-config"
+	"github.com/spf13/viper"
 	"net/http"
 	"strings"
 )
@@ -20,7 +20,7 @@ func Auth() gin.HandlerFunc {
 
 		if strings.Contains(path, "/api/") {
 			authToken := c.GetHeader("X-AUTH-TOKEN")
-			if authToken != config.Get("api", "token").String("") {
+			if authToken != viper.GetString("api.token") {
 				logger.Infof(
 					`Unauthorized access to %s:%s with token %s {"correlationId":"%s"}`,
 					method,
