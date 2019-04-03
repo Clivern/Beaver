@@ -2,6 +2,12 @@
     <img alt="Beaver Logo" src="https://raw.githubusercontent.com/Clivern/Beaver/master/assets/img/logo.png" height="80" />
     <h3 align="center">Beaver</h3>
     <p align="center">A Real Time Messaging Server.</p>
+    <p align="center">
+        <img src="https://travis-ci.org/Clivern/Beaver.svg?branch=master">
+        <img src="https://img.shields.io/badge/Version-1.2.0-red.svg">
+        <img src="https://goreportcard.com/badge/github.com/Clivern/Beaver">
+        <img src="https://img.shields.io/badge/LICENSE-MIT-orange.svg">
+    </p>
 </p>
 
 Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
@@ -9,6 +15,7 @@ Beaver is a real-time messaging server. With beaver you can easily build scalabl
 <p align="center">
     <img alt="Beaver Single Node" src="https://raw.githubusercontent.com/Clivern/Beaver/master/assets/charts/single_node.png" />
 </p>
+
 
 ## Documentation
 
@@ -333,76 +340,29 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 ```
 
 
-## Badges
+## Versioning
 
-[![Build Status](https://travis-ci.org/Clivern/Beaver.svg?branch=master)](https://travis-ci.org/Clivern/Beaver)
-[![GitHub license](https://img.shields.io/github/license/Clivern/Beaver.svg)](https://github.com/Clivern/Beaver/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.0-red.svg)](https://github.com/Clivern/Beaver/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Clivern/Beaver)](https://goreportcard.com/report/github.com/Clivern/Beaver)
+For transparency into our release cycle and in striving to maintain backward compatibility, Beaver is maintained under the [Semantic Versioning guidelines](https://semver.org/) and release process is predictable and business-friendly.
 
-## For contributors
-
-To run beaver locally for development or even testing, please follow the following:
-
-```bash
-# Use src/github.com/clivern/beaver
-$ mkdir -p $GOPATH/src/github.com/clivern/beaver
-$ git clone https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
-$ cd $GOPATH/src/github.com/clivern/beaver
-
-# Create a feature branch
-$ git branch feature/x
-$ git checkout feature/x
-
-$ export GO111MODULE=on
-$ cp config.yml config.dist.yml
-$ cp config.yml config.test.yml
-
-# Add redis to config.test.yml and config.dist.yml
-
-# to run beaver
-$ go run beaver.go
-$ go build beaver.go
-
-# To run test cases
-$ make ci
-```
-
-Then Create a PR with the master branch.
-
-## Changelog
-
-* Version 1.2.0:
-```
-Support TLS.
-Upgrade dependencies.
-Switch to spf13/viper.
-```
-
-* Version 1.1.2:
-```
-Update Docs.
-```
-
-* Version 1.1.1:
-```
-Fix Dockerfile.
-```
-
-* Version 1.1.0:
-```
-Switch to go 1.11 modules.
-Use goreleaser to deliver pre-built binaries.
-Upgrade dependencies.
-```
-
-* Version 1.0.0:
-```
-Initial Release.
-```
+See the [Releases section of our GitHub project](https://github.com/clivern/beaver/releases) for changelogs for each release version of Beaver. It contains summaries of the most noteworthy changes made in each release.
 
 
-## Acknowledgements
+## Bug tracker
+
+If you have any suggestions, bug reports, or annoyances please report them to our issue tracker at https://github.com/clivern/beaver/issues
+
+
+## Security Issues
+
+If you discover a security vulnerability within Beaver, please send an email to [hello@clivern.com](mailto:hello@clivern.com)
+
+
+## Contributing
+
+We are an open source, community-driven project so please feel free to join us. see the [contributing guidelines](CONTRIBUTING.md) for more details.
+
+
+## License
 
 © 2018, Clivern. Released under [MIT License](https://opensource.org/licenses/mit-license.php).
 
