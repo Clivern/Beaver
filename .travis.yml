@@ -13,6 +13,7 @@ go:
   - 1.9.x
   - 1.10.x
   - 1.11.x
+  - 1.12.x
   - master
 
 env:
@@ -54,6 +55,6 @@ deploy:
   script: curl -sL http://git.io/goreleaser | bash
   on:
     tags: true
-    go: 1.11.x
+    go: 1.12.x
     condition: $TRAVIS_OS_NAME = linux
 

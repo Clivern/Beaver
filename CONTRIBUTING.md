@@ -1,3 +1,33 @@
+## Local Development
+
+To run beaver locally for development or even testing, please follow the following:
+
+```bash
+# Use src/github.com/clivern/beaver
+$ mkdir -p $GOPATH/src/github.com/clivern/beaver
+$ git clone https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
+$ cd $GOPATH/src/github.com/clivern/beaver
+
+# Create a feature branch
+$ git branch feature/x
+$ git checkout feature/x
+
+$ export GO111MODULE=on
+$ cp config.yml config.dist.yml
+$ cp config.yml config.test.yml
+
+# Add redis to config.test.yml and config.dist.yml
+
+# to run beaver
+$ go run beaver.go
+$ go build beaver.go
+
+# To run test cases
+$ make ci
+```
+
+Then Create a PR with the master branch.
+
 ## Contributing
 
 - With issues:
