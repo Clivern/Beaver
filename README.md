@@ -340,6 +340,11 @@ Socket("ws://localhost:8080/ws/$ID/$TOKEN");
 ```
 
 
+## Client:
+
+- [Go Client](https://github.com/domgolonka/beavergo) Thanks [@domgolonka](https://github.com/domgolonka)
+
+
 ## Versioning
 
 For transparency into our release cycle and in striving to maintain backward compatibility, Beaver is maintained under the [Semantic Versioning guidelines](https://semver.org/) and release process is predictable and business-friendly.
