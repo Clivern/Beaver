@@ -1,5 +1,5 @@
 app:
-    mode: dev
+    mode: prod
     port: 8080
     domain: example.com
     secret: sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD
