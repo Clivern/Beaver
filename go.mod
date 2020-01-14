@@ -9,8 +9,8 @@ require (
 	github.com/google/logger v1.0.1
 	github.com/gorilla/websocket v1.4.1
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
-	github.com/onsi/ginkgo v1.10.3 // indirect
-	github.com/onsi/gomega v1.7.1 // indirect
+	github.com/onsi/ginkgo v1.11.0 // indirect
+	github.com/onsi/gomega v1.8.1 // indirect
 	github.com/satori/go.uuid v1.2.0
-	github.com/spf13/viper v1.5.0
+	github.com/spf13/viper v1.6.1
 )
