@@ -19,6 +19,7 @@ go:
 
 env:
   - GO111MODULE=on
+  - GIN_MODE=release
 
 install: true
 
