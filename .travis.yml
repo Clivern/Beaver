@@ -34,6 +34,7 @@ script:
   - cd clivern/beaver
   # Config & execute ci tasks
   - make install_revive
+  - cp config.travis.yml config.test.yml
   - cp config.travis.yml config.dist.yml
   - make ci
   # Workaround to clear any package used for testing only
