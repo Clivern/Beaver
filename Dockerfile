@@ -1,4 +1,4 @@
-FROM golang:1.11.1 as builder
+FROM golang:1.13.4 as builder
 
 ENV GO111MODULE=on
 
@@ -21,7 +21,7 @@ RUN mkdir -p /go/logs/beaver
 RUN mkdir -p /go/configs/beaver
 
 # Build a small image
-FROM alpine:3.8
+FROM alpine:3.10
 RUN apk --no-cache add ca-certificates
 
 # Copy our static executable
