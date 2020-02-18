@@ -365,8 +365,8 @@ func (c *Client) Unsubscribe(ID string, channels []string) (bool, error) {
 		return false, err
 	}
 
-	for i, channel := range channels {
-		if validator.IsIn(channel, clientResult.Channels) {
+	for i, channel := range clientResult.Channels {
+		if validator.IsIn(channel, channels) {
 			ok, err := c.RemoveFromChannel(ID, channel)
 			if !ok || err != nil {
 				return false, err
