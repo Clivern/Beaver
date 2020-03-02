@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Beaver Logo" src="https://raw.githubusercontent.com/Clivern/Beaver/master/assets/img/logo.png" height="80" />
+    <img alt="Beaver Logo" src="https://raw.githubusercontent.com/clivern/Beaver/master/assets/img/gopher.png" width="150" />
     <h3 align="center">Beaver</h3>
     <p align="center">A Real Time Messaging Server.</p>
     <p align="center">
