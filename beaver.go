@@ -55,7 +55,15 @@ func main() {
 	if viper.GetString("app.mode") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
-		f, _ := os.Create(fmt.Sprintf("%s/gin.log", viper.GetString("log.path")))
+
+		logFile := fmt.Sprintf("%s/gin.logs", viper.GetString("log.path"))
+		f, err:= os.Create(logFile)
+		if err != nil {
+			panic(fmt.Sprintf("Error while create log file [%s]: %s",
+				logFile,
+				err.Error()))
+		}
+
 		gin.DefaultWriter = io.MultiWriter(f)
 	}
 
