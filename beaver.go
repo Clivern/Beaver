@@ -56,12 +56,16 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 		gin.DisableConsoleColor()
 
-		logFile := fmt.Sprintf("%s/gin.logs", viper.GetString("log.path"))
-		f, err:= os.Create(logFile)
+		logFile := fmt.Sprintf("%s/gin.log", viper.GetString("log.path"))
+
+		f, err := os.Create(logFile)
+
 		if err != nil {
-			panic(fmt.Sprintf("Error while create log file [%s]: %s",
+			panic(fmt.Sprintf(
+				"Error while create log file [%s]: %s",
 				logFile,
-				err.Error()))
+				err.Error(),
+			))
 		}
 
 		gin.DefaultWriter = io.MultiWriter(f)
