@@ -21,7 +21,7 @@ RUN mkdir -p /go/logs/beaver
 RUN mkdir -p /go/configs/beaver
 
 # Build a small image
-FROM alpine:3.10
+FROM alpine:3.11
 RUN apk --no-cache add ca-certificates
 
 # Copy our static executable
