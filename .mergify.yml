@@ -8,8 +8,8 @@ pull_request_rules:
       - author!=Clivern
       - approved-reviews-by=Clivern
       - label=merge
-      - status-success=Travis CI - Pull Request
-      - status-success=Travis CI - Branch
+      - status-success=continuous-integration/travis-ci/pr
+      - status-success=continuous-integration/travis-ci/push
     name: "Automatic Merge 🚀"
   -
     actions:
@@ -26,13 +26,13 @@ pull_request_rules:
     conditions:
       - "author=renovate[bot]"
       - label=merge
-      - status-success=Travis CI - Pull Request
-      - status-success=Travis CI - Branch
+      - status-success=continuous-integration/travis-ci/pr
+      - status-success=continuous-integration/travis-ci/push
     name: "Automatic Merge for Renovate PRs 🚀"
   -
     actions:
       comment:
-        message: "Nice! PR merged successfully."
+        message: "Nice! PR successfully merged."
     conditions:
       - merged
     name: "Merge Done 🚀"
