@@ -6,7 +6,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.8+incompatible
-	github.com/go-redis/redis/v7 v7.3.0
+	github.com/go-redis/redis/v7 v7.4.0
 	github.com/google/logger v1.1.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32
