@@ -1,4 +1,4 @@
-FROM golang:1.14.4 as builder
+FROM golang:1.14.5 as builder
 
 ENV GO111MODULE=on
 
