@@ -13,5 +13,5 @@ require (
 	github.com/onsi/ginkgo v1.12.1 // indirect
 	github.com/onsi/gomega v1.10.0 // indirect
 	github.com/satori/go.uuid v1.2.0
-	github.com/spf13/viper v1.7.0
+	github.com/spf13/viper v1.7.1
 )
