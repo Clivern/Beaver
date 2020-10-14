@@ -21,6 +21,7 @@ import (
 
 	"github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // InArray check if value is on array
@@ -271,3 +272,21 @@ func CheckPasswordHash(password, hash string) bool {
 
 	return err == nil
 }
+
+// GenerateJWTToken generate a jwt token for frontend
+func GenerateJWTToken(data string, timestamp int64, secret string) (string, error) {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"data":      data,
+		"timestamp": timestamp,
+	})
+
+	tokenString, err := token.SignedString([]byte(secret))
+
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
