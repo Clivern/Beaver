@@ -4,7 +4,7 @@
     <p align="center">A Real Time Messaging Server.</p>
     <p align="center">
         <img src="https://travis-ci.org/Clivern/Beaver.svg?branch=master">
-        <img src="https://img.shields.io/badge/Version-1.2.2-red.svg">
+        <img src="https://img.shields.io/badge/Version-2.0.0-red.svg">
         <img src="https://goreportcard.com/badge/github.com/Clivern/Beaver">
         <img src="https://img.shields.io/badge/LICENSE-MIT-orange.svg">
     </p>
