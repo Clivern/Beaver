@@ -9,8 +9,8 @@ import (
 	"net/http"
 )
 
-// GetMetrics controller
-func GetMetrics(c *gin.Context) {
+// HealthCheck controller
+func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
