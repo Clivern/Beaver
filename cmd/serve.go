@@ -15,9 +15,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/clivern/beaver/core/controller/tower"
+	"github.com/clivern/beaver/core/controller"
 	"github.com/clivern/beaver/core/middleware"
-	"github.com/clivern/beaver/core/service"
+	"github.com/clivern/beaver/core/util"
 
 	"github.com/drone/envsubst"
 	"github.com/gin-gonic/gin"
@@ -63,7 +63,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		if viper.GetString("app.log.output") != "stdout" {
-			fs := service.FileSystem{}
+			fs := util.FileSystem{}
 			dir, _ := filepath.Split(viper.GetString("app.log.output"))
 
 			if !fs.DirExists(dir) {

@@ -1,5 +1,7 @@
 version: '3'
+
 services:
+
     beaver:
         image: 'clivern/beaver:release-1.3.0'
         ports:
@@ -8,6 +10,15 @@ services:
         volumes:
             - './configs/:/app/configs'
         restart: unless-stopped
+
+   redis:
+      image: 'redis:5.0.9-alpine'
+      volumes:
+         - 'redis_data:/data'
+      # Allow connection from docker host machine
+      # ports:
+      #   - "6379:6379"
+      restart: always
 
     prometheus:
         image: 'prom/prometheus:v2.21.0'
@@ -29,3 +40,6 @@ services:
         depends_on:
             - prometheus
         restart: unless-stopped
+
+volumes:
+    redis_data: null
