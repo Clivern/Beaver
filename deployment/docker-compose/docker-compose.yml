@@ -1,0 +1,31 @@
+version: '3'
+services:
+    beaver:
+        image: 'clivern/beaver:release-1.3.0'
+        ports:
+            - "8080:8080"
+        command: '/app/beaver serve -c /app/configs/config.prod.json'
+        volumes:
+            - './configs/:/app/configs'
+        restart: unless-stopped
+
+    prometheus:
+        image: 'prom/prometheus:v2.21.0'
+        volumes:
+            - './prometheus/:/etc/prometheus'
+        command: '--config.file=/etc/prometheus/prometheus.yml'
+        ports:
+            - '9090:9090'
+        restart: unless-stopped
+
+    grafana:
+        image: 'grafana/grafana:6.7.4'
+        environment:
+            - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+            - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+            - GF_USERS_ALLOW_SIGN_UP=false
+        ports:
+            - '3000:3000'
+        depends_on:
+            - prometheus
+        restart: unless-stopped
