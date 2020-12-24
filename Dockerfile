@@ -1,36 +1,28 @@
-FROM golang:1.14.6 as builder
+FROM golang:1.15.2
+
+ARG BEAVER_VERSION=2.0.0
 
 ENV GO111MODULE=on
 
-ARG BEAVER_VERSION=1.2.2
+RUN mkdir -p /app/configs
+RUN mkdir -p /app/var/logs
+RUN mkdir -p /app/var/storage
+RUN apt-get update
 
-RUN mkdir -p $GOPATH/src/github.com/clivern
+WORKDIR /app
 
-RUN git clone -b master https://github.com/Clivern/Beaver.git $GOPATH/src/github.com/clivern/beaver
+RUN curl -sL https://github.com/Clivern/Beaver/releases/download/v${BEAVER_VERSION}/Beaver_${BEAVER_VERSION}_Linux_x86_64.tar.gz | tar xz
+RUN rm LICENSE
+RUN rm README.md
+RUN mv Beaver beaver
 
-WORKDIR $GOPATH/src/github.com/clivern/beaver
+COPY ./config.dist.yml /app/configs/
 
-RUN git checkout tags/$BEAVER_VERSION
+EXPOSE 8000
 
-RUN go mod download
+VOLUME /app/configs
+VOLUME /app/var
 
-# Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/beaver .
+RUN ./beaver version
 
-RUN mkdir -p /go/logs/beaver
-RUN mkdir -p /go/configs/beaver
-
-# Build a small image
-FROM alpine:3.12
-RUN apk --no-cache add ca-certificates
-
-# Copy our static executable
-COPY --from=builder /go/bin/beaver /go/bin/beaver
-COPY --from=builder /go/logs/beaver /go/logs/beaver
-COPY --from=builder /go/configs/beaver /go/configs/beaver
-
-WORKDIR /go/bin/
-
-EXPOSE 8080
-
-CMD ["./beaver"]
+CMD ["./beaver", "serve", "-c", "/app/configs/config.dist.yml"]

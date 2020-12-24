@@ -1,0 +1,33 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        go: ['1.13', '1.14', '1.15']
+    name: Go ${{ matrix.go }} run
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Get dependencies
+        run: |
+          export PATH=${PATH}:`go env GOPATH`/bin
+          make install_revive
+
+      - name: Run make ci
+        run: |
+          export PATH=${PATH}:`go env GOPATH`/bin
+          make ci
+          git status
+          git diff > diff.log
+          cat diff.log
+          git clean -fd
+          git reset --hard
+          make verify
