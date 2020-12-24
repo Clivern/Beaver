@@ -23,3 +23,5 @@ vendor
 config.test.yml
 coverage.html
 cover.out
+
+dist

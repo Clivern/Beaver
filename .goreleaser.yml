@@ -27,4 +27,8 @@ checksum:
   name_template: checksums.txt
 snapshot:
   name_template: "{{ .Tag }}-next"
+<<<<<<< Updated upstream
 project_name: walrus
+=======
+project_name: beaver
+>>>>>>> Stashed changes
