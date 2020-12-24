@@ -1,20 +1,11 @@
 GO           ?= go
 GOFMT        ?= $(GO)fmt
 pkgs          = ./...
-HUGO ?= hugo
 
 
 help: Makefile
 	@echo
 	@echo " Choose a command run in Beaver:"
-	@echo
-	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
-	@echo
-
-
-help: Makefile
-	@echo
-	@echo " Choose a command run in Rhino:"
 	@echo
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
 	@echo
@@ -74,10 +65,7 @@ lint:
 
 
 ## verify: Verify dependencies
-<<<<<<< Updated upstream
-=======
 .PHONY: verify
->>>>>>> Stashed changes
 verify:
 	@echo ">> ============= List Dependencies ============= <<"
 	$(GO) list -m all
@@ -115,10 +103,7 @@ ci: style check_license test vet lint
 
 
 ## run: Run the service
-<<<<<<< Updated upstream
-=======
 .PHONY: run
->>>>>>> Stashed changes
 run:
 	-cp -n config.dist.yml config.prod.yml
 	$(GO) run beaver.go serve -c config.prod.yml
