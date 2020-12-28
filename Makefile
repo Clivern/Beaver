@@ -82,7 +82,7 @@ coverage:
 ## build: Build the application.
 build:
 	rm -f beaver
-	$(GO) build -o beaver beaver.go
+	$(GO) build -ldflags="-s -w" -o beaver beaver.go
 
 
 ## ci: Run all CI tests.

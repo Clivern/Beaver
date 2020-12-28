@@ -1,0 +1,32 @@
+.git
+.github
+assets
+var/logs
+*.md
+LICENSE
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Config file
+config.dist.yml
+
+# App build
+beaver
+
+# Ignore vendor and run dep ensure
+vendor
+
+config.test.yml
+coverage.html
+cover.out
