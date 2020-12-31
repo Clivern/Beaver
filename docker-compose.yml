@@ -9,7 +9,7 @@ services:
       #   - "6379:6379"
       restart: always
    web:
-      image: "clivern_beaver:1.2.2"
+      image: "clivern_beaver:1.2.3"
       build: .
       command: './beaver -config=/go/configs/beaver/config.dist.yml'
       ports:
