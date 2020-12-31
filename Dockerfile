@@ -2,7 +2,7 @@ FROM golang:1.15.6 as builder
 
 ENV GO111MODULE=on
 
-ARG BEAVER_VERSION=1.2.2
+ARG BEAVER_VERSION=1.2.3
 
 RUN mkdir -p $GOPATH/src/github.com/clivern
 

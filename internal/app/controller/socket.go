@@ -36,7 +36,7 @@ type PublishRequest struct {
 
 // Websocket Object
 type Websocket struct {
-	Clients   map[string]*websocket.Conn
+	Clients   utils.Map
 	Broadcast chan Message
 	Upgrader  websocket.Upgrader
 }
@@ -85,7 +85,7 @@ func (c *PublishRequest) ConvertToJSON() (string, error) {
 
 // Init initialize the websocket object
 func (e *Websocket) Init() {
-	e.Clients = make(map[string]*websocket.Conn)
+	e.Clients = utils.NewMap()
 	e.Broadcast = make(chan Message)
 	e.Upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -148,7 +148,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	defer ws.Close()
 
 	// Register our new client
-	e.Clients[ID] = ws
+	e.Clients.Set(ID, ws)
 
 	logger.Infof(
 		`Client %s connected {"correlationId":"%s"}`,
@@ -163,7 +163,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		err := ws.ReadJSON(&msg)
 
 		if err != nil {
-			delete(e.Clients, ID)
+			e.Clients.Delete(ID)
 			client.Disconnect(clientResult)
 			logger.Infof(
 				`Client %s disconnected {"correlationId":"%s"}`,
@@ -196,11 +196,11 @@ func (e *Websocket) HandleMessages() {
 			// Push message to that client if it still connected
 			// or remove from clients if we can't deliver messages to
 			// it anymore
-			if client, ok := e.Clients[msg.ToClient]; ok {
-				err := client.WriteJSON(msg)
+			if client, ok := e.Clients.Get(msg.ToClient); ok {
+				err := client.(*websocket.Conn).WriteJSON(msg)
 				if err != nil {
-					client.Close()
-					delete(e.Clients, msg.ToClient)
+					client.(*websocket.Conn).Close()
+					e.Clients.Delete(msg.ToClient)
 				}
 			}
 		}
@@ -221,11 +221,11 @@ func (e *Websocket) HandleMessages() {
 				msg.ToClient = iter.Val()
 
 				if msg.ToClient != "" && validate.IsUUID4(msg.ToClient) {
-					if client, ok := e.Clients[msg.ToClient]; ok {
-						err := client.WriteJSON(msg)
+					if client, ok := e.Clients.Get(msg.ToClient); ok {
+						err := client.(*websocket.Conn).WriteJSON(msg)
 						if err != nil {
-							client.Close()
-							delete(e.Clients, msg.ToClient)
+							client.(*websocket.Conn).Close()
+							e.Clients.Delete(msg.ToClient)
 						}
 					}
 				}
