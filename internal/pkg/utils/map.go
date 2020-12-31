@@ -8,19 +8,19 @@ import (
 	"sync"
 )
 
-// ConcurrentMap type
-type ConcurrentMap struct {
+// Map type
+type Map struct {
 	sync.RWMutex
 	items map[string]interface{}
 }
 
-// NewConcurrentMap creates a new instance of ConcurrentMap
-func NewConcurrentMap() ConcurrentMap {
-	return ConcurrentMap{items: make(map[string]interface{})}
+// NewMap creates a new instance of Map
+func NewMap() Map {
+	return Map{items: make(map[string]interface{})}
 }
 
 // Gets a key from a concurrent map
-func (cm *ConcurrentMap) Get(key string) (interface{}, bool) {
+func (cm *Map) Get(key string) (interface{}, bool) {
 	cm.Lock()
 	defer cm.Unlock()
 
@@ -30,7 +30,7 @@ func (cm *ConcurrentMap) Get(key string) (interface{}, bool) {
 }
 
 // Sets a key in a concurrent map
-func (cm *ConcurrentMap) Set(key string, value interface{}) {
+func (cm *Map) Set(key string, value interface{}) {
 	cm.Lock()
 	defer cm.Unlock()
 
@@ -38,7 +38,7 @@ func (cm *ConcurrentMap) Set(key string, value interface{}) {
 }
 
 // Delete deletes a key
-func (cm *ConcurrentMap) Delete(key string) {
+func (cm *Map) Delete(key string) {
 	cm.Lock()
 	defer cm.Unlock()
 

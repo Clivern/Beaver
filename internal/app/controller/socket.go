@@ -36,7 +36,7 @@ type PublishRequest struct {
 
 // Websocket Object
 type Websocket struct {
-	Clients   utils.ConcurrentMap
+	Clients   utils.Map
 	Broadcast chan Message
 	Upgrader  websocket.Upgrader
 }
@@ -85,7 +85,7 @@ func (c *PublishRequest) ConvertToJSON() (string, error) {
 
 // Init initialize the websocket object
 func (e *Websocket) Init() {
-	e.Clients = utils.NewConcurrentMap()
+	e.Clients = utils.NewMap()
 	e.Broadcast = make(chan Message)
 	e.Upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
