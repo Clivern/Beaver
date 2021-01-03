@@ -47,6 +47,7 @@ check_license:
 .PHONY: test_short
 test_short:
 	@echo ">> ============= Running Short Tests ============= <<"
+	$(GO) clean -testcache
 	$(GO) test -short $(pkgs)
 
 
@@ -54,7 +55,16 @@ test_short:
 .PHONY: test
 test:
 	@echo ">> ============= Running All Tests ============= <<"
-	$(GO) test -v -cover $(pkgs)
+	$(GO) clean -testcache
+	$(GO) test -tags=unit -v -cover $(pkgs)
+
+
+## integration: Run integration test cases (Requires etcd, RabbitMQ)
+.PHONY: integration
+integration:
+	@echo ">> ============= Running All Tests ============= <<"
+	$(GO) clean -testcache
+	$(GO) test -tags=integration -v -cover $(pkgs)
 
 
 ## lint: Lint the code.

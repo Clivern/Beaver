@@ -1,0 +1,68 @@
+# App configs
+app:
+    # Env mode (dev or prod)
+    mode: ${BEAVER_APP_MODE:-dev}
+    # HTTP port
+    port: ${BEAVER_API_PORT:-8080}
+    # App URL
+    url: ${BEAVER_APP_DOMAIN:-http://127.0.0.1:8080}
+    # TLS configs
+    tls:
+        status: ${BEAVER_API_TLS_STATUS:-off}
+        pemPath: ${BEAVER_API_TLS_PEMPATH:-cert/server.pem}
+        keyPath: ${BEAVER_API_TLS_KEYPATH:-cert/server.key}
+
+    # API Configs
+    api:
+        key: ${BEAVER_API_KEY:- }
+
+    # Runtime, Requests/Response and Beetle Metrics
+    metrics:
+        prometheus:
+            # Route for the metrics endpoint
+            endpoint: ${BEAVER_METRICS_PROM_ENDPOINT:-/metrics}
+
+    # Log configs
+    log:
+        # Log level, it can be debug, info, warn, error, panic, fatal
+        level: ${BEAVER_LOG_LEVEL:-info}
+        # output can be stdout or abs path to log file /var/logs/beetle.log
+        output: ${BEAVER_LOG_OUTPUT:-stdout}
+        # Format can be json
+        format: ${BEAVER_LOG_FORMAT:-json}
+
+    database:
+        # database driver
+        driver: ${BEAVER_DB_DRIVER:-etcd}
+
+        etcd:
+            # etcd database name or prefix
+            databaseName: ${BEAVER_DB_ETCD_DB:-beaver_v2}
+            # etcd username
+            username: ${BEAVER_DB_ETCD_USERNAME:- }
+            # etcd password
+            password: ${BEAVER_DB_ETCD_PASSWORD:- }
+            # etcd endpoints
+            endpoints: ${BEAVER_DB_ETCD_ENDPOINTS:-http://127.0.0.1:2379}
+            # Timeout in seconds
+            timeout: 30
+
+    # Backend HTTP Webhook
+    webhook:
+        url: ${BEAVER_WEBHOOK_URL:- }
+        retry: ${BEAVER_WEBHOOK_RETRY:-3}
+        apiKey: ${BEAVER_WEBHOOK_API_KEY:- }
+
+# Cluster Configs
+cluster:
+    # Whether to enable or disable the cluster
+    enable: ${BEAVER_CLUSTER_STATUS:-true}
+
+    broker:
+        # Broker driver, supported drivers are rabbitmq
+        driver: ${BEAVER_CLUSTER_BROKER_DRIVER:-rabbitmq}
+
+        # RabbitMQ Driver Configs
+        rabbitmq:
+            # Connection string
+            connection: ${BEAVER_BROKER_RABBITMQ_CONNECTION:-amqp://username:password@127.0.0.1:5672/}

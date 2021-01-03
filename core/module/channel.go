@@ -7,19 +7,17 @@ package module
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/clivern/beaver/internal/app/driver"
-	"github.com/clivern/beaver/internal/pkg/logger"
-	"github.com/clivern/beaver/internal/pkg/utils"
-	"github.com/go-redis/redis"
+	"strings"
+
+	"github.com/clivern/beaver/core/driver"
+	"github.com/clivern/beaver/core/util"
+
+	"github.com/spf13/viper"
 )
 
-// ChannelsHashPrefix is the hash prefix
-const ChannelsHashPrefix string = "beaver.channel"
-
-// Channel struct
+// Channel type
 type Channel struct {
-	Driver        *driver.Redis
-	CorrelationID string
+	db driver.Database
 }
 
 // ChannelResult struct
@@ -48,93 +46,155 @@ func (c *ChannelResult) ConvertToJSON() (string, error) {
 	return string(data), nil
 }
 
-// Init initialize the redis connection
-func (c *Channel) Init() bool {
-	c.Driver = driver.NewRedisDriver()
+// NewChannel creates a channel instance
+func NewChannel(db driver.Database) *Channel {
+	result := new(Channel)
+	result.db = db
 
-	result, err := c.Driver.Connect()
-	if !result {
-		logger.Errorf(
-			`Error while connecting to redis: %s {"correlationId":"%s"}`,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false
+	return result
+}
+
+// ChannelsExist checks if channels exist
+func (c *Channel) ChannelsExist(channels []string) (bool, error) {
+	for _, channel := range channels {
+		exists, err := c.ChannelExist(channel)
+
+		if err != nil {
+			return false, fmt.Errorf(
+				`Error while getting channel %s`,
+				channel,
+			)
+		}
+
+		if !exists {
+			return false, nil
+		}
 	}
 
-	logger.Infof(
-		`Redis connection established {"correlationId":"%s"}`,
-		c.CorrelationID,
-	)
+	return true, nil
+}
 
-	return true
+// ChannelExist checks if a channel exists
+func (c *Channel) ChannelExist(name string) (bool, error) {
+	return c.db.Exists(fmt.Sprintf(
+		"%s/channel/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		name,
+	))
+}
+
+// DeleteChannelByName deletes a channel with name
+func (c *Channel) DeleteChannelByName(name string) (bool, error) {
+	deleted, err := c.db.Delete(fmt.Sprintf(
+		"%s/channel/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		name,
+	))
+
+	return deleted > 0, err
+}
+
+// GetSubscribers gets a list of subscribers with channel name (all subscribers)
+func (c *Channel) GetSubscribers(name string) ([]string, error) {
+	result := []string{}
+
+	subscribers, err := c.db.GetKeys(fmt.Sprintf(
+		"%s/channel/%s/subscriber",
+		viper.GetString("app.database.etcd.databaseName"),
+		name,
+	))
+
+	for _, subscriber := range subscribers {
+		// Get the subscriber uuid only
+		items := strings.Split(util.RemoveTrailingSlash(subscriber), "/")
+		result = append(result, items[len(items)-1])
+	}
+
+	return result, err
+}
+
+// CountSubscribers counts channel subscribers (all subscribers)
+func (c *Channel) CountSubscribers(name string) (int, error) {
+	subscribers, err := c.GetSubscribers(name)
+
+	return len(subscribers), err
+}
+
+// GetListeners gets a list of listeners with channel name (online subscribers)
+func (c *Channel) GetListeners(name string) ([]string, error) {
+	listeners := []string{}
+
+	subscribers, err := c.GetSubscribers(name)
+
+	// filter out offline subscribers
+	for _, subscriber := range subscribers {
+		items := strings.Split(subscriber, "/")
+		listener := items[len(items)-1]
+
+		online, err := c.isSubscriberOnline(listener)
+
+		if err != nil {
+			return listeners, err
+		}
+
+		if online {
+			listeners = append(listeners, listener)
+		}
+	}
+
+	return listeners, err
+}
+
+// CountListeners counts channel listeners (online subscribers)
+func (c *Channel) CountListeners(name string) (int, error) {
+	listeners, err := c.GetListeners(name)
+
+	return len(listeners), err
+}
+
+// isSubscriberOnline checks if subscriber is online
+func (c *Channel) isSubscriberOnline(uuid string) (bool, error) {
+	subscriber, err := c.db.Get(fmt.Sprintf(
+		"%s/client/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		uuid,
+	))
+
+	if err != nil {
+		return false, err
+	}
+
+	for k, v := range subscriber {
+		// Check if it is the status key
+		if strings.Contains(k, "/status") {
+			if v == "online" {
+				return true, nil
+			} else {
+				return false, nil
+			}
+		}
+	}
+
+	return false, nil
 }
 
 // CreateChannel creates a channel
 func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, channel.Name)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while creating channel %s: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while creating channel %s`,
-			channel.Name,
-		)
-	}
-
-	if exists {
-		logger.Warningf(
-			`Trying to create existent channel %s {"correlationId":"%s"}`,
-			channel.Name,
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Trying to create existent channel %s`,
-			channel.Name,
-		)
-	}
-
 	result, err := channel.ConvertToJSON()
 
 	if err != nil {
-		logger.Errorf(
-			`Something wrong with channel %s data: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Something wrong with channel %s data`,
-			channel.Name,
-		)
+		return false, nil
 	}
 
-	_, err = c.Driver.HSet(ChannelsHashPrefix, channel.Name, result)
+	err = c.db.Put(fmt.Sprintf(
+		"%s/channel/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
+		channel.Name,
+	), result)
 
 	if err != nil {
-		logger.Errorf(
-			`Error while creating channel %s: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while creating channel %s`,
-			channel.Name,
-		)
+		return false, nil
 	}
-
-	logger.Infof(
-		`Channel %s with type %s got created {"correlationId":"%s"}`,
-		channel.Name,
-		channel.Type,
-		c.CorrelationID,
-	)
 
 	return true, nil
 }
@@ -143,289 +203,52 @@ func (c *Channel) CreateChannel(channel ChannelResult) (bool, error) {
 func (c *Channel) GetChannelByName(name string) (ChannelResult, error) {
 	var channelResult ChannelResult
 
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, name)
+	data, err := c.db.Get(fmt.Sprintf(
+		"%s/channel/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
+		name,
+	))
 
 	if err != nil {
-		logger.Errorf(
-			`Error while getting channel %s: %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return channelResult, fmt.Errorf(
-			`Error while getting channel %s`,
-			name,
-		)
+		return channelResult, err
 	}
 
-	if !exists {
-		logger.Warningf(
-			`Trying to get non existent channel %s {"correlationId":"%s"}`,
-			name,
-			c.CorrelationID,
-		)
-		return channelResult, fmt.Errorf(
-			`Trying to get non existent channel %s`,
-			name,
-		)
+	for k, v := range data {
+		// Check if it is the info key
+		if strings.Contains(k, "/info") {
+			_, err = channelResult.LoadFromJSON([]byte(v))
+
+			if err != nil {
+				return channelResult, err
+			}
+
+			return channelResult, nil
+		}
 	}
 
-	value, err := c.Driver.HGet(ChannelsHashPrefix, name)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while getting channel %s: %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return channelResult, fmt.Errorf(
-			`Error while getting channel %s`,
-			name,
-		)
-	}
-
-	_, err = channelResult.LoadFromJSON([]byte(value))
-
-	if err != nil {
-		logger.Errorf(
-			`Error while getting channel %s: %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return channelResult, fmt.Errorf(
-			`Error while getting channel %s`,
-			name,
-		)
-	}
-
-	return channelResult, nil
+	return channelResult, fmt.Errorf(
+		"Unable to find channel %s",
+		name,
+	)
 }
 
 // UpdateChannelByName updates a channel by name
 func (c *Channel) UpdateChannelByName(channel ChannelResult) (bool, error) {
-	exists, err := c.Driver.HExists(ChannelsHashPrefix, channel.Name)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while updating channel %s: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while updating channel %s`,
-			channel.Name,
-		)
-	}
-
-	if !exists {
-		logger.Warningf(
-			`Trying to create non existent channel %s {"correlationId":"%s"}`,
-			channel.Name,
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Trying to create non existent channel %s`,
-			channel.Name,
-		)
-	}
-
 	result, err := channel.ConvertToJSON()
 
 	if err != nil {
-		logger.Errorf(
-			`Something wrong with channel %s data: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Something wrong with channel %s data`,
-			channel.Name,
-		)
+		return false, nil
 	}
 
-	_, err = c.Driver.HSet(ChannelsHashPrefix, channel.Name, result)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while updating channel %s: %s {"correlationId":"%s"}`,
-			channel.Name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while updating channel %s`,
-			channel.Name,
-		)
-	}
-
-	logger.Infof(
-		`Channel %s got updated to type %s {"correlationId":"%s"}`,
+	err = c.db.Put(fmt.Sprintf(
+		"%s/channel/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
 		channel.Name,
-		channel.Type,
-		c.CorrelationID,
-	)
-
-	return true, nil
-}
-
-// DeleteChannelByName deletes a channel with name
-func (c *Channel) DeleteChannelByName(name string) (bool, error) {
-	deleted, err := c.Driver.HDel(ChannelsHashPrefix, name)
+	), result)
 
 	if err != nil {
-		logger.Errorf(
-			`Error while deleting channel %s: %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while deleting channel %s`,
-			name,
-		)
-	}
-
-	if deleted <= 0 {
-		logger.Warningf(
-			`Trying to delete non existent channel %s {"correlationId":"%s"}`,
-			name,
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Trying to delete non existent channel %s`,
-			name,
-		)
-	}
-
-	c.Driver.HTruncate(fmt.Sprintf("%s.listeners", name))
-	c.Driver.HTruncate(fmt.Sprintf("%s.subscribers", name))
-
-	logger.Infof(
-		`Channel %s got deleted {"correlationId":"%s"}`,
-		name,
-		c.CorrelationID,
-	)
-
-	return true, nil
-}
-
-// CountListeners counts channel listeners
-func (c *Channel) CountListeners(name string) int64 {
-
-	count, err := c.Driver.HLen(fmt.Sprintf("%s.listeners", name))
-
-	if err != nil {
-		logger.Errorf(
-			`Error while counting %s listeners %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return 0
-	}
-
-	return count
-
-}
-
-// CountSubscribers counts channel subscribers
-func (c *Channel) CountSubscribers(name string) int64 {
-
-	count, err := c.Driver.HLen(fmt.Sprintf("%s.subscribers", name))
-
-	if err != nil {
-		logger.Errorf(
-			`Error while counting %s subscribers %s {"correlationId":"%s"}`,
-			name,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return 0
-	}
-
-	return count
-}
-
-// ChannelsExist checks if channels exist
-func (c *Channel) ChannelsExist(channels []string) (bool, error) {
-	for _, channel := range channels {
-		exists, err := c.Driver.HExists(ChannelsHashPrefix, channel)
-
-		if err != nil {
-			logger.Errorf(
-				`Error while getting channel %s: %s {"correlationId":"%s"}`,
-				channel,
-				err.Error(),
-				c.CorrelationID,
-			)
-			return false, fmt.Errorf(
-				`Error while getting channel %s`,
-				channel,
-			)
-		}
-
-		if !exists {
-			logger.Infof(
-				`Channel %s not exist {"correlationId":"%s"}`,
-				channel,
-				c.CorrelationID,
-			)
-			return false, fmt.Errorf(
-				`Channel %s not exist`,
-				channel,
-			)
-		}
+		return false, nil
 	}
 
 	return true, nil
-}
-
-// ChannelExist checks if channel exists
-func (c *Channel) ChannelExist(channel string) (bool, error) {
-	return c.ChannelsExist([]string{channel})
-}
-
-// ChannelScan get clients under channel listeners (connected clients)
-func (c *Channel) ChannelScan(channel string) *redis.ScanCmd {
-	return c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0)
-}
-
-// GetListeners gets a list of listeners with channel name
-func (c *Channel) GetListeners(channel string) []string {
-	var result []string
-	var key string
-	validate := utils.Validator{}
-
-	iter := c.Driver.HScan(fmt.Sprintf("%s.listeners", channel), 0, "", 0).Iterator()
-
-	for iter.Next() {
-		key = iter.Val()
-		if key != "" && validate.IsUUID4(key) {
-			result = append(result, key)
-		}
-	}
-
-	return result
-}
-
-// GetSubscribers gets a list of subscribers with channel name
-func (c *Channel) GetSubscribers(channel string) []string {
-	var result []string
-	var key string
-	validate := utils.Validator{}
-
-	iter := c.Driver.HScan(fmt.Sprintf("%s.subscribers", channel), 0, "", 0).Iterator()
-
-	for iter.Next() {
-		key = iter.Val()
-		if key != "" && validate.IsUUID4(key) {
-			result = append(result, key)
-		}
-	}
-
-	return result
 }

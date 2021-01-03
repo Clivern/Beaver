@@ -1,4 +1,4 @@
-// Copyright 2020 Clivern. All rights reserved.
+// Copyright 2018 Clivern. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
@@ -21,7 +21,6 @@ import (
 
 	"github.com/drone/envsubst"
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/pkger"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -63,11 +62,10 @@ var serveCmd = &cobra.Command{
 		}
 
 		if viper.GetString("app.log.output") != "stdout" {
-			fs := util.FileSystem{}
 			dir, _ := filepath.Split(viper.GetString("app.log.output"))
 
-			if !fs.DirExists(dir) {
-				if _, err := fs.EnsureDir(dir, 777); err != nil {
+			if !util.DirExists(dir) {
+				if _, err := util.EnsureDir(dir, 755); err != nil {
 					panic(fmt.Sprintf(
 						"Directory [%s] creation failed with error: %s",
 						dir,
@@ -76,15 +74,17 @@ var serveCmd = &cobra.Command{
 				}
 			}
 
-			if !fs.FileExists(viper.GetString("app.log.output")) {
+			if !util.FileExists(viper.GetString("app.log.output")) {
 				f, err := os.Create(viper.GetString("app.log.output"))
+
 				if err != nil {
 					panic(fmt.Sprintf(
 						"Error while creating log file [%s]: %s",
-						viper.GetString(fmt.Sprintf("%s.log.output", viper.GetString("role"))),
+						viper.GetString("app.log.output"),
 						err.Error(),
 					))
 				}
+
 				defer f.Close()
 			}
 		}
@@ -119,6 +119,8 @@ var serveCmd = &cobra.Command{
 			log.SetFormatter(&log.TextFormatter{})
 		}
 
+		viper.SetDefault("app.name", util.GenerateUUID4())
+
 		r := gin.Default()
 
 		r.Use(middleware.Correlation())
@@ -133,66 +135,30 @@ var serveCmd = &cobra.Command{
 
 		r.GET("/", controller.Index)
 		r.GET("/_health", controller.HealthCheck)
-		r.GET("/_node", controller.GetNodeInfo)
-		r.GET("/_metrics", controller.GetMetrics)
 
-		api := r.Group("/api")
+		apiv1 := r.Group("/api/v2")
 		{
-			api.GET("/channel/:name", controller.GetChannelByName)
-			api.POST("/channel", controller.CreateChannel)
-			api.DELETE("/channel/:name", controller.DeleteChannelByName)
-			api.PUT("/channel/:name", controller.UpdateChannelByName)
+			apiv1.GET("/client/:id", controller.GetClientByID)
+			apiv1.POST("/client", controller.CreateClient)
+			apiv1.DELETE("/client/:id", controller.DeleteClientByID)
+			apiv1.PUT("/client/:id/unsubscribe", controller.Unsubscribe)
+			apiv1.PUT("/client/:id/subscribe", controller.Subscribe)
 
-			api.GET("/client/:id", controller.GetClientByID)
-			api.POST("/client", controller.CreateClient)
-			api.DELETE("/client/:id", controller.DeleteClientByID)
-			api.PUT("/client/:id/unsubscribe", controller.Unsubscribe)
-			api.PUT("/client/:id/subscribe", controller.Subscribe)
-
-			api.GET("/config/:key", controller.GetConfigByKey)
-			api.POST("/config", controller.CreateConfig)
-			api.DELETE("/config/:key", controller.DeleteConfigByKey)
-			api.PUT("/config/:key", controller.UpdateConfigByKey)
+			apiv1.GET("/channel/:name", controller.GetChannelByName)
+			apiv1.POST("/channel", controller.CreateChannel)
+			apiv1.DELETE("/channel/:name", controller.DeleteChannelByName)
+			apiv1.PUT("/channel/:name", controller.UpdateChannelByName)
+			apiv1.GET("/channel/:name/subscribers", controller.GetChannelSubscribersByName)
+			apiv1.GET("/channel/:name/listeners", controller.GetChannelListenersByName)
 		}
 
-		socket := &controller.Websocket{}
-		socket.Init()
+		r.GET(
+			viper.GetString("app.metrics.prometheus.endpoint"),
+			gin.WrapH(controller.Metrics()),
+		)
 
-		r.GET("/ws/:id/:token", func(c *gin.Context) {
-			socket.HandleConnections(
-				c.Writer,
-				c.Request,
-				c.Param("id"),
-				c.Param("token"),
-				c.Request.Header.Get("X-Correlation-ID"),
-			)
-		})
-
-		r.POST("/api/broadcast", func(c *gin.Context) {
-			rawBody, err := c.GetRawData()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"status": "error",
-					"error":  "Invalid request",
-				})
-				return
-			}
-			socket.BroadcastAction(c, rawBody)
-		})
-
-		r.POST("/api/publish", func(c *gin.Context) {
-			rawBody, err := c.GetRawData()
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"status": "error",
-					"error":  "Invalid request",
-				})
-				return
-			}
-			socket.PublishAction(c, rawBody)
-		})
-
-		go socket.HandleMessages()
+		// Goroutine for node heartbeat
+		go controller.Heartbeat()
 
 		var runerr error
 

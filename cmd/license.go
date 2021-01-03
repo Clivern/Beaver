@@ -1,4 +1,4 @@
-// Copyright 2020 Clivern. All rights reserved.
+// Copyright 2018 Clivern. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
@@ -16,7 +16,7 @@ var licenseCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(`MIT License
 
-Copyright (c) 2020 Clivern
+Copyright (c) 2018 Clivern
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

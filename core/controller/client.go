@@ -5,78 +5,82 @@
 package controller
 
 import (
-	"github.com/clivern/beaver/internal/app/api"
-	"github.com/clivern/beaver/internal/pkg/utils"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/clivern/beaver/core/driver"
+	"github.com/clivern/beaver/core/module"
+	"github.com/clivern/beaver/core/util"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetClientByID controller
 func GetClientByID(c *gin.Context) {
 
-	var clientResult api.ClientResult
-	validate := utils.Validator{}
+	var clientResult module.ClientResult
+
+	validate := util.Validator{}
 
 	ID := c.Param("id")
 
 	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Client ID is invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Client ID is invalid UUID v4.",
 		})
 		return
 	}
 
-	client := api.Client{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
+	db := driver.NewEtcdDriver()
 
-	if !client.Init() {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "error",
-			"error":  "Internal server error",
+	err := db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
 
-	clientResult, err := client.GetClientByID(ID)
+	defer db.Close()
+
+	client := module.NewClient(db)
+
+	clientResult, err = client.GetClientByID(ID)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  fmt.Sprintf("Client with ID %s not found.", ID),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"id":         clientResult.ID,
-		"token":      clientResult.Token,
-		"channels":   clientResult.Channels,
-		"created_at": clientResult.CreatedAt,
-		"updated_at": clientResult.UpdatedAt,
+		"id":        clientResult.ID,
+		"token":     clientResult.Token,
+		"channels":  clientResult.Channels,
+		"createdAt": time.Unix(clientResult.CreatedAt, 0),
+		"updatedAt": time.Unix(clientResult.UpdatedAt, 0),
 	})
 }
 
 // CreateClient controller
 func CreateClient(c *gin.Context) {
 
-	var clientResult api.ClientResult
-	validate := utils.Validator{}
+	var clientResult module.ClientResult
 
-	client := api.Client{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
-	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
+	validate := util.Validator{}
 
 	rawBody, err := c.GetRawData()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"errorMessage":  "Error! Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
 		})
 		return
 	}
@@ -85,99 +89,114 @@ func CreateClient(c *gin.Context) {
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"errorMessage":  "Error! Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
 		})
 		return
 	}
 
 	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Provided client channels are invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Provided client channels are invalid.",
 		})
 		return
 	}
 
-	if !client.Init() || !channel.Init() {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "error",
-			"error":  "Internal server error",
+	db := driver.NewEtcdDriver()
+
+	err = db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
+
+	defer db.Close()
+
+	client := module.NewClient(db)
+	channel := module.NewChannel(db)
 
 	ok, err = channel.ChannelsExist(clientResult.Channels)
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Provided client channels not found",
 		})
 		return
 	}
 
-	ok, err = clientResult.GenerateClient()
+	newClient := module.GenerateClient(clientResult.Channels)
+
+	ok, err = client.CreateClient(*newClient)
 
 	if !ok || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
-		})
-		return
-	}
-
-	ok, err = client.CreateClient(clientResult)
-
-	if !ok || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"id":         clientResult.ID,
-		"token":      clientResult.Token,
-		"channels":   clientResult.Channels,
-		"created_at": clientResult.CreatedAt,
-		"updated_at": clientResult.UpdatedAt,
+		"id":        newClient.ID,
+		"token":     newClient.Token,
+		"channels":  newClient.Channels,
+		"createdAt": time.Unix(newClient.CreatedAt, 0),
+		"updatedAt": time.Unix(newClient.UpdatedAt, 0),
 	})
 }
 
 // DeleteClientByID controller
 func DeleteClientByID(c *gin.Context) {
 
-	validate := utils.Validator{}
+	validate := util.Validator{}
 	ID := c.Param("id")
 
 	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Client ID is invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Client ID is invalid.",
 		})
 		return
 	}
 
-	client := api.Client{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
+	db := driver.NewEtcdDriver()
 
-	if !client.Init() {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "error",
-			"error":  "Internal server error",
+	err := db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
 
-	_, err := client.DeleteClientByID(ID)
+	defer db.Close()
+
+	client := module.NewClient(db)
+
+	_, err = client.GetClientByID(ID)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  fmt.Sprintf("Client with ID %s not found.", ID),
+		})
+		return
+	}
+
+	ok, err := client.DeleteClientByID(ID)
+
+	if !ok || err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
@@ -188,31 +207,26 @@ func DeleteClientByID(c *gin.Context) {
 // Unsubscribe controller
 func Unsubscribe(c *gin.Context) {
 
-	var clientResult api.ClientResult
-	validate := utils.Validator{}
+	var clientResult module.ClientResult
+
+	validate := util.Validator{}
+
 	ID := c.Param("id")
 
 	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Client ID is invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Client ID is invalid UUID v4",
 		})
 		return
-	}
-
-	client := api.Client{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
-	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Invalid request",
 		})
 		return
 	}
@@ -221,34 +235,53 @@ func Unsubscribe(c *gin.Context) {
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Invalid request",
 		})
 		return
 	}
 
 	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Provided client channels are invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Provided client channels are invalid",
 		})
 		return
 	}
 
-	if !client.Init() || !channel.Init() {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "error",
-			"error":  "Internal server error",
+	db := driver.NewEtcdDriver()
+
+	err = db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
+
+	defer db.Close()
+
+	client := module.NewClient(db)
+	channel := module.NewChannel(db)
 
 	ok, err = channel.ChannelsExist(clientResult.Channels)
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Channels not found",
+		})
+		return
+	}
+
+	_, err = client.GetClientByID(ID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  fmt.Sprintf("Client with ID %s not found.", ID),
 		})
 		return
 	}
@@ -256,9 +289,9 @@ func Unsubscribe(c *gin.Context) {
 	ok, err = client.Unsubscribe(ID, clientResult.Channels)
 
 	if !ok || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
@@ -268,32 +301,26 @@ func Unsubscribe(c *gin.Context) {
 
 // Subscribe controller
 func Subscribe(c *gin.Context) {
+	var clientResult module.ClientResult
 
-	var clientResult api.ClientResult
-	validate := utils.Validator{}
+	validate := util.Validator{}
+
 	ID := c.Param("id")
 
 	if validate.IsEmpty(ID) || !validate.IsUUID4(ID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Client ID is invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Client ID is invalid UUID v4.",
 		})
 		return
-	}
-
-	client := api.Client{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
-	}
-	channel := api.Channel{
-		CorrelationID: c.Request.Header.Get("X-Correlation-ID"),
 	}
 
 	rawBody, err := c.GetRawData()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Invalid request",
 		})
 		return
 	}
@@ -302,34 +329,53 @@ func Subscribe(c *gin.Context) {
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Invalid request",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Invalid request",
 		})
 		return
 	}
 
 	if !validate.IsSlugs(clientResult.Channels, 3, 60) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  "Provided client channels are invalid.",
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Provided client channels are invalid.",
 		})
 		return
 	}
 
-	if !client.Init() || !channel.Init() {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "error",
-			"error":  "Internal server error",
+	db := driver.NewEtcdDriver()
+
+	err = db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}
+
+	defer db.Close()
+
+	client := module.NewClient(db)
+	channel := module.NewChannel(db)
 
 	ok, err = channel.ChannelsExist(clientResult.Channels)
 
 	if !ok || err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Error! Channels not found",
+		})
+		return
+	}
+
+	_, err = client.GetClientByID(ID)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  fmt.Sprintf("Client with ID %s not found.", ID),
 		})
 		return
 	}
@@ -337,9 +383,9 @@ func Subscribe(c *gin.Context) {
 	ok, err = client.Subscribe(ID, clientResult.Channels)
 
 	if !ok || err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error":  err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
 		})
 		return
 	}

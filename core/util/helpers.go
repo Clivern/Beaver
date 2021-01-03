@@ -1,18 +1,13 @@
-// Copyright 2020 Clivern. All rights reserved.
+// Copyright 2018 Clivern. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
 package util
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/md5"
-	"crypto/rand"
-	"encoding/hex"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -20,8 +15,6 @@ import (
 	"strings"
 
 	"github.com/satori/go.uuid"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/dgrijalva/jwt-go"
 )
 
 // InArray check if value is on array
@@ -180,59 +173,11 @@ func DeleteFile(path string) error {
 	return os.Remove(path)
 }
 
-// Encrypt encrypt data
-func Encrypt(data []byte, passphrase string) ([]byte, error) {
-	var result []byte
-
-	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return result, err
-	}
-
-	nonce := make([]byte, gcm.NonceSize())
-
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return result, err
-	}
-
-	result = gcm.Seal(nonce, nonce, data, nil)
-
-	return result, nil
-}
-
-// Decrypt decrypts data
-func Decrypt(data []byte, passphrase string) ([]byte, error) {
-	var result []byte
-
-	key := []byte(createHash(passphrase))
-	block, err := aes.NewCipher(key)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return result, err
-	}
-
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-	result, err = gcm.Open(nil, nonce, ciphertext, nil)
-
-	if err != nil {
-		return result, err
-	}
-
-	return result, nil
-}
-
-// createHash creates a hash
-func createHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
+// CreateHash creates a hash
+func CreateHash(key string) string {
+	h := sha256.New()
+	h.Write([]byte(key))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 // LoadFromJSON update object from json
@@ -252,41 +197,3 @@ func ConvertToJSON(item interface{}) (string, error) {
 	}
 	return string(data), nil
 }
-
-// HashPassword hashes the password
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword(
-		[]byte(password),
-		14,
-	)
-
-	return string(bytes), err
-}
-
-// CheckPasswordHash validate password with a hash
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword(
-		[]byte(hash),
-		[]byte(password),
-	)
-
-	return err == nil
-}
-
-// GenerateJWTToken generate a jwt token for frontend
-func GenerateJWTToken(data string, timestamp int64, secret string) (string, error) {
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"data":      data,
-		"timestamp": timestamp,
-	})
-
-	tokenString, err := token.SignedString([]byte(secret))
-
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
-}
-

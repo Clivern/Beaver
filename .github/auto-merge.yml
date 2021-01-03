@@ -1,0 +1,9 @@
+# https://github.com/bobvanderlinden/probot-auto-merge
+blockingLabels:
+- blocking
+rules:
+- minApprovals:
+  OWNER: 1
+  MEMBER: 2
+- requiredLabels:
+  - merge

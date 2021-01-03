@@ -2,51 +2,42 @@
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
+// +build unit
+
 package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/nbio/st"
-	"github.com/spf13/viper"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"strconv"
 	"testing"
+
+	"github.com/clivern/beaver/pkg"
+
+	"github.com/franela/goblin"
+	"github.com/gin-gonic/gin"
 )
 
-// init setup stuff
-func init() {
-	basePath := fmt.Sprintf("%s/src/github.com/clivern/beaver", os.Getenv("GOPATH"))
-	configFile := fmt.Sprintf("%s/%s", basePath, "config.test.yml")
+// TestIndex test cases
+func TestIndex(t *testing.T) {
 
-	viper.SetConfigFile(configFile)
+	baseDir := pkg.GetBaseDir("cache")
+	pkg.LoadConfigs(fmt.Sprintf("%s/config.dist.yml", baseDir))
 
-	err := viper.ReadInConfig()
+	gin.SetMode(gin.ReleaseMode)
 
-	if err != nil {
-		panic(fmt.Sprintf(
-			"Error while loading config file [%s]: %s",
-			configFile,
-			err.Error(),
-		))
-	}
+	g := goblin.Goblin(t)
 
-	os.Setenv("BeaverBasePath", fmt.Sprintf("%s/", basePath))
-	os.Setenv("PORT", strconv.Itoa(viper.GetInt("app.port")))
-}
+	g.Describe("#Index", func() {
+		g.It("It should return the expected response and status code", func() {
+			r := gin.Default()
+			r.GET("/", Index)
 
-// TestHomeController test case
-func TestHomeController(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", "/", nil)
+			r.ServeHTTP(w, req)
 
-	router := gin.Default()
-	router.GET("/", HealthCheck)
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
-	router.ServeHTTP(w, req)
-
-	st.Expect(t, 200, w.Code)
-	st.Expect(t, `{"status":"ok"}`, w.Body.String())
+			g.Assert(w.Code).Equal(200)
+		})
+	})
 }

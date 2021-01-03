@@ -1,11 +1,10 @@
-// Copyright 2020 Clivern. All rights reserved.
+// Copyright 2018 Clivern. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -22,8 +21,8 @@ func Auth() gin.HandlerFunc {
 
 		if strings.Contains(path, "/api/") {
 			apiKey := c.GetHeader("x-api-key")
-			if viper.GetString("api.key") != "" &&
-				apiKey != viper.GetString("api.key") {
+			if viper.GetString("app.api.key") != "" &&
+				apiKey != viper.GetString("app.api.key") {
 				log.WithFields(log.Fields{
 					"correlation_id": c.Request.Header.Get("X-Correlation-ID"),
 					"http_method":    method,

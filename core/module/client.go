@@ -7,20 +7,18 @@ package module
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/clivern/beaver/internal/app/driver"
-	"github.com/clivern/beaver/internal/pkg/logger"
-	"github.com/clivern/beaver/internal/pkg/utils"
-	"os"
+	"strings"
 	"time"
+
+	"github.com/clivern/beaver/core/driver"
+	"github.com/clivern/beaver/core/util"
+
+	"github.com/spf13/viper"
 )
 
-// ClientsHashPrefix is the hash prefix
-const ClientsHashPrefix string = "beaver.client"
-
-// Client struct
+// Client type
 type Client struct {
-	Driver        *driver.Redis
-	CorrelationID string
+	db driver.Database
 }
 
 // ClientResult struct
@@ -30,6 +28,19 @@ type ClientResult struct {
 	Channels  []string `json:"channels"`
 	CreatedAt int64    `json:"created_at"`
 	UpdatedAt int64    `json:"updated_at"`
+}
+
+// GenerateClient generates a new client
+func GenerateClient(channels []string) *ClientResult {
+	now := time.Now().Unix()
+
+	return &ClientResult{
+		ID:        util.GenerateUUID4(),
+		Token:     util.CreateHash(util.GenerateUUID4()),
+		Channels:  channels,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
 }
 
 // LoadFromJSON load object from json
@@ -50,122 +61,73 @@ func (c *ClientResult) ConvertToJSON() (string, error) {
 	return string(data), nil
 }
 
-// GenerateClient generates client ID & Token
-func (c *ClientResult) GenerateClient() (bool, error) {
+// NewClient creates a client instance
+func NewClient(db driver.Database) *Client {
+	result := new(Client)
+	result.db = db
 
-	now := time.Now().Unix()
-	c.ID = utils.GenerateUUID4()
+	return result
+}
 
-	token, err := utils.GenerateJWTToken(
-		fmt.Sprintf("%s@%d", c.ID, now),
-		now,
-		os.Getenv("AppSecret"),
-	)
+// CreateClient stores a client
+func (c *Client) CreateClient(client ClientResult) (bool, error) {
+	result, err := client.ConvertToJSON()
 
 	if err != nil {
 		return false, err
 	}
 
-	c.Token = token
-	c.CreatedAt = now
-	c.UpdatedAt = now
+	// store client info
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
+		client.ID,
+	), result)
+
+	if err != nil {
+		return false, err
+	}
+
+	// store client status
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/status",
+		viper.GetString("app.database.etcd.databaseName"),
+		client.ID,
+	), "offline")
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, channel := range client.Channels {
+		ok, err := c.addToChannel(client.ID, channel)
+		if !ok || err != nil {
+			return false, err
+		}
+	}
 
 	return true, nil
 }
 
-// Init initialize the redis connection
-func (c *Client) Init() bool {
-	c.Driver = driver.NewRedisDriver()
-
-	result, err := c.Driver.Connect()
-	if !result {
-		logger.Errorf(
-			`Error while connecting to redis: %s {"correlationId":"%s"}`,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false
-	}
-
-	logger.Infof(
-		`Redis connection established {"correlationId":"%s"}`,
-		c.CorrelationID,
-	)
-
-	return true
-}
-
-// CreateClient creates a client
-func (c *Client) CreateClient(client ClientResult) (bool, error) {
-
-	exists, err := c.Driver.HExists(ClientsHashPrefix, client.ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while creating client %s: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while creating client %s`,
-			client.ID,
-		)
-	}
-
-	if exists {
-		logger.Warningf(
-			`Trying to create existent client %s {"correlationId":"%s"}`,
-			client.ID,
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Trying to create existent client %s`,
-			client.ID,
-		)
-	}
+// UpdateClientByID updates a client by ID
+func (c *Client) UpdateClientByID(client ClientResult) (bool, error) {
+	client.UpdatedAt = time.Now().Unix()
 
 	result, err := client.ConvertToJSON()
 
 	if err != nil {
-		logger.Errorf(
-			`Something wrong with client %s data: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Something wrong with client %s data`,
-			client.ID,
-		)
+		return false, err
 	}
 
-	_, err = c.Driver.HSet(ClientsHashPrefix, client.ID, result)
+	// store client info
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
+		client.ID,
+	), result)
 
 	if err != nil {
-		logger.Errorf(
-			`Error while creating client %s: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while creating client %s`,
-			client.ID,
-		)
-	}
-
-	logger.Infof(
-		`Client %s got created {"correlationId":"%s"}`,
-		client.ID,
-		c.CorrelationID,
-	)
-
-	for _, channel := range client.Channels {
-		ok, err := c.AddToChannel(client.ID, channel)
-		if !ok || err != nil {
-			return false, err
-		}
+		return false, err
 	}
 
 	return true, nil
@@ -173,192 +135,68 @@ func (c *Client) CreateClient(client ClientResult) (bool, error) {
 
 // GetClientByID gets a client by ID
 func (c *Client) GetClientByID(ID string) (ClientResult, error) {
-
 	var clientResult ClientResult
 
-	exists, err := c.Driver.HExists(ClientsHashPrefix, ID)
+	data, err := c.db.Get(fmt.Sprintf(
+		"%s/client/%s/info",
+		viper.GetString("app.database.etcd.databaseName"),
+		ID,
+	))
 
 	if err != nil {
-		logger.Errorf(
-			`Error while getting client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return clientResult, fmt.Errorf(
-			"Error while getting client %s",
-			ID,
-		)
+		return clientResult, err
 	}
 
-	if !exists {
-		logger.Warningf(
-			`Trying to get non existent client %s {"correlationId":"%s"}`,
-			ID,
-			c.CorrelationID,
-		)
-		return clientResult, fmt.Errorf(
-			"Trying to get non existent client %s",
-			ID,
-		)
+	for k, v := range data {
+		// Check if it is the info key
+		if strings.Contains(k, "/info") {
+			_, err = clientResult.LoadFromJSON([]byte(v))
+
+			if err != nil {
+				return clientResult, err
+			}
+
+			return clientResult, nil
+		}
 	}
 
-	value, err := c.Driver.HGet(ClientsHashPrefix, ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while getting client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return clientResult, fmt.Errorf(
-			"Error while getting client %s",
-			ID,
-		)
-	}
-
-	_, err = clientResult.LoadFromJSON([]byte(value))
-
-	if err != nil {
-		logger.Errorf(
-			`Error while getting client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return clientResult, fmt.Errorf(
-			"Error while getting client %s",
-			ID,
-		)
-	}
-
-	return clientResult, nil
-}
-
-// UpdateClientByID updates a client by ID
-func (c *Client) UpdateClientByID(client ClientResult) (bool, error) {
-
-	exists, err := c.Driver.HExists(ClientsHashPrefix, client.ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while updating client %s: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while updating client %s`,
-			client.ID,
-		)
-	}
-
-	if !exists {
-		logger.Warningf(
-			`Trying to create non existent client %s {"correlationId":"%s"}`,
-			client.ID,
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Trying to create non existent client %s`,
-			client.ID,
-		)
-	}
-
-	result, err := client.ConvertToJSON()
-
-	if err != nil {
-		logger.Errorf(
-			`Something wrong with client %s data: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Something wrong with client %s data`,
-			client.ID,
-		)
-	}
-
-	_, err = c.Driver.HSet(ClientsHashPrefix, client.ID, result)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while updating client %s: %s {"correlationId":"%s"}`,
-			client.ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while updating client %s`,
-			client.ID,
-		)
-	}
-
-	logger.Infof(
-		`Client %s got updated {"correlationId":"%s"}`,
-		client.ID,
-		c.CorrelationID,
+	return clientResult, fmt.Errorf(
+		"Unable to find client %s",
+		ID,
 	)
-
-	return true, nil
 }
 
 // DeleteClientByID deletes a client with ID
 func (c *Client) DeleteClientByID(ID string) (bool, error) {
-
 	client, err := c.GetClientByID(ID)
 
 	if err != nil {
-		logger.Errorf(
-			`Error while deleting client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while deleting client %s`,
-			ID,
-		)
+		return false, err
 	}
 
 	for _, channel := range client.Channels {
-		ok, err := c.RemoveFromChannel(ID, channel)
+		ok, err := c.removeFromChannel(ID, channel)
 		if !ok || err != nil {
 			return false, err
 		}
 	}
 
-	// Remove client from clients
-	_, err = c.Driver.HDel(ClientsHashPrefix, ID)
+	count, err := c.db.Delete(fmt.Sprintf(
+		"%s/client/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		ID,
+	))
 
 	if err != nil {
-		logger.Errorf(
-			`Error while deleting client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while deleting client %s`,
-			ID,
-		)
+		return false, err
 	}
 
-	logger.Infof(
-		`Client %s got deleted {"correlationId":"%s"}`,
-		ID,
-		c.CorrelationID,
-	)
-
-	return true, nil
+	return count > 0, nil
 }
 
 // Unsubscribe from channels
 func (c *Client) Unsubscribe(ID string, channels []string) (bool, error) {
-
-	validator := utils.Validator{}
+	validator := util.Validator{}
 	clientResult, err := c.GetClientByID(ID)
 
 	if err != nil {
@@ -367,11 +205,11 @@ func (c *Client) Unsubscribe(ID string, channels []string) (bool, error) {
 
 	for i, channel := range clientResult.Channels {
 		if validator.IsIn(channel, channels) {
-			ok, err := c.RemoveFromChannel(ID, channel)
+			ok, err := c.removeFromChannel(ID, channel)
 			if !ok || err != nil {
 				return false, err
 			}
-			clientResult.Channels = utils.Unset(clientResult.Channels, i)
+			clientResult.Channels = util.Unset(clientResult.Channels, i)
 		}
 	}
 
@@ -380,8 +218,7 @@ func (c *Client) Unsubscribe(ID string, channels []string) (bool, error) {
 
 // Subscribe to channels
 func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
-
-	validator := utils.Validator{}
+	validator := util.Validator{}
 	clientResult, err := c.GetClientByID(ID)
 
 	if err != nil {
@@ -390,7 +227,7 @@ func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
 
 	for _, channel := range channels {
 		if !validator.IsIn(channel, clientResult.Channels) {
-			ok, err := c.AddToChannel(ID, channel)
+			ok, err := c.addToChannel(ID, channel)
 			if !ok || err != nil {
 				return false, err
 			}
@@ -401,142 +238,56 @@ func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
 	return c.UpdateClientByID(clientResult)
 }
 
-// AddToChannel adds a client to a channel
-func (c *Client) AddToChannel(ID string, channel string) (bool, error) {
-	// Remove client from channel subscribers
-	_, err := c.Driver.HSet(fmt.Sprintf("%s.subscribers", channel), ID, "")
-
-	if err != nil {
-		logger.Errorf(
-			`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
-			ID,
-			fmt.Sprintf("%s.subscribers", channel),
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while adding client %s to channel %s`,
-			ID,
-			fmt.Sprintf("%s.subscribers", channel),
-		)
-	}
-
-	logger.Infof(
-		`Client %s added to channel %s {"correlationId":"%s"}`,
-		ID,
-		channel,
-		c.CorrelationID,
-	)
-
-	return true, nil
-}
-
-// RemoveFromChannel removes a client from a channel
-func (c *Client) RemoveFromChannel(ID string, channel string) (bool, error) {
-	// Remove client from channel subscribers
-	_, err := c.Driver.HDel(fmt.Sprintf("%s.subscribers", channel), ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
-			ID,
-			fmt.Sprintf("%s.subscribers", channel),
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while removing client %s from %s`,
-			ID,
-			fmt.Sprintf("%s.subscribers", channel),
-		)
-	}
-
-	// Delete from listeners if stale
-	_, err = c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), ID)
-
-	if err != nil {
-		logger.Errorf(
-			`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
-			ID,
-			fmt.Sprintf("%s.listeners", channel),
-			err.Error(),
-			c.CorrelationID,
-		)
-		return false, fmt.Errorf(
-			`Error while removing client %s from %s`,
-			ID,
-			fmt.Sprintf("%s.listeners", channel),
-		)
-	}
-
-	logger.Infof(
-		`Client %s removed from channel %s {"correlationId":"%s"}`,
-		ID,
-		channel,
-		c.CorrelationID,
-	)
-
-	return true, nil
-}
-
 // Connect a client
-func (c *Client) Connect(clientResult ClientResult) (bool, error) {
-	for _, channel := range clientResult.Channels {
-		// Remove client from channel listeners
-		_, err := c.Driver.HSet(fmt.Sprintf("%s.listeners", channel), clientResult.ID, "")
-
-		if err != nil {
-			logger.Errorf(
-				`Error while adding client %s to channel %s: %s {"correlationId":"%s"}`,
-				clientResult.ID,
-				fmt.Sprintf("%s.listeners", channel),
-				err.Error(),
-				c.CorrelationID,
-			)
-			return false, fmt.Errorf(
-				`Error while adding client %s to channel %s`,
-				clientResult.ID,
-				fmt.Sprintf("%s.listeners", channel),
-			)
-		}
-	}
-
-	logger.Infof(
-		`Client %s connected to all subscribed channels {"correlationId":"%s"}`,
-		clientResult.ID,
-		c.CorrelationID,
-	)
-
-	return true, nil
+func (c *Client) Connect(clientID string) error {
+	// update client status
+	return c.db.Put(fmt.Sprintf(
+		"%s/client/%s/status",
+		viper.GetString("app.database.etcd.databaseName"),
+		clientID,
+	), "online")
 }
 
 // Disconnect a client
-func (c *Client) Disconnect(clientResult ClientResult) (bool, error) {
-	for _, channel := range clientResult.Channels {
-		// Remove client from channel listeners
-		_, err := c.Driver.HDel(fmt.Sprintf("%s.listeners", channel), clientResult.ID)
+func (c *Client) Disconnect(clientID string) error {
+	// update client status
+	return c.db.Put(fmt.Sprintf(
+		"%s/client/%s/status",
+		viper.GetString("app.database.etcd.databaseName"),
+		clientID,
+	), "offline")
+}
 
-		if err != nil {
-			logger.Errorf(
-				`Error while removing client %s from channel %s: %s {"correlationId":"%s"}`,
-				clientResult.ID,
-				fmt.Sprintf("%s.listeners", channel),
-				err.Error(),
-				c.CorrelationID,
-			)
-			return false, fmt.Errorf(
-				"Error while removing client %s from %s",
-				clientResult.ID,
-				fmt.Sprintf("%s.listeners", channel),
-			)
-		}
+// addToChannel adds a client to a channel
+func (c *Client) addToChannel(ID string, channel string) (bool, error) {
+	// Add client from channel subscribers
+	err := c.db.Put(fmt.Sprintf(
+		"%s/channel/%s/subscriber/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		channel,
+		ID,
+	), "#")
+
+	if err != nil {
+		return false, err
 	}
 
-	logger.Infof(
-		`Client %s disconnected from all subscribed channels {"correlationId":"%s"}`,
-		clientResult.ID,
-		c.CorrelationID,
-	)
-
 	return true, nil
+}
+
+// removeFromChannel removes a client from a channel
+func (c *Client) removeFromChannel(ID string, channel string) (bool, error) {
+	// Remove client from channel subscribers
+	count, err := c.db.Delete(fmt.Sprintf(
+		"%s/channel/%s/subscriber/%s",
+		viper.GetString("app.database.etcd.databaseName"),
+		channel,
+		ID,
+	))
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
