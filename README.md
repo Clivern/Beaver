@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="Beaver Logo" src="/assets/img/gopher.png" width="180" />
     <h3 align="center">Beaver</h3>
-    <p align="center">A Real Time Messaging Server.</p>
+    <p align="center">A Real Time Messaging System.</p>
     <p align="center">
         <img src="https://travis-ci.org/Clivern/Beaver.svg?branch=master">
         <img src="https://img.shields.io/badge/Version-2.0.0-red.svg">
