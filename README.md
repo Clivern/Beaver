@@ -13,7 +13,7 @@
 Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
 
 <p align="center">
-    <img alt="Beaver Cluster" src="/assets/charts/chart.png" />
+    <img alt="Beaver Cluster" src="/assets/charts/chart.png" width="60%" />
 </p>
 
 
