@@ -105,7 +105,7 @@ func (e *Websocket) Init() {
 // HandleConnections manage new clients
 func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID string, token string, correlationID string) {
 
-	var clientResult api.ClientResult
+	var clientResult module.ClientResult
 
 	validate := util.Validator{}
 
@@ -114,28 +114,50 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		return
 	}
 
-	client := api.Client{
-		CorrelationID: correlationID,
-	}
+	db := driver.NewEtcdDriver()
 
-	if !client.Init() {
+	err := db.Connect()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+			"errorMessage":  "Internal server error",
+		})
 		return
 	}
 
-	clientResult, err := client.GetClientByID(ID)
+	defer db.Close()
+
+	client := module.NewClient(db)
+
+	clientResult, err = client.GetClientByID(ID)
 
 	if err != nil {
+		log.WithFields(log.Fields{
+			"id":            ID,
+			"error":         err.Error(),
+			"correlationID": correlationID,
+		}).Info("Client not found")
 		return
 	}
 
 	// Ensure that client is alreay registered before
 	if clientResult.ID != ID || clientResult.Token != token {
+		log.WithFields(log.Fields{
+			"id":            ID,
+			"correlationID": correlationID,
+		}).Info("Client ID or token mismatch")
 		return
 	}
 
-	ok, err := client.Connect(clientResult)
+	err := client.Connect(clientResult)
 
-	if !ok || err != nil {
+	if err != nil {
+		log.WithFields(log.Fields{
+			"id":            ID,
+			"error":         err.Error(),
+			"correlationID": correlationID,
+		}).Info("Client can not connect")
 		return
 	}
 
@@ -143,12 +165,12 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	ws, err := e.Upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		logger.Fatalf(
-			`Error while upgrading the GET request to a websocket for client %s: %s {"correlationId":"%s"}`,
-			ID,
-			err.Error(),
-			correlationID,
-		)
+		log.WithFields(log.Fields{
+			"id":            ID,
+			"error":         err.Error(),
+			"correlationID": correlationID,
+		}).Error("Error while upgrading the GET request to a websocket for client")
+		return
 	}
 
 	// Make sure we close the connection when the function returns
@@ -157,11 +179,10 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	// Register our new client
 	e.Clients.Set(ID, ws)
 
-	logger.Infof(
-		`Client %s connected {"correlationId":"%s"}`,
-		ID,
-		correlationID,
-	)
+	log.WithFields(log.Fields{
+		"id":            ID,
+		"correlationID": correlationID,
+	}).Info("A new client connected")
 
 	for {
 		var msg Message
@@ -172,11 +193,11 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		if err != nil {
 			e.Clients.Delete(ID)
 			client.Disconnect(clientResult)
-			logger.Infof(
-				`Client %s disconnected {"correlationId":"%s"}`,
-				ID,
-				correlationID,
-			)
+
+			log.WithFields(log.Fields{
+				"id":            ID,
+				"correlationID": correlationID,
+			}).Info("A client disconnected")
 			break
 		}
 
@@ -294,23 +315,26 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 		return
 	}
 
-	for _, name := range broadcastRequest.Channels {
-		// Push message to all subscribed clients
-		iter := channel.ChannelScan(name).Iterator()
+	// Push message to all subscribed clients
+	/*
+		for _, name := range broadcastRequest.Channels {
+			// Push message to all subscribed clients
+			iter := channel.ChannelScan(name).Iterator()
 
-		for iter.Next() {
-			key = iter.Val()
-			if key != "" && validate.IsUUID4(key) {
-				msg = Message{
-					ToClient: key,
-					Data:     broadcastRequest.Data,
-					Channel:  name,
+			for iter.Next() {
+				key = iter.Val()
+				if key != "" && validate.IsUUID4(key) {
+					msg = Message{
+						ToClient: key,
+						Data:     broadcastRequest.Data,
+						Channel:  name,
+					}
+
+					e.Broadcast <- msg
 				}
-
-				e.Broadcast <- msg
 			}
 		}
-	}
+	*/
 
 	c.Status(http.StatusOK)
 }
@@ -368,7 +392,7 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 		return
 	}
 
-	listeners, err := channel.GetListeners(publishRequest.Channel)
+	subscribers, err := channel.GetSubscribers(publishRequest.Channel)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
