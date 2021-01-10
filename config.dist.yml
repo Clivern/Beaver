@@ -56,7 +56,7 @@ app:
 # Cluster Configs
 cluster:
     # Whether to enable or disable the cluster
-    enable: ${BEAVER_CLUSTER_STATUS:-true}
+    enabled: ${BEAVER_CLUSTER_STATUS:-true}
 
     broker:
         # Broker driver, supported drivers are rabbitmq

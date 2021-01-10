@@ -136,20 +136,63 @@ var serveCmd = &cobra.Command{
 		r.GET("/", controller.Index)
 		r.GET("/_health", controller.HealthCheck)
 
-		apiv1 := r.Group("/api/v2")
+		apiv2 := r.Group("/api/v2")
 		{
-			apiv1.GET("/client/:id", controller.GetClientByID)
-			apiv1.POST("/client", controller.CreateClient)
-			apiv1.DELETE("/client/:id", controller.DeleteClientByID)
-			apiv1.PUT("/client/:id/unsubscribe", controller.Unsubscribe)
-			apiv1.PUT("/client/:id/subscribe", controller.Subscribe)
+			apiv2.GET("/client/:id", controller.GetClientByID)
+			apiv2.POST("/client", controller.CreateClient)
+			apiv2.DELETE("/client/:id", controller.DeleteClientByID)
+			apiv2.PUT("/client/:id/unsubscribe", controller.Unsubscribe)
+			apiv2.PUT("/client/:id/subscribe", controller.Subscribe)
 
-			apiv1.GET("/channel/:name", controller.GetChannelByName)
-			apiv1.POST("/channel", controller.CreateChannel)
-			apiv1.DELETE("/channel/:name", controller.DeleteChannelByName)
-			apiv1.PUT("/channel/:name", controller.UpdateChannelByName)
-			apiv1.GET("/channel/:name/subscribers", controller.GetChannelSubscribersByName)
-			apiv1.GET("/channel/:name/listeners", controller.GetChannelListenersByName)
+			apiv2.GET("/channel/:name", controller.GetChannelByName)
+			apiv2.POST("/channel", controller.CreateChannel)
+			apiv2.DELETE("/channel/:name", controller.DeleteChannelByName)
+			apiv2.PUT("/channel/:name", controller.UpdateChannelByName)
+			apiv2.GET("/channel/:name/subscribers", controller.GetChannelSubscribersByName)
+			apiv2.GET("/channel/:name/listeners", controller.GetChannelListenersByName)
+		}
+
+		socket := &controller.Websocket{}
+		socket.Init()
+
+		r.GET("/ws/:id/:token", func(c *gin.Context) {
+			socket.HandleConnections(
+				c.Writer,
+				c.Request,
+				c.Param("id"),
+				c.Param("token"),
+				c.Request.Header.Get("X-Correlation-ID"),
+			)
+		})
+
+		r.POST("/api/broadcast", func(c *gin.Context) {
+			rawBody, err := c.GetRawData()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status": "error",
+					"error":  "Invalid request",
+				})
+				return
+			}
+			socket.BroadcastAction(c, rawBody)
+		})
+
+		r.POST("/api/publish", func(c *gin.Context) {
+			rawBody, err := c.GetRawData()
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status": "error",
+					"error":  "Invalid request",
+				})
+				return
+			}
+			socket.PublishAction(c, rawBody)
+		})
+
+		go socket.HandleMessages()
+
+		if viper.GetBool("cluser.enabled") {
+			go socket.HandleBroadcastedMessages()
 		}
 
 		r.GET(
