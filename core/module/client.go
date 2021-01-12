@@ -99,6 +99,17 @@ func (c *Client) CreateClient(client ClientResult) (bool, error) {
 		return false, err
 	}
 
+	// store client node
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/node",
+		viper.GetString("app.database.etcd.databaseName"),
+		client.ID,
+	), "#")
+
+	if err != nil {
+		return false, err
+	}
+
 	for _, channel := range client.Channels {
 		ok, err := c.addToChannel(client.ID, channel)
 		if !ok || err != nil {
@@ -239,23 +250,47 @@ func (c *Client) Subscribe(ID string, channels []string) (bool, error) {
 }
 
 // Connect a client
-func (c *Client) Connect(clientID string) error {
+func (c *Client) Connect(clientID, node string) error {
 	// update client status
-	return c.db.Put(fmt.Sprintf(
+	err := c.db.Put(fmt.Sprintf(
 		"%s/client/%s/status",
 		viper.GetString("app.database.etcd.databaseName"),
 		clientID,
 	), "online")
+
+	if err != nil {
+		return err
+	}
+
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/node",
+		viper.GetString("app.database.etcd.databaseName"),
+		clientID,
+	), node)
+
+	return err
 }
 
 // Disconnect a client
 func (c *Client) Disconnect(clientID string) error {
 	// update client status
-	return c.db.Put(fmt.Sprintf(
+	err := c.db.Put(fmt.Sprintf(
 		"%s/client/%s/status",
 		viper.GetString("app.database.etcd.databaseName"),
 		clientID,
 	), "offline")
+
+	if err != nil {
+		return err
+	}
+
+	err = c.db.Put(fmt.Sprintf(
+		"%s/client/%s/node",
+		viper.GetString("app.database.etcd.databaseName"),
+		clientID,
+	), "#")
+
+	return err
 }
 
 // addToChannel adds a client to a channel

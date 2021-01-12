@@ -195,6 +195,10 @@ var serveCmd = &cobra.Command{
 			go socket.HandleBroadcastedMessages()
 		}
 
+		if viper.GetString("app.webhook.url") {
+			go socket.HandlePersistenceCallback()
+		}
+
 		r.GET(
 			viper.GetString("app.metrics.prometheus.endpoint"),
 			gin.WrapH(controller.Metrics()),

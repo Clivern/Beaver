@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 // Message struct
@@ -39,9 +40,10 @@ type PublishRequest struct {
 
 // Websocket Object
 type Websocket struct {
-	Clients   util.Map
-	Broadcast chan Message
-	Upgrader  websocket.Upgrader
+	Clients          util.Map
+	Broadcast        chan Message
+	PersistBroadcast chan Message
+	Upgrader         websocket.Upgrader
 }
 
 // IsValid checks if message is valid
@@ -92,6 +94,7 @@ func (e *Websocket) Init() {
 	e.Clients = util.NewMap()
 
 	e.Broadcast = make(chan Message)
+	e.PersistBroadcast = make(chan Message)
 
 	e.Upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -150,7 +153,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		return
 	}
 
-	err := client.Connect(clientResult)
+	err := client.Connect(ID, viper.GetString("app.name"))
 
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -192,7 +195,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 
 		if err != nil {
 			e.Clients.Delete(ID)
-			client.Disconnect(clientResult)
+			client.Disconnect(ID)
 
 			log.WithFields(log.Fields{
 				"id":            ID,
@@ -226,6 +229,7 @@ func (e *Websocket) HandleMessages() {
 			// it anymore
 			if client, ok := e.Clients.Get(msg.ToClient); ok {
 				err := client.(*websocket.Conn).WriteJSON(msg)
+
 				if err != nil {
 					client.(*websocket.Conn).Close()
 					e.Clients.Delete(msg.ToClient)
@@ -316,25 +320,34 @@ func (e *Websocket) BroadcastAction(c *gin.Context, rawBody []byte) {
 	}
 
 	// Push message to all subscribed clients
-	/*
-		for _, name := range broadcastRequest.Channels {
-			// Push message to all subscribed clients
-			iter := channel.ChannelScan(name).Iterator()
+	for _, name := range broadcastRequest.Channels {
 
-			for iter.Next() {
-				key = iter.Val()
-				if key != "" && validate.IsUUID4(key) {
-					msg = Message{
-						ToClient: key,
-						Data:     broadcastRequest.Data,
-						Channel:  name,
-					}
+		subscribers, err := channel.GetSubscribers(name)
 
-					e.Broadcast <- msg
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"correlationID": c.Request.Header.Get("X-Correlation-ID"),
+				"errorMessage":  "Internal server error",
+			})
+			return
+		}
+
+		for k, uuid := range subscribers {
+			if uuid != "" && validate.IsUUID4(uuid) {
+				msg = Message{
+					ToClient: uuid,
+					Data:     broadcastRequest.Data,
+					Channel:  name,
+				}
+
+				e.Broadcast <- msg
+
+				if viper.GetString("app.webhook.url") != "" {
+					e.PersistBroadcast <- msg
 				}
 			}
 		}
-	*/
+	}
 
 	c.Status(http.StatusOK)
 }
@@ -402,23 +415,21 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 		return
 	}
 
-	// Push message to all subscribed clients
-	/*
-		iter := channel.ChannelScan(publishRequest.Channel).Iterator()
+	for k, uuid := range subscribers {
+		if uuid != "" && validate.IsUUID4(uuid) {
+			msg = Message{
+				ToClient: uuid,
+				Data:     publishRequest.Data,
+				Channel:  publishRequest.Channel,
+			}
 
-		for iter.Next() {
-			key = iter.Val()
-			if key != "" && validate.IsUUID4(key) {
-				msg = Message{
-					ToClient: key,
-					Data:     publishRequest.Data,
-					Channel:  publishRequest.Channel,
-				}
+			e.Broadcast <- msg
 
-				e.Broadcast <- msg
+			if viper.GetString("app.webhook.url") != "" {
+				e.PersistBroadcast <- msg
 			}
 		}
-	*/
+	}
 
 	c.Status(http.StatusOK)
 }
@@ -426,4 +437,14 @@ func (e *Websocket) PublishAction(c *gin.Context, rawBody []byte) {
 // HandleBroadcastedMessages
 func (e *Websocket) HandleBroadcastedMessages() {
 	// Handle incoming messages from RabbitMQ
+}
+
+// HandlePersistenceCallback send message to backend
+func (e *Websocket) HandlePersistenceCallback() {
+	for {
+		// Grab the next message from the channel
+		msg := <-e.PersistBroadcast
+
+		fmt.Println("%v", msg)
+	}
 }
