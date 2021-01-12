@@ -177,6 +177,32 @@ func (c *Client) GetClientByID(ID string) (ClientResult, error) {
 	)
 }
 
+// GetClientNode gets a client node
+func (c *Client) GetClientNode(ID string) (string, error) {
+
+	data, err := c.db.Get(fmt.Sprintf(
+		"%s/client/%s/node",
+		viper.GetString("app.database.etcd.databaseName"),
+		ID,
+	))
+
+	if err != nil {
+		return "", err
+	}
+
+	for k, v := range data {
+		// Check if it is the node key
+		if strings.Contains(k, "/node") {
+			return string(v), nil
+		}
+	}
+
+	return "", fmt.Errorf(
+		"Unable to find the client node %s",
+		ID,
+	)
+}
+
 // DeleteClientByID deletes a client with ID
 func (c *Client) DeleteClientByID(ID string) (bool, error) {
 	client, err := c.GetClientByID(ID)
