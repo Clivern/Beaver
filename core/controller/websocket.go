@@ -5,6 +5,7 @@
 package controller
 
 import (
+	"fmt"
 	"encoding/json"
 	"net/http"
 
@@ -122,10 +123,10 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 	err := db.Connect()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"correlationID": c.Request.Header.Get("X-Correlation-ID"),
-			"errorMessage":  "Internal server error",
-		})
+		log.WithFields(log.Fields{
+			"error":         err.Error(),
+			"correlationID": correlationID,
+		}).Info("DB connection error")
 		return
 	}
 
