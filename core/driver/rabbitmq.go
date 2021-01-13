@@ -16,8 +16,8 @@ type RabbitMQ struct {
 
 // NewRabbitMQDriver creates an instance of RabbitMQ
 func NewRabbitMQDriver() (*RabbitMQ, error) {
-	result := &RabbitMQ{}
 	var err error
+	result := &RabbitMQ{}
 
 	result.Connection, err = amqp.Dial(viper.GetString("cluster.broker.rabbitmq.connection"))
 

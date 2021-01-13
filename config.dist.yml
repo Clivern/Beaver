@@ -66,3 +66,5 @@ cluster:
         rabbitmq:
             # Connection string
             connection: ${BEAVER_BROKER_RABBITMQ_CONNECTION:-amqp://username:password@127.0.0.1:5672/}
+            # RabbitMQ Queue
+            queue: ${BEAVER_CLUSTER_BROKER_QUEUE:-beaver_nodes}

@@ -154,7 +154,7 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 		return
 	}
 
-	err := client.Connect(ID, viper.GetString("app.name"))
+	err = client.Connect(ID, viper.GetString("app.name"))
 
 	if err != nil {
 		log.WithFields(log.Fields{
