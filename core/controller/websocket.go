@@ -5,8 +5,8 @@
 package controller
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/clivern/beaver/core/driver"
