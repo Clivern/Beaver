@@ -14,6 +14,11 @@ type Map struct {
 	items map[string]interface{}
 }
 
+// NewMap creates a new instance of Map
+func NewMap() Map {
+	return Map{items: make(map[string]interface{})}
+}
+
 // Get a key from a concurrent map
 func (cm *Map) Get(key string) (interface{}, bool) {
 	cm.Lock()

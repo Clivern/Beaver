@@ -16,8 +16,8 @@ type RabbitMQ struct {
 
 // NewRabbitMQDriver creates an instance of RabbitMQ
 func NewRabbitMQDriver() (*RabbitMQ, error) {
-	result := &RabbitMQ{}
 	var err error
+	result := &RabbitMQ{}
 
 	result.Connection, err = amqp.Dial(viper.GetString("cluster.broker.rabbitmq.connection"))
 
@@ -29,7 +29,7 @@ func NewRabbitMQDriver() (*RabbitMQ, error) {
 }
 
 // Send sends a message
-func (r *RabbitMQ) Send(queue, message string) error {
+func (r *RabbitMQ) Send(queue, routingKey, message string) error {
 	ch, err := r.Connection.Channel()
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (r *RabbitMQ) Send(queue, message string) error {
 
 	err = ch.ExchangeDeclare(
 		queue,    // name
-		"fanout", // type
+		"direct", // type
 		true,     // durable
 		false,    // auto-deleted
 		false,    // internal
@@ -53,10 +53,10 @@ func (r *RabbitMQ) Send(queue, message string) error {
 	}
 
 	err = ch.Publish(
-		queue, // exchange
-		"",    // routing key
-		false, // mandatory
-		false, // immediate
+		queue,      // exchange
+		routingKey, // routing key
+		false,      // mandatory
+		false,      // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(message),
@@ -71,7 +71,7 @@ func (r *RabbitMQ) Send(queue, message string) error {
 }
 
 // Consume consumes a queue
-func (r *RabbitMQ) Consume(queue string, callback func(msg string)) error {
+func (r *RabbitMQ) Consume(queue, routingKey string, callback func(msg string)) error {
 	ch, err := r.Connection.Channel()
 
 	if err != nil {
@@ -82,7 +82,7 @@ func (r *RabbitMQ) Consume(queue string, callback func(msg string)) error {
 
 	err = ch.ExchangeDeclare(
 		queue,    // name
-		"fanout", // type
+		"direct", // type
 		true,     // durable
 		false,    // auto-deleted
 		false,    // internal
@@ -108,9 +108,9 @@ func (r *RabbitMQ) Consume(queue string, callback func(msg string)) error {
 	}
 
 	err = ch.QueueBind(
-		q.Name, // queue name
-		"",     // routing key
-		queue,  // exchange
+		q.Name,     // queue name
+		routingKey, // routing key
+		queue,      // exchange
 		false,
 		nil,
 	)
@@ -122,10 +122,10 @@ func (r *RabbitMQ) Consume(queue string, callback func(msg string)) error {
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
-		true,   // auto-ack
+		true,   // auto ack
 		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
+		false,  // no local
+		false,  // no wait
 		nil,    // args
 	)
 

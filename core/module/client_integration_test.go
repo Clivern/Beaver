@@ -192,7 +192,7 @@ func TestIntegrationCreateClient(t *testing.T) {
 				"messages",
 			})
 
-			g.Assert(client.Connect(newClient.ID)).Equal(nil)
+			g.Assert(client.Connect(newClient.ID, "#")).Equal(nil)
 		})
 	})
 
