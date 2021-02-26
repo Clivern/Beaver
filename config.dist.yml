@@ -33,9 +33,9 @@ app:
 
     database:
         # database driver
-        driver: ${BEAVER_DB_DRIVER:-etcd}
+        driver: ${BEAVER_DB_DRIVER:-cassandra}
 
-        etcd:
+        cassandra:
             # etcd database name or prefix
             databaseName: ${BEAVER_DB_ETCD_DB:-beaver_v2}
             # etcd username

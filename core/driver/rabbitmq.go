@@ -12,9 +12,11 @@ import (
 // RabbitMQ type
 type RabbitMQ struct {
 	Connection *amqp.Connection
+	Host       string
 }
 
 // NewRabbitMQDriver creates an instance of RabbitMQ
+// TODO: Remove this method
 func NewRabbitMQDriver() (*RabbitMQ, error) {
 	var err error
 	result := &RabbitMQ{}
@@ -26,6 +28,31 @@ func NewRabbitMQDriver() (*RabbitMQ, error) {
 	}
 
 	return result, nil
+}
+
+// NewRabbitMQ creates an instance of RabbitMQ
+func NewRabbitMQ() *RabbitMQ {
+	return &RabbitMQ{}
+}
+
+// WithHost define the host
+func (r *RabbitMQ) WithHost(host string) *RabbitMQ {
+	r.Host = host
+
+	return r
+}
+
+// Dial connects to RabbitMQ
+func (r *RabbitMQ) Dial() error {
+	var err error
+
+	result.Connection, err = amqp.Dial(r.Host)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Send sends a message

@@ -5,6 +5,7 @@
 package driver
 
 import (
+	"context"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -58,8 +59,8 @@ func (c *Cassandra) CreateSession() (*gocql.Session, error) {
 }
 
 // Query query the database
-func (c *Cassandra) Query(query string) *gocql.Query {
-	return c.Session.Query(query)
+func (c *Cassandra) Query(ctx context.Context, query string) *gocql.Query {
+	return c.Session.Query(query).WithContext(ctx)
 }
 
 // GetSession gets the session
