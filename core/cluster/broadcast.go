@@ -24,7 +24,11 @@ type Broadcast struct {
 func NewBroadcast() (*Broadcast, error) {
 	var broadcast *Broadcast
 
-	broker, err := driver.NewRabbitMQDriver()
+	broker := driver.NewRabbitMQ().WithHost(
+		viper.GetString("cluster.broker.rabbitmq.connection"),
+	)
+
+	err := broker.Dial()
 
 	if err != nil {
 		return broadcast, err

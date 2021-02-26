@@ -19,13 +19,13 @@ var (
 
 	// client_table query var
 	client_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.client (id UUID PRIMARY KEY, node_id UUID, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
+		"CREATE TABLE IF NOT EXISTS %s.client (id UUID PRIMARY KEY, node_id UUID, status VARCHAR, api_key VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
 		viper.GetString("app.database.cassandra.databaseName"),
 	)
 
 	// channel_table query var
 	channel_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.channel (id UUID PRIMARY KEY, slug VARCHAR, name VARCHAR, type VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
+		"CREATE TABLE IF NOT EXISTS %s.channel (id UUID PRIMARY KEY, name VARCHAR, type VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
 		viper.GetString("app.database.cassandra.databaseName"),
 	)
 

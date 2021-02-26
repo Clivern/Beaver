@@ -5,22 +5,19 @@
 package cluster
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/clivern/beaver/core/driver"
-
-	"github.com/spf13/viper"
 )
 
 // Node type
 type Node struct {
-	db driver.Database
+	db driver.Cassandra
 }
 
 // NewNode creates a node instance
-func NewNode(db driver.Database) *Node {
+func NewNode(db driver.Cassandra) *Node {
 	result := new(Node)
 	result.db = db
 
@@ -29,49 +26,6 @@ func NewNode(db driver.Database) *Node {
 
 // Alive report the node as live to etcd
 func (n *Node) Alive(seconds int64) error {
-	hostname, err := n.GetHostname()
-
-	if err != nil {
-		return err
-	}
-
-	key := fmt.Sprintf(
-		"%s/node/%s__%s",
-		viper.GetString("app.database.etcd.databaseName"),
-		hostname,
-		viper.GetString("app.name"),
-	)
-
-	leaseID, err := n.db.CreateLease(seconds)
-
-	if err != nil {
-		return err
-	}
-
-	err = n.db.PutWithLease(fmt.Sprintf("%s/state", key), "alive", leaseID)
-
-	if err != nil {
-		return err
-	}
-
-	err = n.db.PutWithLease(fmt.Sprintf("%s/url", key), viper.GetString("app.url"), leaseID)
-
-	if err != nil {
-		return err
-	}
-
-	err = n.db.PutWithLease(fmt.Sprintf("%s/load", key), "0", leaseID)
-
-	if err != nil {
-		return err
-	}
-
-	err = n.db.RenewLease(leaseID)
-
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

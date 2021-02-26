@@ -5,7 +5,6 @@
 package driver
 
 import (
-	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )
 
@@ -13,21 +12,6 @@ import (
 type RabbitMQ struct {
 	Connection *amqp.Connection
 	Host       string
-}
-
-// NewRabbitMQDriver creates an instance of RabbitMQ
-// TODO: Remove this method
-func NewRabbitMQDriver() (*RabbitMQ, error) {
-	var err error
-	result := &RabbitMQ{}
-
-	result.Connection, err = amqp.Dial(viper.GetString("cluster.broker.rabbitmq.connection"))
-
-	if err != nil {
-		return result, err
-	}
-
-	return result, nil
 }
 
 // NewRabbitMQ creates an instance of RabbitMQ
@@ -46,7 +30,7 @@ func (r *RabbitMQ) WithHost(host string) *RabbitMQ {
 func (r *RabbitMQ) Dial() error {
 	var err error
 
-	result.Connection, err = amqp.Dial(r.Host)
+	r.Connection, err = amqp.Dial(r.Host)
 
 	if err != nil {
 		return err

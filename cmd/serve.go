@@ -139,12 +139,14 @@ var serveCmd = &cobra.Command{
 		apiv2 := r.Group("/api/v2")
 		{
 			apiv2.GET("/client/:id", controller.GetClientByID)
+			apiv2.GET("/client/:id/messages", controller.GetClientMessages)
 			apiv2.POST("/client", controller.CreateClient)
 			apiv2.DELETE("/client/:id", controller.DeleteClientByID)
 			apiv2.PUT("/client/:id/unsubscribe", controller.Unsubscribe)
 			apiv2.PUT("/client/:id/subscribe", controller.Subscribe)
 
 			apiv2.GET("/channel/:name", controller.GetChannelByName)
+			apiv2.GET("/channel/:name/messages", controller.GetChannelMessages)
 			apiv2.POST("/channel", controller.CreateChannel)
 			apiv2.DELETE("/channel/:name", controller.DeleteChannelByName)
 			apiv2.PUT("/channel/:name", controller.UpdateChannelByName)
@@ -195,7 +197,7 @@ var serveCmd = &cobra.Command{
 			go socket.HandleBroadcastedMessages()
 		}
 
-		if viper.GetString("app.webhook.url") {
+		if viper.GetString("app.webhook.url") != "" {
 			go socket.HandlePersistenceCallback()
 		}
 

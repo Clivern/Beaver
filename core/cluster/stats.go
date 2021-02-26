@@ -5,20 +5,16 @@
 package cluster
 
 import (
-	"fmt"
-
 	"github.com/clivern/beaver/core/driver"
-
-	"github.com/spf13/viper"
 )
 
 // Stats type
 type Stats struct {
-	db driver.Database
+	db driver.Cassandra
 }
 
 // NewStats creates a stats instance
-func NewStats(db driver.Database) *Stats {
+func NewStats(db driver.Cassandra) *Stats {
 	result := new(Stats)
 	result.db = db
 
@@ -27,51 +23,20 @@ func NewStats(db driver.Database) *Stats {
 
 // GetTotalNodes gets total nodes count
 func (s *Stats) GetTotalNodes() (int, error) {
-
-	key := fmt.Sprintf(
-		"%s/node",
-		viper.GetString("app.database.etcd.databaseName"),
-	)
-
-	keys, err := s.db.GetKeys(key)
-
-	if err != nil {
-		return 0, err
-	}
-
-	return len(keys), nil
+	return 0, nil
 }
 
 // GetTotalChannels gets total channels count
 func (s *Stats) GetTotalChannels() (int, error) {
-
-	key := fmt.Sprintf(
-		"%s/channel",
-		viper.GetString("app.database.etcd.databaseName"),
-	)
-
-	keys, err := s.db.GetKeys(key)
-
-	if err != nil {
-		return 0, err
-	}
-
-	return len(keys), nil
+	return 0, nil
 }
 
 // GetTotalClients gets total clients count
 func (s *Stats) GetTotalClients() (int, error) {
+	return 0, nil
+}
 
-	key := fmt.Sprintf(
-		"%s/client",
-		viper.GetString("app.database.etcd.databaseName"),
-	)
-
-	keys, err := s.db.GetKeys(key)
-
-	if err != nil {
-		return 0, err
-	}
-
-	return len(keys), nil
+// GetTotalMessages gets total messages count
+func (s *Stats) GetTotalMessages() (int, error) {
+	return 0, nil
 }
