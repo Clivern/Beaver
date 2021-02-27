@@ -19,6 +19,7 @@ vendor
 
 config.prod.yml
 config.dev.yml
+config.test.yml
 coverage.html
 cover.out
 

@@ -26,7 +26,7 @@ app:
     log:
         # Log level, it can be debug, info, warn, error, panic, fatal
         level: ${BEAVER_LOG_LEVEL:-info}
-        # output can be stdout or abs path to log file /var/logs/beetle.log
+        # output can be stdout or abs path to log file /var/logs/beaver.log
         output: ${BEAVER_LOG_OUTPUT:-stdout}
         # Format can be json
         format: ${BEAVER_LOG_FORMAT:-json}
@@ -37,13 +37,13 @@ app:
 
         cassandra:
             # etcd database name or prefix
-            databaseName: ${BEAVER_DB_ETCD_DB:-beaver_v2}
+            databaseName: ${BEAVER_DB_CASSANDRA_DB:-beaver}
             # etcd username
-            username: ${BEAVER_DB_ETCD_USERNAME:- }
+            username: ${BEAVER_DB_CASSANDRA_USERNAME:-cassandra}
             # etcd password
-            password: ${BEAVER_DB_ETCD_PASSWORD:- }
+            password: ${BEAVER_DB_CASSANDRA_PASSWORD:-cassandra}
             # etcd endpoints
-            endpoints: ${BEAVER_DB_ETCD_ENDPOINTS:-http://127.0.0.1:2379}
+            hosts: ${BEAVER_DB_CASSANDRA_ENDPOINTS:-127.0.0.1}
             # Timeout in seconds
             timeout: 30
 

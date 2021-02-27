@@ -21,16 +21,10 @@ jobs:
           export PATH=${PATH}:`go env GOPATH`/bin
           make install_revive
 
-      - name: Install etcd server
-        run: |
-          bash ./bin/local_etcd_ubuntu.sh
-
       - name: Run make ci
         run: |
           export PATH=${PATH}:`go env GOPATH`/bin
           make ci
-          make integration
-          make integration
           git status
           git diff > diff.log
           cat diff.log

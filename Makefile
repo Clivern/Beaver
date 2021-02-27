@@ -109,6 +109,7 @@ coverage:
 ## ci: Run all CI tests.
 .PHONY: ci
 ci: style check_license test vet lint
+	-cp -n config.dist.yml config.test.yml
 	@echo "\n==> All quality checks passed"
 
 

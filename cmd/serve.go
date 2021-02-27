@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -16,7 +17,9 @@ import (
 	"strings"
 
 	"github.com/clivern/beaver/core/controller"
+	"github.com/clivern/beaver/core/driver"
 	"github.com/clivern/beaver/core/middleware"
+	"github.com/clivern/beaver/core/schema"
 	"github.com/clivern/beaver/core/util"
 
 	"github.com/drone/envsubst"
@@ -120,6 +123,98 @@ var serveCmd = &cobra.Command{
 		}
 
 		viper.SetDefault("app.name", util.GenerateUUID4())
+
+		db := driver.NewCassandra().WithHosts(
+			strings.Split(viper.GetString("app.database.cassandra.hosts"), ","),
+		).WithTimeout(
+			viper.GetInt("app.database.cassandra.timeout"),
+		).WithAuth(
+			viper.GetString("app.database.cassandra.username"),
+			viper.GetString("app.database.cassandra.password"),
+		)
+
+		err = db.CreateSession()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while connecting cassandra: %s",
+				err.Error(),
+			))
+		}
+
+		defer db.Close()
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.Database),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.Database query: %s",
+				err.Error(),
+			))
+		}
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ClientTable),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.ClientTable query: %s",
+				err.Error(),
+			))
+		}
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ChannelTable),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.ChannelTable query: %s",
+				err.Error(),
+			))
+		}
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.MessageTable),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.MessageTable query: %s",
+				err.Error(),
+			))
+		}
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.NodeTable),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.NodeTable query: %s",
+				err.Error(),
+			))
+		}
+
+		err = db.Query(
+			context.Background(),
+			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ClientChannelTable),
+		).Exec()
+
+		if err != nil {
+			panic(fmt.Sprintf(
+				"Error while executing Schema.ClientChannelTable query: %s",
+				err.Error(),
+			))
+		}
 
 		r := gin.Default()
 

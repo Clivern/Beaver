@@ -5,45 +5,30 @@
 package schema
 
 import (
-	"fmt"
-
-	"github.com/spf13/viper"
+	"strings"
 )
 
 var (
-	// database query var
-	database = fmt.Sprintf(
-		"CREATE KEYSPACE IF NOT EXISTS %s WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// Database query var
+	Database = "CREATE KEYSPACE IF NOT EXISTS [Database] WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };"
 
-	// client_table query var
-	client_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.client (id UUID PRIMARY KEY, node_id UUID, status VARCHAR, api_key VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// ClientTable query var
+	ClientTable = "CREATE TABLE IF NOT EXISTS [Database].client (id UUID PRIMARY KEY, node_id UUID, status VARCHAR, api_key VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
-	// channel_table query var
-	channel_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.channel (id UUID PRIMARY KEY, name VARCHAR, type VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// ChannelTable query var
+	ChannelTable = "CREATE TABLE IF NOT EXISTS [Database].channel (id UUID PRIMARY KEY, name VARCHAR, type VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
-	// message_table query var
-	message_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.message (id UUID PRIMARY KEY, message TEXT, from_client_id UUID, to_channel_id UUID, to_client_id UUID, created_at TIMESTAMP, updated_at TIMESTAMP);",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// MessageTable query var
+	MessageTable = "CREATE TABLE IF NOT EXISTS [Database].message (id UUID PRIMARY KEY, message TEXT, from_client_id UUID, to_channel_id UUID, to_client_id UUID, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
-	// node_table query var
-	node_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.node (id UUID PRIMARY KEY, address VARCHAR, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// NodeTable query var
+	NodeTable = "CREATE TABLE IF NOT EXISTS [Database].node (id UUID PRIMARY KEY, address VARCHAR, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
-	// client_channel_table query var
-	client_channel_table = fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s.client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID);",
-		viper.GetString("app.database.cassandra.databaseName"),
-	)
+	// ClientChannelTable query var
+	ClientChannelTable = "CREATE TABLE IF NOT EXISTS [Database].client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID);"
 )
+
+// SchemaWithDatabase gets the query with database
+func SchemaWithDatabase(database, query string) string {
+	return strings.Replace(query, "[Database]", database, -1)
+}

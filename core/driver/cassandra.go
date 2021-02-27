@@ -45,7 +45,7 @@ func (c *Cassandra) WithAuth(username, password string) *Cassandra {
 }
 
 // CreateSession creates a new session
-func (c *Cassandra) CreateSession() (*gocql.Session, error) {
+func (c *Cassandra) CreateSession() error {
 	var err error
 
 	// https://github.com/gocql/gocql/blob/master/cluster.go#L31
@@ -55,7 +55,7 @@ func (c *Cassandra) CreateSession() (*gocql.Session, error) {
 	cluster.Authenticator = gocql.PasswordAuthenticator{Username: c.Username, Password: c.Password}
 	c.Session, err = cluster.CreateSession()
 
-	return c.Session, err
+	return err
 }
 
 // Query query the database
