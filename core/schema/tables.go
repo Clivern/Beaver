@@ -25,7 +25,7 @@ var (
 	NodeTable = "CREATE TABLE IF NOT EXISTS [Database].node (id UUID PRIMARY KEY, hostname VARCHAR, address VARCHAR, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
 	// ClientChannelTable query var
-	ClientChannelTable = "CREATE TABLE IF NOT EXISTS [Database].client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID, channel_name VARCHAR);"
+	ClientChannelTable = "CREATE TABLE IF NOT EXISTS [Database].client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID, channel_name VARCHAR, client_status VARCHAR);"
 )
 
 // SchemaWithDatabase gets the query with database

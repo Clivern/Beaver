@@ -10,6 +10,14 @@ import (
 
 	"github.com/clivern/beaver/core/driver"
 	"github.com/clivern/beaver/core/util"
+
+	"github.com/gocql/gocql"
+)
+
+const (
+	Online  = "online"
+	Offline = "offline"
+	Unknown = "unknown"
 )
 
 // ClientModule type
@@ -19,22 +27,24 @@ type ClientModule struct {
 
 // ClientModel struct
 type ClientModel struct {
-	ID        string   `json:"id"`
-	APIKey    string   `json:"api_key"`
-	NodeID    string   `json:"node_id"`
-	Status    string   `json:"status"`
-	Channels  []string `json:"channels"`
-	CreatedAt int64    `json:"created_at"`
-	UpdatedAt int64    `json:"updated_at"`
+	ID        gocql.UUID `json:"id"`
+	APIKey    string     `json:"api_key"`
+	NodeID    gocql.UUID `json:"node_id"`
+	Status    string     `json:"status"`
+	Channels  []string   `json:"channels"`
+	CreatedAt int64      `json:"created_at"`
+	UpdatedAt int64      `json:"updated_at"`
 }
 
 // GenerateClient generates a new client
-func GenerateClient(channels []string) *ClientModel {
+func GenerateClient(nodeID gocql.UUID, status string, channels []string) *ClientModel {
 	now := time.Now().Unix()
 
 	return &ClientModel{
-		ID:        util.GenerateUUID4(),
+		ID:        gocql.TimeUUID(),
 		APIKey:    util.CreateHash(util.GenerateUUID4()),
+		NodeID:    nodeID,
+		Status:    status,
 		Channels:  channels,
 		CreatedAt: now,
 		UpdatedAt: now,

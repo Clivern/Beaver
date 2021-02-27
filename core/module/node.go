@@ -59,7 +59,12 @@ func (c *NodeModule) DeleteById(ctx context.Context, id gocql.UUID) error {
 	return c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"DELETE FROM %s.node WHERE id = %s;",
+			`BEGIN BATCH
+				DELETE FROM %s.node WHERE id = %s;
+				UPDATE %s.client SET node_id = NULL WHERE node_id = %s;
+			APPLY BATCH;`,
+			viper.GetString("app.database.cassandra.databaseName"),
+			id,
 			viper.GetString("app.database.cassandra.databaseName"),
 			id,
 		),
