@@ -19,13 +19,13 @@ var (
 	ChannelTable = "CREATE TABLE IF NOT EXISTS [Database].channel (id UUID PRIMARY KEY, name VARCHAR, type VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
 	// MessageTable query var
-	MessageTable = "CREATE TABLE IF NOT EXISTS [Database].message (id UUID PRIMARY KEY, message TEXT, from_client_id UUID, to_channel_id UUID, to_client_id UUID, created_at TIMESTAMP, updated_at TIMESTAMP);"
+	MessageTable = "CREATE TABLE IF NOT EXISTS [Database].message (id UUID PRIMARY KEY, message TEXT, from_client_id UUID, to_channel_id UUID, to_channel_name VARCHAR, to_client_id UUID, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
 	// NodeTable query var
-	NodeTable = "CREATE TABLE IF NOT EXISTS [Database].node (id UUID PRIMARY KEY, address VARCHAR, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
+	NodeTable = "CREATE TABLE IF NOT EXISTS [Database].node (id UUID PRIMARY KEY, hostname VARCHAR, address VARCHAR, status VARCHAR, created_at TIMESTAMP, updated_at TIMESTAMP);"
 
 	// ClientChannelTable query var
-	ClientChannelTable = "CREATE TABLE IF NOT EXISTS [Database].client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID);"
+	ClientChannelTable = "CREATE TABLE IF NOT EXISTS [Database].client_channel (id UUID PRIMARY KEY, client_id UUID, channel_id UUID, channel_name VARCHAR);"
 )
 
 // SchemaWithDatabase gets the query with database

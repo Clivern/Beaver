@@ -30,6 +30,7 @@ fmt.Println(nodeModule.Insert(context.Background(), module.NodeModel{
     ID:        id,
     Address:   "http://127.0.0.1",
     Status:    "up",
+    Hostname:  "clivern",
     CreatedAt: time.Now().Unix(),
     UpdatedAt: time.Now().Unix(),
 }))

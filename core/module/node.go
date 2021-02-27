@@ -24,6 +24,7 @@ type NodeModel struct {
 	ID        gocql.UUID `json:"id"`
 	Address   string     `json:"address"`
 	Status    string     `json:"status"`
+	Hostname  string     `json:"hostname"`
 	CreatedAt int64      `json:"created_at"`
 	UpdatedAt int64      `json:"updated_at"`
 }
@@ -41,8 +42,9 @@ func (c *NodeModule) Insert(ctx context.Context, node NodeModel) error {
 	return c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"INSERT INTO %s.node (id, address, status, created_at, updated_at) VALUES (%s, '%s', '%s', %d, %d);",
+			"INSERT INTO %s.node (id, hostname, address, status, created_at, updated_at) VALUES (%s, '%s', '%s', '%s', %d, %d);",
 			viper.GetString("app.database.cassandra.databaseName"),
+			node.Hostname,
 			node.ID,
 			node.Address,
 			node.Status,
@@ -69,8 +71,9 @@ func (c *NodeModule) UpdateById(ctx context.Context, node NodeModel) error {
 	return c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"UPDATE %s.node SET address = '%s', status = '%s', created_at = %d, updated_at = %d WHERE id = %s IF EXISTS;",
+			"UPDATE %s.node SET hostname = '%s', address = '%s', status = '%s', created_at = %d, updated_at = %d WHERE id = %s IF EXISTS;",
 			viper.GetString("app.database.cassandra.databaseName"),
+			node.Hostname,
 			node.Address,
 			node.Status,
 			node.CreatedAt,
@@ -84,6 +87,7 @@ func (c *NodeModule) UpdateById(ctx context.Context, node NodeModel) error {
 func (c *NodeModule) GetById(ctx context.Context, id gocql.UUID) (NodeModel, error) {
 	var address string
 	var status string
+	var hostname string
 	var createdAt int64
 	var updatedAt int64
 	var nodeModel NodeModel
@@ -91,17 +95,18 @@ func (c *NodeModule) GetById(ctx context.Context, id gocql.UUID) (NodeModel, err
 	err := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT address, status, created_at, updated_at FROM %s.node WHERE id = %s;",
+			"SELECT hostname, address, status, created_at, updated_at FROM %s.node WHERE id = %s;",
 			viper.GetString("app.database.cassandra.databaseName"),
 			id,
 		),
-	).Scan(&address, &status, &createdAt, &updatedAt)
+	).Scan(&hostname, &address, &status, &createdAt, &updatedAt)
 
 	if err != nil {
 		return nodeModel, err
 	}
 
 	nodeModel.ID = id
+	nodeModel.Hostname = hostname
 	nodeModel.Address = address
 	nodeModel.Status = status
 	nodeModel.CreatedAt = createdAt
