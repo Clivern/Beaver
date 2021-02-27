@@ -80,26 +80,20 @@ func (c *ChannelModule) ChannelExist(ctx context.Context, name string) (bool, er
 
 // DeleteChannelByName deletes a channel with name
 func (c *ChannelModule) DeleteChannelByName(ctx context.Context, name string) error {
-	return c.db.Query(
-		ctx,
-		fmt.Sprintf(
-			`BEGIN BATCH
-				DELETE FROM %s.channel WHERE name = '%s';
-				DELETE FROM %s.message WHERE to_channel_name = '%s';
-				DELETE FROM %s.client_channel WHERE channel_name = '%s';
-			APPLY BATCH;`,
-			viper.GetString("app.database.cassandra.databaseName"),
-			name,
-			viper.GetString("app.database.cassandra.databaseName"),
-			name,
-			viper.GetString("app.database.cassandra.databaseName"),
-			name,
-		),
-	).Exec()
+
+	fullQuery := strings.Join([]string{
+		"BEGIN BATCH",
+		fmt.Sprintf("DELETE FROM %s.channel WHERE name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
+		fmt.Sprintf("DELETE FROM %s.message WHERE to_channel_name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
+		fmt.Sprintf("DELETE FROM %s.client_channel WHERE channel_name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
+		"APPLY BATCH",
+	}, "\n")
+
+	return c.db.Query(ctx, fullQuery).Exec()
 }
 
 // GetSubscribers gets a list of subscribers with channel name (all subscribers)
-func (c *ChannelModule) GetSubscribers(name string) []ClientModel {
+func (c *ChannelModule) GetSubscribers(ctx context.Context, name string) []ClientModel {
 	var clientIDs []gocql.UUID
 	var clients []ClientModel
 
@@ -112,11 +106,20 @@ func (c *ChannelModule) GetSubscribers(name string) []ClientModel {
 		),
 	).Iter()
 
-	for _, columnInfo := range iter.Columns() {
-		clientIDs = append(clientIDs, columnInfo.client_id)
-		clients = append(clients, ClientModel{
-			ID: columnInfo.client_id,
-		})
+	for {
+		row := make(map[string]interface{})
+
+		if !iter.MapScan(row) {
+			break
+		}
+
+		// Do things with row
+		if clientId, ok := row["client_id"]; ok {
+			clientIDs = append(clientIDs, clientId.(gocql.UUID))
+			clients = append(clients, ClientModel{
+				ID: clientId.(gocql.UUID),
+			})
+		}
 	}
 
 	return clients
@@ -143,7 +146,7 @@ func (c *ChannelModule) CountSubscribers(ctx context.Context, name string) (int,
 }
 
 // GetListeners gets a list of listeners with channel name (online subscribers)
-func (c *ChannelModule) GetListeners(name string) []ClientModel {
+func (c *ChannelModule) GetListeners(ctx context.Context, name string) []ClientModel {
 	var clientIDs []gocql.UUID
 	var clients []ClientModel
 
@@ -157,11 +160,20 @@ func (c *ChannelModule) GetListeners(name string) []ClientModel {
 		),
 	).Iter()
 
-	for _, columnInfo := range iter.Columns() {
-		clientIDs = append(clientIDs, columnInfo.client_id)
-		clients = append(clients, ClientModel{
-			ID: columnInfo.client_id,
-		})
+	for {
+		row := make(map[string]interface{})
+
+		if !iter.MapScan(row) {
+			break
+		}
+
+		// Do things with row
+		if clientId, ok := row["client_id"]; ok {
+			clientIDs = append(clientIDs, clientId.(gocql.UUID))
+			clients = append(clients, ClientModel{
+				ID: clientId.(gocql.UUID),
+			})
+		}
 	}
 
 	return clients
