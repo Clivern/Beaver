@@ -144,74 +144,22 @@ var serveCmd = &cobra.Command{
 
 		defer db.Close()
 
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.Database),
-		).Exec()
+		migrate := schema.NewMigration(db)
+
+		err = migrate.Init(context.Background())
 
 		if err != nil {
 			panic(fmt.Sprintf(
-				"Error while executing Schema.Database query: %s",
+				"Error while executing migrate.Init: %s",
 				err.Error(),
 			))
 		}
 
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ClientTable),
-		).Exec()
+		err = migrate.Migrate(context.Background())
 
 		if err != nil {
 			panic(fmt.Sprintf(
-				"Error while executing Schema.ClientTable query: %s",
-				err.Error(),
-			))
-		}
-
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ChannelTable),
-		).Exec()
-
-		if err != nil {
-			panic(fmt.Sprintf(
-				"Error while executing Schema.ChannelTable query: %s",
-				err.Error(),
-			))
-		}
-
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.MessageTable),
-		).Exec()
-
-		if err != nil {
-			panic(fmt.Sprintf(
-				"Error while executing Schema.MessageTable query: %s",
-				err.Error(),
-			))
-		}
-
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.NodeTable),
-		).Exec()
-
-		if err != nil {
-			panic(fmt.Sprintf(
-				"Error while executing Schema.NodeTable query: %s",
-				err.Error(),
-			))
-		}
-
-		err = db.Query(
-			context.Background(),
-			schema.SchemaWithDatabase(viper.GetString("app.database.cassandra.databaseName"), schema.ClientChannelTable),
-		).Exec()
-
-		if err != nil {
-			panic(fmt.Sprintf(
-				"Error while executing Schema.ClientChannelTable query: %s",
+				"Error while executing migrate.Migrate: %s",
 				err.Error(),
 			))
 		}
