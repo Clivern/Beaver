@@ -65,7 +65,7 @@ func (c *ChannelModule) ChannelExist(ctx context.Context, name string) (bool, er
 	err := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT COUNT(*) FROM %s.channel WHERE name = %s;",
+			"SELECT COUNT(*) FROM %s.channel WHERE name = '%s';",
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 		),
@@ -80,16 +80,14 @@ func (c *ChannelModule) ChannelExist(ctx context.Context, name string) (bool, er
 
 // DeleteChannelByName deletes a channel with name
 func (c *ChannelModule) DeleteChannelByName(ctx context.Context, name string) error {
-
-	fullQuery := strings.Join([]string{
-		"BEGIN BATCH",
-		fmt.Sprintf("DELETE FROM %s.channel WHERE name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
-		fmt.Sprintf("DELETE FROM %s.message WHERE to_channel_name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
-		fmt.Sprintf("DELETE FROM %s.client_channel WHERE channel_name = '%s'", viper.GetString("app.database.cassandra.databaseName"), name),
-		"APPLY BATCH",
-	}, "\n")
-
-	return c.db.Query(ctx, fullQuery).Exec()
+	return c.db.Query(
+		ctx,
+		fmt.Sprintf(
+			"DELETE FROM %s.channel WHERE name = '%s'",
+			viper.GetString("app.database.cassandra.databaseName"),
+			name,
+		),
+	).Exec()
 }
 
 // GetSubscribers gets a list of subscribers with channel name (all subscribers)
@@ -100,7 +98,7 @@ func (c *ChannelModule) GetSubscribers(ctx context.Context, name string) []Clien
 	iter := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT client_id FROM %s.client_channel WHERE channel_name = '%s';",
+			"SELECT id FROM %s.client WHERE channels CONTAINS '%s';",
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 		),
@@ -114,7 +112,7 @@ func (c *ChannelModule) GetSubscribers(ctx context.Context, name string) []Clien
 		}
 
 		// Do things with row
-		if clientId, ok := row["client_id"]; ok {
+		if clientId, ok := row["id"]; ok {
 			clientIDs = append(clientIDs, clientId.(gocql.UUID))
 			clients = append(clients, ClientModel{
 				ID: clientId.(gocql.UUID),
@@ -132,7 +130,7 @@ func (c *ChannelModule) CountSubscribers(ctx context.Context, name string) (int,
 	err := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT COUNT(*) FROM %s.client_channel WHERE channel_name = '%s';",
+			"SELECT COUNT(*) FROM %s.client WHERE channels CONTAINS '%s';",
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 		),
@@ -153,7 +151,7 @@ func (c *ChannelModule) GetListeners(ctx context.Context, name string) []ClientM
 	iter := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT client_id FROM %s.client_channel WHERE channel_name = '%s' AND client_status = '%s';",
+			"SELECT id FROM %s.client WHERE channels CONTAINS '%s' AND status = '%s';",
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 			Online,
@@ -168,7 +166,7 @@ func (c *ChannelModule) GetListeners(ctx context.Context, name string) []ClientM
 		}
 
 		// Do things with row
-		if clientId, ok := row["client_id"]; ok {
+		if clientId, ok := row["id"]; ok {
 			clientIDs = append(clientIDs, clientId.(gocql.UUID))
 			clients = append(clients, ClientModel{
 				ID: clientId.(gocql.UUID),
@@ -186,7 +184,7 @@ func (c *ChannelModule) CountListeners(ctx context.Context, name string) (int, e
 	err := c.db.Query(
 		ctx,
 		fmt.Sprintf(
-			"SELECT COUNT(*) FROM %s.client_channel WHERE channel_name = '%s' AND client_status = '%s';",
+			"SELECT COUNT(*) FROM %s.client WHERE channels CONTAINS '%s' AND status = '%s';",
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 			Online,
@@ -240,7 +238,7 @@ func (c *ChannelModule) CreateChannel(ctx context.Context, channel ChannelModel)
 // GetChannelByName gets a channel by name
 func (c *ChannelModule) GetChannelByName(ctx context.Context, name string) (ChannelModel, error) {
 	var id gocql.UUID
-	var ch_type string
+	var chType string
 	var createdAt int64
 	var updatedAt int64
 	var channelModel ChannelModel
@@ -252,7 +250,7 @@ func (c *ChannelModule) GetChannelByName(ctx context.Context, name string) (Chan
 			viper.GetString("app.database.cassandra.databaseName"),
 			name,
 		),
-	).Scan(&id, &ch_type, &createdAt, &updatedAt)
+	).Scan(&id, &chType, &createdAt, &updatedAt)
 
 	if err != nil {
 		return channelModel, err
@@ -260,7 +258,7 @@ func (c *ChannelModule) GetChannelByName(ctx context.Context, name string) (Chan
 
 	channelModel.ID = id
 	channelModel.Name = name
-	channelModel.Type = ch_type
+	channelModel.Type = chType
 	channelModel.CreatedAt = createdAt
 	channelModel.UpdatedAt = updatedAt
 
@@ -281,7 +279,7 @@ func (c *ChannelModule) UpdateChannelByName(ctx context.Context, channel_name, c
 	).Exec()
 }
 
-// Count ...
+// Count counts the channel
 func (c *ChannelModule) Count(ctx context.Context) (int, error) {
 	var count int
 

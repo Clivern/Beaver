@@ -27,9 +27,7 @@ func TestNodeModule(t *testing.T) {
 
 	g.Describe("#TestInsert", func() {
 		g.It("It should satisfy all provided test cases", func() {
-
 			g.Assert(Sum(tt.input)).Equal(tt.wantResult)
-
 		})
 	})
 }

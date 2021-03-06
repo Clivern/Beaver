@@ -7,7 +7,6 @@ package module
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/clivern/beaver/core/driver"
 
@@ -57,14 +56,14 @@ func (c *NodeModule) Insert(ctx context.Context, node NodeModel) error {
 
 // DeleteById ...
 func (c *NodeModule) DeleteById(ctx context.Context, id gocql.UUID) error {
-	fullQuery := strings.Join([]string{
-		"BEGIN BATCH",
-		fmt.Sprintf("DELETE FROM %s.node WHERE id = %s", viper.GetString("app.database.cassandra.databaseName"), id),
-		fmt.Sprintf("UPDATE %s.client SET node_id = NULL WHERE node_id = %s", viper.GetString("app.database.cassandra.databaseName"), id),
-		"APPLY BATCH",
-	}, "\n")
-
-	return c.db.Query(ctx, fullQuery).Exec()
+	return c.db.Query(
+		ctx,
+		fmt.Sprintf(
+			"DELETE FROM %s.node WHERE id = %s",
+			viper.GetString("app.database.cassandra.databaseName"),
+			id,
+		),
+	).Exec()
 }
 
 // UpdateById ...
