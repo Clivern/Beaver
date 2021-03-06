@@ -54,8 +54,8 @@ func GenerateClient(nodeID gocql.UUID, status string, channels []string) *Client
 	}
 }
 
-// NewClient creates a client instance
-func NewClient(db driver.Cassandra) *ClientModule {
+// NewClientModule creates a client instance
+func NewClientModule(db driver.Cassandra) *ClientModule {
 	result := new(ClientModule)
 	result.db = db
 

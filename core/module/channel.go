@@ -30,8 +30,8 @@ type ChannelModel struct {
 	UpdatedAt int64      `json:"updated_at"`
 }
 
-// NewChannel creates a channel instance
-func NewChannel(db driver.Cassandra) *ChannelModule {
+// NewChannelModule creates a channel instance
+func NewChannelModule(db driver.Cassandra) *ChannelModule {
 	result := new(ChannelModule)
 	result.db = db
 

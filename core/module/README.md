@@ -50,3 +50,87 @@ fmt.Println(value)
 fmt.Println(nodeModule.Count(context.Background()))
 fmt.Println(nodeModule.DeleteById(context.Background(), id))
 ```
+
+
+Channel Module Example
+
+```golang
+db := driver.NewCassandra().WithHosts(
+    strings.Split(viper.GetString("app.database.cassandra.hosts"), ","),
+).WithTimeout(
+    viper.GetInt("app.database.cassandra.timeout"),
+).WithAuth(
+    viper.GetString("app.database.cassandra.username"),
+    viper.GetString("app.database.cassandra.password"),
+)
+
+
+err = db.CreateSession()
+
+if err != nil {
+    panic(fmt.Sprintf(
+        "Error while connecting cassandra: %s",
+        err.Error(),
+    ))
+}
+
+defer db.Close()
+
+channelModule := module.NewChannelModule(db)
+```
+
+
+Client Module Example
+
+```golang
+db := driver.NewCassandra().WithHosts(
+    strings.Split(viper.GetString("app.database.cassandra.hosts"), ","),
+).WithTimeout(
+    viper.GetInt("app.database.cassandra.timeout"),
+).WithAuth(
+    viper.GetString("app.database.cassandra.username"),
+    viper.GetString("app.database.cassandra.password"),
+)
+
+
+err = db.CreateSession()
+
+if err != nil {
+    panic(fmt.Sprintf(
+        "Error while connecting cassandra: %s",
+        err.Error(),
+    ))
+}
+
+defer db.Close()
+
+clientModule := module.NewClientModule(db)
+```
+
+
+Message Module Example
+
+```golang
+db := driver.NewCassandra().WithHosts(
+    strings.Split(viper.GetString("app.database.cassandra.hosts"), ","),
+).WithTimeout(
+    viper.GetInt("app.database.cassandra.timeout"),
+).WithAuth(
+    viper.GetString("app.database.cassandra.username"),
+    viper.GetString("app.database.cassandra.password"),
+)
+
+
+err = db.CreateSession()
+
+if err != nil {
+    panic(fmt.Sprintf(
+        "Error while connecting cassandra: %s",
+        err.Error(),
+    ))
+}
+
+defer db.Close()
+
+messageModule := module.NewMessageModule(db)
+```

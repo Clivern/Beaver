@@ -27,8 +27,8 @@ type MessageModel struct {
 	UpdatedAt     int64      `json:"updated_at"`
 }
 
-// NewMessageModel creates a message module instance
-func NewMessageModel(db *driver.Cassandra) *MessageModule {
+// NewMessageModule creates a message module instance
+func NewMessageModule(db *driver.Cassandra) *MessageModule {
 	result := new(MessageModule)
 	result.db = db
 
