@@ -46,6 +46,8 @@ app:
             hosts: ${BEAVER_DB_CASSANDRA_ENDPOINTS:-127.0.0.1}
             # Timeout in seconds
             timeout: 30
+            # Connect Timeout in seconds
+            connectTimeout: 30
 
     # Backend HTTP Webhook
     webhook:

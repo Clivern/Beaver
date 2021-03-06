@@ -1,3 +1,35 @@
+To Run Cassandra, Install Docker and docker-compose
+
+```bash
+$ apt-get update
+$ apt install docker.io
+$ systemctl enable docker
+$ apt install docker-compose
+```
+
+Create `docker-compose.yml` file
+
+```yaml
+version: '3'
+
+services:
+  n1:
+    image: 'cassandra:3.11'
+    ports:
+      - "9042:9042"
+```
+
+Run cassandra container
+
+```bash
+$ docker-compose up -d n1
+$ docker ps
+
+$ docker-compose exec n1 nodetool help
+$ docker-compose exec n1 nodetool status
+$ docker-compose exec n1 nodetool ring
+```
+
 Node Module Example
 
 ```golang

@@ -15,6 +15,7 @@ import (
 type Cassandra struct {
 	Session  *gocql.Session
 	Hosts    []string
+	ConnectTimeout int
 	Timeout  int
 	Username string
 	Password string
@@ -37,6 +38,12 @@ func (c *Cassandra) WithTimeout(timeout int) *Cassandra {
 	return c
 }
 
+// WithConnectTimeout define connect timeout
+func (c *Cassandra) WithConnectTimeout(connectTimeout int) *Cassandra {
+	c.ConnectTimeout = connectTimeout
+	return c
+}
+
 // WithAuth define auth configs
 func (c *Cassandra) WithAuth(username, password string) *Cassandra {
 	c.Username = username
@@ -51,7 +58,8 @@ func (c *Cassandra) CreateSession() error {
 	// https://github.com/gocql/gocql/blob/master/cluster.go#L31
 	cluster := gocql.NewCluster()
 	cluster.Hosts = c.Hosts
-	cluster.ConnectTimeout = time.Second * time.Duration(c.Timeout)
+	cluster.ConnectTimeout = time.Second * time.Duration(c.ConnectTimeout)
+	cluster.Timeout = time.Second * time.Duration(c.Timeout)
 	cluster.Authenticator = gocql.PasswordAuthenticator{Username: c.Username, Password: c.Password}
 	c.Session, err = cluster.CreateSession()
 

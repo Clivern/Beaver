@@ -128,6 +128,8 @@ var serveCmd = &cobra.Command{
 			strings.Split(viper.GetString("app.database.cassandra.hosts"), ","),
 		).WithTimeout(
 			viper.GetInt("app.database.cassandra.timeout"),
+		).WithConnectTimeout(
+			viper.GetInt("app.database.cassandra.connectTimeout"),
 		).WithAuth(
 			viper.GetString("app.database.cassandra.username"),
 			viper.GetString("app.database.cassandra.password"),
