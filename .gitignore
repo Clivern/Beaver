@@ -11,15 +11,11 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Config file
-config.dist.yml
+# dist dir
+dist
 
-# App build
-beaver
+sync
 
-# Ignore vendor and run dep ensure
-vendor
+*.db
 
-config.test.yml
-coverage.html
-cover.out
+config.prod.yml

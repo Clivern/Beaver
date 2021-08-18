@@ -1,28 +1,40 @@
 # This is an example goreleaser.yaml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
+---
+archives:
+  -
+    replacements:
+      386: i386
+      amd64: x86_64
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+    files:
+      - LICENSE
+      - README.md
+      - config.dist.yml
+      - config.prod.yml
 before:
   hooks:
-    # you may remove this if you don't use vgo
-    - go mod download
-    # you may remove this if you don't need go generate
-    - go generate ./...
+    - "go mod download"
+    - "go generate ./..."
 builds:
-- env:
-  - CGO_ENABLED=0
-archives:
-- replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
+  -
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+
 changelog:
-  sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - "^docs:"
+      - "^test:"
+  sort: asc
+checksum:
+  name_template: checksums.txt
+snapshot:
+  name_template: "{{ .Tag }}-next"
+project_name: beaver

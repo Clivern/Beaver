@@ -1,0 +1,49 @@
+# App configs
+app:
+    # Env mode (dev or prod)
+    mode: ${BEAVER_APP_MODE:-dev}
+    # HTTP port
+    port: ${BEAVER_API_PORT:-8080}
+    # Hostname
+    hostname: ${BEAVER_API_HOSTNAME:-127.0.0.1}
+    # TLS configs
+    tls:
+        status: ${BEAVER_API_TLS_STATUS:-off}
+        pemPath: ${BEAVER_API_TLS_PEMPATH:-cert/server.pem}
+        keyPath: ${BEAVER_API_TLS_KEYPATH:-cert/server.key}
+
+    # API Configs
+    api:
+        key: ${BEAVER_API_KEY:-6c68b836-6f8e-465e-b59f-89c1db53afca}
+
+    # Beaver Secret
+    secret: ${BEAVER_SECRET:-sWUhHRcs4Aqa0MEnYwbuQln3EW8CZ0oD}
+
+    # Runtime, Requests/Response and Beaver Metrics
+    metrics:
+        prometheus:
+            # Route for the metrics endpoint
+            endpoint: ${BEAVER_METRICS_PROM_ENDPOINT:-/metrics}
+
+    # Application Database
+    database:
+        # Database driver
+        driver: ${BEAVER_DB_DRIVER:-redis}
+
+        # Redis Configs
+        redis:
+            # Redis address
+            address: ${BEAVER_DB_REDIS_ADDR:-localhost:6379}
+            # Redis password
+            password: ${BEAVER_DB_REDIS_PASSWORD:- }
+            # Redis database
+            db: ${BEAVER_DB_REDIS_DB:-0}
+
+    # Log configs
+    log:
+        # Log level, it can be debug, info, warn, error, panic, fatal
+        level: ${BEAVER_LOG_LEVEL:-info}
+        # Output can be stdout or abs path to log file /var/logs/beaver.log
+        output: ${BEAVER_LOG_OUTPUT:-stdout}
+        # Format can be json
+        format: ${BEAVER_LOG_FORMAT:-json}
