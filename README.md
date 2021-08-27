@@ -10,10 +10,10 @@
             <img src="https://github.com/Clivern/Beaver/workflows/Release/badge.svg">
         </a>
         <a href="https://github.com/Clivern/Beaver/releases">
-            <img src="https://img.shields.io/badge/Version-2.0.1-red.svg">
+            <img src="https://img.shields.io/badge/Version-1.4.0-red.svg">
         </a>
         <a href="https://goreportcard.com/report/github.com/Clivern/Beaver">
-            <img src="https://goreportcard.com/badge/github.com/Clivern/Beaver?v=2.0.1">
+            <img src="https://goreportcard.com/badge/github.com/Clivern/Beaver?v=1.4.0">
         </a>
         <a href="https://godoc.org/github.com/clivern/beaver">
             <img src="https://godoc.org/github.com/clivern/beaver?status.svg">
@@ -25,7 +25,7 @@
 </p>
 <br/>
 <p align="center">
-    <img src="/assets/charts/chart.png?v=2.0.1" width="60%" />
+    <img src="/assets/charts/chart.png?v=1.4.0" width="60%" />
 </p>
 
 Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
