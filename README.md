@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/assets/img/gopher.png" width="200" />
+    <img src="https://raw.githubusercontent.com/Clivern/Beaver/main/assets/img/gopher.png" width="200" />
     <h3 align="center">Beaver</h3>
     <p align="center">A Real Time Messaging Server.</p>
     <p align="center">
@@ -25,7 +25,7 @@
 </p>
 <br/>
 <p align="center">
-    <img src="/assets/charts/chart.png?v=1.4.0" width="60%" />
+    <img src="https://raw.githubusercontent.com/Clivern/Beaver/main/assets/charts/chart.png?v=1.4.0" width="60%" />
 </p>
 
 Beaver is a real-time messaging server. With beaver you can easily build scalable in-app notifications, realtime graphs, multiplayer games, chat applications, geotracking and more in web applications and mobile apps.
