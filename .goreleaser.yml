@@ -13,7 +13,6 @@ archives:
       - LICENSE
       - README.md
       - config.dist.yml
-      - config.prod.yml
 before:
   hooks:
     - "go mod download"
