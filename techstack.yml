@@ -2,7 +2,7 @@ repo_name: Clivern/Beaver
 report_id: 7bdb4c3f5f0b1a8883352e328dc9f3f5
 version: 0.1
 repo_type: Public
-timestamp: '2024-01-05T08:18:46+00:00'
+timestamp: '2024-02-29T19:08:40+00:00'
 requested_by: Clivern
 provider: github
 branch: main
@@ -32,7 +32,7 @@ tools:
   detection_source_url: https://github.com/Clivern/Beaver
   detection_source: Repo Metadata
 - name: Gin Gonic
-  description: 'HTTP web framework written in Go '
+  description: HTTP web framework written in Go
   website_url: https://gin-gonic.com/
   license: MIT
   open_source: true
