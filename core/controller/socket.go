@@ -172,7 +172,10 @@ func (e *Websocket) HandleConnections(w http.ResponseWriter, r *http.Request, ID
 
 		msg.FromClient = ID
 
-		if msg.IsValid() {
+		// Enforce channel authorization: a client may only emit messages
+		// scoped to a channel it was granted. Without this check any
+		// connected client can publish to arbitrary channels or clients.
+		if msg.IsValid() && validate.IsIn(msg.Channel, clientResult.Channels) {
 			// Send the newly received message to the broadcast channel
 			e.Broadcast <- msg
 		}
